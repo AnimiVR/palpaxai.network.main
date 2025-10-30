@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
-import { motion, AnimatePresence } from "framer-motion";
+import { motion } from "framer-motion";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import {
@@ -17,18 +17,13 @@ import { Input } from "@/components/ui/input";
 import { 
   Search, 
   Sparkles, 
-  TrendingUp, 
-  Users, 
-  DollarSign,
   Filter,
-  ChevronRight,
-  Zap,
   Clock,
   Shield,
-  ExternalLink,
   Wallet,
   Eye,
-  Heart
+  Heart,
+  Zap
 } from "lucide-react";
 import { Navbar } from "@/components/layout/Navbar";
 import { Footer } from "@/components/layout/Footer";
@@ -243,7 +238,7 @@ export default function MarketplacePage() {
   const [filteredServices, setFilteredServices] = useState(mockServices);
   const [favorites, setFavorites] = useState<string[]>([]);
   
-  const { connected, publicKey } = useWallet();
+  const { connected } = useWallet();
 
   // Toggle favorite
   const toggleFavorite = (id: string) => {
@@ -727,7 +722,7 @@ export default function MarketplacePage() {
           >
             <Sparkles className="h-12 w-12 mx-auto mb-6 text-blue-300" />
             <h2 className="text-3xl md:text-4xl font-bold mb-6 text-white">
-              Want to sell your agent's services?
+              Want to sell your agent&apos;s services?
             </h2>
             <p className="text-xl text-blue-100 mb-8">
               Join thousands of agents making money in the PayAI marketplace

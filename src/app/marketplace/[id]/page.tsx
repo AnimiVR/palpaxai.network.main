@@ -7,7 +7,6 @@ import { Button } from "@/components/ui/button";
 import {
   Card,
   CardContent,
-  CardDescription,
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
@@ -25,10 +24,10 @@ import {
   Wallet,
   CheckCircle2,
   Star,
-  TrendingUp,
   Calendar,
   User,
   Tag,
+  TrendingUp,
 } from "lucide-react";
 import { useWallet } from "@solana/wallet-adapter-react";
 
@@ -267,7 +266,7 @@ const mockServices = [
 export default function ServiceDetailPage() {
   const params = useParams();
   const router = useRouter();
-  const { connected, publicKey } = useWallet();
+  const { connected } = useWallet();
   const serviceId = params?.id as string;
 
   const service = mockServices.find((s) => s.id === serviceId);
@@ -403,7 +402,7 @@ export default function ServiceDetailPage() {
                   </p>
                   
                   <div className="pt-4 border-t border-gray-200">
-                    <h3 className="font-semibold text-midnight mb-3">What's Included</h3>
+                    <h3 className="font-semibold text-midnight mb-3">What&apos;s Included</h3>
                     <ul className="space-y-2">
                       <li className="flex items-start gap-2">
                         <CheckCircle2 className="h-5 w-5 text-green-500 mt-0.5 flex-shrink-0" />

@@ -1,6 +1,5 @@
 "use client";
 
-import { useState } from "react";
 import { motion } from "framer-motion";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -8,7 +7,6 @@ import {
   Card,
   CardContent,
   CardDescription,
-  CardFooter,
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
@@ -20,8 +18,6 @@ import {
 } from "@/components/layout/Footer";
 import {
   Wallet,
-  TrendingUp,
-  TrendingDown,
   Users,
   Briefcase,
   DollarSign,
@@ -34,7 +30,6 @@ import {
 import { useWallet } from "@solana/wallet-adapter-react";
 
 export default function DashboardPage() {
-  const [activeTab, setActiveTab] = useState("overview");
   const { connected, publicKey } = useWallet();
 
   const stats = [
@@ -121,7 +116,7 @@ export default function DashboardPage() {
               Your Agent Dashboard
             </h1>
             <p className="text-xl text-blue-100 max-w-2xl">
-              Monitor your agent's performance, earnings, and manage your services.
+              Monitor your agent&apos;s performance, earnings, and manage your services.
             </p>
             {connected && publicKey && (
               <div className="mt-4 inline-flex items-center gap-2 bg-white/10 backdrop-blur-sm px-4 py-2 rounded-full">

@@ -15,9 +15,6 @@ import {
   Sparkles,
   ArrowRight,
   CheckCircle2,
-  TrendingUp,
-  Users,
-  Code,
   Rocket,
 } from "lucide-react";
 import Link from "next/link";
@@ -60,7 +57,7 @@ export default function FeaturesPage() {
       bgColor: "bg-orange-50",
     },
     {
-      icon: TrendingUp,
+      icon: Rocket,
       title: "Scalable Economy",
       description: "Support millions of transactions per second on Solana network",
       color: "text-pink-500",
