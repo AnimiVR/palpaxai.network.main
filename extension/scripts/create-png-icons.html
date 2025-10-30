@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>SVG to PNG Converter - PayAI Icons</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      max-width: 800px;
+      margin: 50px auto;
+      padding: 20px;
+    }
+    .icon-preview {
+      display: inline-block;
+      margin: 10px;
+      text-align: center;
+    }
+    canvas {
+      border: 1px solid #ddd;
+      margin: 5px;
+    }
+    button {
+      background: #4D63F6;
+      color: white;
+      border: none;
+      padding: 10px 20px;
+      border-radius: 5px;
+      cursor: pointer;
+      margin: 5px;
+    }
+    button:hover {
+      background: #2563eb;
+    }
+  </style>
+</head>
+<body>
+  <h1>PayAI Extension Icons - SVG to PNG Converter</h1>
+  <p>This page will convert SVG icons to PNG format for Chrome extension.</p>
+  
+  <div id="icons-container"></div>
+  
+  <button onclick="convertAll()">Download All PNG Icons</button>
+
+  <script>
+    const sizes = [16, 32, 48, 128];
+    const container = document.getElementById('icons-container');
+
+    sizes.forEach(size => {
+      const div = document.createElement('div');
+      div.className = 'icon-preview';
+      
+      const canvas = document.createElement('canvas');
+      canvas.width = size;
+      canvas.height = size;
+      canvas.id = `canvas-${size}`;
+      
+      const label = document.createElement('p');
+      label.textContent = `${size}x${size}`;
+      
+      const downloadBtn = document.createElement('button');
+      downloadBtn.textContent = `Download ${size}x${size}`;
+      downloadBtn.onclick = () => downloadIcon(size);
+      
+      div.appendChild(canvas);
+      div.appendChild(label);
+      div.appendChild(downloadBtn);
+      container.appendChild(div);
+      
+      // Load and draw SVG
+      loadAndDrawIcon(size);
+    });
+
+    function loadAndDrawIcon(size) {
+      fetch(`../icons/icon${size}.svg`)
+        .then(response => response.text())
+        .then(svgText => {
+          const canvas = document.getElementById(`canvas-${size}`);
+          const ctx = canvas.getContext('2d');
+          const img = new Image();
+          
+          img.onload = () => {
+            ctx.clearRect(0, 0, size, size);
+            ctx.drawImage(img, 0, 0, size, size);
+          };
+          
+          const svgBlob = new Blob([svgText], { type: 'image/svg+xml;charset=utf-8' });
+          const url = URL.createObjectURL(svgBlob);
+          img.src = url;
+        })
+        .catch(err => {
+          console.error(`Error loading icon${size}.svg:`, err);
+        });
+    }
+
+    function downloadIcon(size) {
+      const canvas = document.getElementById(`canvas-${size}`);
+      canvas.toBlob(blob => {
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = `icon${size}.png`;
+        a.click();
+        URL.revokeObjectURL(url);
+      }, 'image/png');
+    }
+
+    function convertAll() {
+      sizes.forEach(size => {
+        setTimeout(() => downloadIcon(size), size * 10);
+      });
+    }
+  </script>
+</body>
+</html>
+
+
+

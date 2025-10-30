@@ -2,13 +2,59 @@
 
 import React, { useState, useEffect } from "react";
 import Link from "next/link";
-import { Menu, X, Book, Github } from "lucide-react";
+import { Menu, X, Github, Wallet } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import Image from "next/image";
+import { useWallet } from "@solana/wallet-adapter-react";
+import { useWalletModal } from "@solana/wallet-adapter-react-ui";
 
 export function Navbar() {
   const [isScrolled, setIsScrolled] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+  const { wallet, select, wallets, connect, disconnect, connected, publicKey } = useWallet();
+  const { setVisible } = useWalletModal();
+
+  const handleConnect = async () => {
+    if (!connected) {
+      // If wallet is already selected, try to connect directly
+      if (wallet && wallet.adapter && wallet.adapter.connected === false) {
+        try {
+          await connect();
+          return;
+        } catch (err) {
+          console.error("Failed to connect selected wallet:", err);
+          // Fall through to show modal
+        }
+      }
+      
+      // Show wallet selection modal for user to choose wallet
+      setVisible(true);
+    }
+  };
+
+  const handleDisconnect = () => {
+    disconnect().catch((err) => {
+      console.error("Failed to disconnect wallet:", err);
+    });
+  };
+
+  // Sync wallet state to extension storage via injected bridge
+  useEffect(() => {
+    const syncToExtension = () => {
+      // Use the bridge function injected by extension content script
+      if (typeof window !== 'undefined' && window.__payaiExtensionBridge) {
+        const isConnected = connected && !!publicKey;
+        const address = publicKey ? publicKey.toString() : '';
+        console.log('Website: Syncing wallet state to extension:', { isConnected, address });
+        window.__payaiExtensionBridge.syncWalletState(isConnected, address);
+      } else {
+        console.log('Website: Extension bridge not available (extension may not be installed)');
+      }
+    };
+    
+    // Sync when wallet state changes
+    syncToExtension();
+  }, [connected, publicKey]);
 
   useEffect(() => {
     const handleScroll = () => {
@@ -59,7 +105,7 @@ export function Navbar() {
           initial={{ scale: 0.95, opacity: 0 }}
           animate={{ scale: 1, opacity: 1 }}
           transition={{ duration: 0.5, delay: 0.1 }}
-          className="bg-white/10 backdrop-blur-sm border border-white/20 rounded-full shadow-sm px-6 py-3 flex items-center justify-between"
+          className="bg-white backdrop-blur-sm border border-blue-900 rounded-full shadow-sm px-6 py-3 flex items-center justify-between"
         >
           {/* Logo */}
           <Link href="/" className="flex items-center">
@@ -87,8 +133,8 @@ export function Navbar() {
               transition={{ duration: 0.4, delay: 0.2 }}
             >
               <Link
-                href="#home"
-                onClick={(e) => handleNavClick(e, "home")}
+                href="/"
+                // onClick={(e) => handleNavClick(e, "home")}
                 className="text-body font-normal text-gray-700 hover:text-gray-900 transition-colors"
               >
                 Home
@@ -100,11 +146,10 @@ export function Navbar() {
               transition={{ duration: 0.4, delay: 0.25 }}
             >
               <Link
-                href="#features"
-                onClick={(e) => handleNavClick(e, "features")}
+                href="/marketplace"
                 className="text-body font-normal text-gray-700 hover:text-gray-900 transition-colors"
               >
-                Features
+                Marketplace
               </Link>
             </motion.div>
             <motion.div
@@ -113,21 +158,73 @@ export function Navbar() {
               transition={{ duration: 0.4, delay: 0.3 }}
             >
               <Link
-                href="#blog"
-                onClick={(e) => handleNavClick(e, "blog")}
+                href="/dashboard"
                 className="text-body font-normal text-gray-700 hover:text-gray-900 transition-colors"
               >
-                Blog
+                Dashboard
+              </Link>
+            </motion.div>
+            <motion.div
+              initial={{ opacity: 0, y: -10 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.4, delay: 0.35 }}
+            >
+              <Link
+                href="/features"
+                // onClick={(e) => handleNavClick(e, "features")}
+                className="text-body font-normal text-gray-700 hover:text-gray-900 transition-colors"
+              >
+                Features
               </Link>
             </motion.div>
           </nav>
 
           {/* CTA Buttons */}
           <div className="hidden md:flex items-center space-x-3">
+            {/* Wallet Button */}
+            {!connected ? (
+              <motion.div
+                initial={{ opacity: 0, x: 20 }}
+                animate={{ opacity: 1, x: 0 }}
+                transition={{ duration: 0.4, delay: 0.4 }}
+                whileHover={{ scale: 1.05 }}
+                whileTap={{ scale: 0.95 }}
+              >
+                <button
+                  onClick={handleConnect}
+                  className="inline-flex items-center justify-center bg-midnight text-white px-5 py-2 text-body font-semibold border border-midnight rounded-full transition-colors hover:bg-midnight/90"
+                >
+                  <Wallet className="w-4 h-4 mr-2" />
+                  Connect Wallet
+                </button>
+              </motion.div>
+            ) : (
+              <motion.div
+                initial={{ opacity: 0, x: 20 }}
+                animate={{ opacity: 1, x: 0 }}
+                transition={{ duration: 0.4, delay: 0.4 }}
+                whileHover={{ scale: 1.05 }}
+                whileTap={{ scale: 0.95 }}
+                className="flex items-center space-x-3"
+              >
+                <div className="bg-green-50 border border-green-200 rounded-full px-4 py-2 flex items-center space-x-2">
+                  <div className="w-2 h-2 bg-green-500 rounded-full"></div>
+                  <span className="text-sm font-medium text-green-700">
+                    {publicKey?.toString().substring(0, 4)}...{publicKey?.toString().slice(-4)}
+                  </span>
+                </div>
+                <button
+                  onClick={handleDisconnect}
+                  className="inline-flex items-center justify-center bg-white/70 text-gray-800 px-5 py-2 text-body font-normal border border-gray-200 rounded-full transition-colors hover:bg-white"
+                >
+                  Disconnect
+                </button>
+              </motion.div>
+            )}
             <motion.div
               initial={{ opacity: 0, x: 20 }}
               animate={{ opacity: 1, x: 0 }}
-              transition={{ duration: 0.4, delay: 0.35 }}
+              transition={{ duration: 0.4, delay: 0.45 }}
               whileHover={{ scale: 1.05 }}
               whileTap={{ scale: 0.95 }}
             >
@@ -138,22 +235,6 @@ export function Navbar() {
               >
                 <Github className="w-4 h-4 mr-2" />
                 Github
-              </Link>
-            </motion.div>
-            <motion.div
-              initial={{ opacity: 0, x: 20 }}
-              animate={{ opacity: 1, x: 0 }}
-              transition={{ duration: 0.4, delay: 0.4 }}
-              whileHover={{ scale: 1.05 }}
-              whileTap={{ scale: 0.95 }}
-            >
-              <Link
-                href={process.env.NEXT_PUBLIC_DOCS_URL || "#"}
-                target="_blank"
-                className="inline-flex items-center justify-center bg-primary hover:bg-primary-700 text-white px-5 py-2 text-body font-normal rounded-full transition-colors"
-              >
-                <Book className="w-4 h-4 mr-2" />
-                Docs
               </Link>
             </motion.div>
           </div>
@@ -211,8 +292,8 @@ export function Navbar() {
                 transition={{ duration: 0.3, delay: 0.1 }}
               >
                 <Link
-                  href="#home"
-                  onClick={(e) => handleNavClick(e, "home")}
+                  href="/"
+                  // onClick={(e) => handleNavClick(e, "home")}
                   className="block py-2 text-body font-normal text-gray-900 hover:text-gray-600"
                 >
                   Home
@@ -224,11 +305,10 @@ export function Navbar() {
                 transition={{ duration: 0.3, delay: 0.15 }}
               >
                 <Link
-                  href="#features"
-                  onClick={(e) => handleNavClick(e, "features")}
+                  href="/marketplace"
                   className="block py-2 text-body font-normal text-gray-900 hover:text-gray-600"
                 >
-                  Features
+                  Marketplace
                 </Link>
               </motion.div>
               <motion.div
@@ -237,18 +317,66 @@ export function Navbar() {
                 transition={{ duration: 0.3, delay: 0.2 }}
               >
                 <Link
-                  href="#blog"
-                  onClick={(e) => handleNavClick(e, "blog")}
+                  href="/dashboard"
                   className="block py-2 text-body font-normal text-gray-900 hover:text-gray-600"
                 >
-                  Blog
+                  Dashboard
+                </Link>
+              </motion.div>
+              <motion.div
+                initial={{ opacity: 0, x: -20 }}
+                animate={{ opacity: 1, x: 0 }}
+                transition={{ duration: 0.3, delay: 0.25 }}
+              >
+                <Link
+                  href="/features"
+                  // onClick={(e) => handleNavClick(e, "features")}
+                  className="block py-2 text-body font-normal text-gray-900 hover:text-gray-600"
+                >
+                  Features
                 </Link>
               </motion.div>
               <div className="pt-4 flex flex-col space-y-2">
+                {/* Mobile Wallet Button */}
+                {!connected ? (
+                  <motion.div
+                    initial={{ opacity: 0, y: 20 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ duration: 0.3, delay: 0.3 }}
+                  >
+                    <button
+                      onClick={handleConnect}
+                      className="inline-flex items-center justify-center bg-midnight text-white px-5 py-2 text-body font-semibold border border-midnight rounded-full transition-colors hover:bg-midnight/90 w-full"
+                    >
+                      <Wallet className="w-4 h-4 mr-2" />
+                      Connect Wallet
+                    </button>
+                  </motion.div>
+                ) : (
+                  <motion.div
+                    initial={{ opacity: 0, y: 20 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ duration: 0.3, delay: 0.3 }}
+                    className="space-y-2"
+                  >
+                    <div className="bg-green-50 border border-green-200 rounded-full px-4 py-2 flex items-center justify-center space-x-2">
+                      <div className="w-2 h-2 bg-green-500 rounded-full"></div>
+                      <span className="text-sm font-medium text-green-700">
+                        {publicKey?.toString().substring(0, 4)}...{publicKey?.toString().slice(-4)}
+                      </span>
+                    </div>
+                    <button
+                      onClick={handleDisconnect}
+                      className="inline-flex items-center justify-center bg-white/70 text-gray-800 px-5 py-2 text-body font-normal border border-gray-200 rounded-full transition-colors hover:bg-white w-full"
+                    >
+                      Disconnect
+                    </button>
+                  </motion.div>
+                )}
                 <motion.div
                   initial={{ opacity: 0, y: 20 }}
                   animate={{ opacity: 1, y: 0 }}
-                  transition={{ duration: 0.3, delay: 0.25 }}
+                  transition={{ duration: 0.3, delay: 0.35 }}
                 >
                   <Link
                     href={process.env.NEXT_PUBLIC_GITHUB_URL || "#"}
@@ -257,20 +385,6 @@ export function Navbar() {
                   >
                     <Github className="w-4 h-4 mr-2" />
                     Github
-                  </Link>
-                </motion.div>
-                <motion.div
-                  initial={{ opacity: 0, y: 20 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ duration: 0.3, delay: 0.3 }}
-                >
-                  <Link
-                    href={process.env.NEXT_PUBLIC_DOCS_URL || "#"}
-                    target="_blank"
-                    className="inline-flex items-center justify-center bg-primary hover:bg-primary-700 text-white px-5 py-2 text-body font-normal rounded-full transition-colors w-full"
-                  >
-                    <Book className="w-4 h-4 mr-2" />
-                    Docs
                   </Link>
                 </motion.div>
               </div>

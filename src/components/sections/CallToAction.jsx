@@ -4,7 +4,7 @@ import React from "react";
 import { motion } from "framer-motion";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import TerminalCommand from "@/components/shared/TerminalCommand";
+import PayAISetupTerminal from "@/components/shared/TerminalCommand";
 
 export function CallToAction() {
   // Floating elements for visual appeal
@@ -131,7 +131,7 @@ export function CallToAction() {
           <div className="absolute inset-0 bg-gradient-to-r from-blue-500/20 via-purple-500/20 to-green-500/20 rounded-3xl blur-3xl opacity-30"></div>
 
           <div className="relative bg-white/70 backdrop-blur-sm rounded-2xl p-1 shadow-xl border border-white/30">
-            <TerminalCommand />
+            <PayAISetupTerminal />
           </div>
         </motion.div>
 

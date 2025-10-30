@@ -1,5 +1,7 @@
 import type { Metadata } from "next";
 import "./globals.css";
+import { SolanaWalletProvider } from "@/components/WalletProvider";
+import { Chatbot } from "@/components/shared/Chatbot";
 
 export const metadata: Metadata = {
   title: "PayAI - Payments for the AI Age",
@@ -42,7 +44,12 @@ export default function RootLayout({
         <meta name="theme-color" content="#4D63F6" />
         <meta name="color-scheme" content="light" />
       </head>
-      <body className="">{children}</body>
+      <body className="">
+        <SolanaWalletProvider>
+          {children}
+          <Chatbot />
+        </SolanaWalletProvider>
+      </body>
     </html>
   );
 }

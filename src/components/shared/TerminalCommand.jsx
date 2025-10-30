@@ -1,8 +1,24 @@
+"use client";
+
 import { Button } from "@relume_io/relume-ui";
 import { motion } from "framer-motion";
 import Typewriter from "typewriter-effect";
+import { useEffect, useState } from "react";
 
-const TerminalCommand = () => {
+// Code display component for code examples
+export const TerminalCommand = ({ text, language = "javascript" }) => {
+  return (
+    <pre className="font-mono text-sm leading-relaxed text-gray-100 whitespace-pre-wrap break-words">
+      <code>{text}</code>
+    </pre>
+  );
+};
+
+// Original terminal command component
+const PayAISetupTerminal = () => {
+  const [mounted, setMounted] = useState(false);
+  useEffect(() => setMounted(true), []);
+
   return (
     <div className="relative mx-auto max-w-4xl">
       {/* Modern Code Interface */}
@@ -15,7 +31,7 @@ const TerminalCommand = () => {
             <div className="w-3 h-3 bg-green-400 rounded-full"></div>
           </div>
           <div className="ml-4 text-sm font-medium text-gray-600">
-            Quick Start - PayAI Setup
+            Quick Start - PalPaxAI Setup
           </div>
         </div>
 
@@ -27,18 +43,20 @@ const TerminalCommand = () => {
               <span className="text-green-400 mt-1">$</span>
               <div className="font-mono text-lg flex-1 min-h-[120px] flex items-start">
                 <div className="w-full">
-                  <Typewriter
-                    options={{
-                      strings: [
-                        "git clone git@github.com:elizaOS/eliza.git<br/>cd eliza && npm install<br/>npx elizaos plugins add @elizaos-plugins/plugin-payai",
-                      ],
-                      autoStart: true,
-                      loop: true,
-                      pauseFor: 8000,
-                      deleteAll: 1000,
-                      delay: 50,
-                    }}
-                  />
+                  {mounted && (
+                    <Typewriter
+                      options={{
+                        strings: [
+                          "git clone git@github.com:elizaOS/eliza.git<br/>cd eliza && npm install<br/>npx elizaos plugins add @elizaos-plugins/plugin-payai",
+                        ],
+                        autoStart: true,
+                        loop: true,
+                        pauseFor: 8000,
+                        deleteAll: 1000,
+                        delay: 50,
+                      }}
+                    />
+                  )}
                 </div>
               </div>
             </div>
@@ -52,7 +70,7 @@ const TerminalCommand = () => {
                     Quick Setup
                   </p>
                   <p className="text-blue-200/80 text-sm">
-                    Add PayAI plugin to your ElizaOS agent and start monetizing
+                    Add PalPaxAI plugin to your ElizaOS agent and start monetizing
                     AI services in minutes
                   </p>
                 </div>
@@ -108,7 +126,7 @@ const TerminalCommand = () => {
           <div className="mt-4 text-center">
             <p className="text-sm text-gray-600">
               🚀 Join <span className="font-semibold text-midnight">1000+</span>{" "}
-              developers building with PayAI
+              developers building with PalPaxAI
             </p>
           </div>
         </div>
@@ -117,4 +135,4 @@ const TerminalCommand = () => {
   );
 };
 
-export default TerminalCommand;
+export default PayAISetupTerminal;
