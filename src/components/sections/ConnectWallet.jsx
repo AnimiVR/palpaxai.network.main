@@ -49,7 +49,7 @@ export function ConnectWallet() {
   return (
     <section
       id="connect-wallet"
-      className="px-[5%] py-16 md:py-24 lg:py-28 bg-gradient-to-b from-white to-gray-50"
+      className="px-[5%] py-16 md:py-24 lg:py-28 bg-gradient-to-b from-purple-100/40 via-blue-100/30 to-indigo-50/20"
     >
       <div className="container max-w-7xl mx-auto">
         {/* Header */}
@@ -67,7 +67,7 @@ export function ConnectWallet() {
             Connect Your Phantom Wallet
           </h2>
           <p className="text-gray-600 text-lg md:text-xl max-w-3xl mx-auto">
-            Securely connect to the PayAI platform using Phantom, the most trusted Solana wallet. 
+            Securely connect to the PalPaxAI platform using Phantom, the most trusted Solana wallet. 
             Start paying for AI services instantly.
           </p>
         </motion.div>
@@ -81,7 +81,7 @@ export function ConnectWallet() {
             viewport={{ once: true }}
             className="space-y-6"
           >
-            <Card className="border-0 shadow-xl bg-gradient-to-br from-purple-50 to-blue-50">
+            <Card className="border-2 border-purple-200/70 shadow-xl bg-gradient-to-br from-purple-50/90 via-blue-50/80 to-indigo-50/90 hover:border-purple-300/90">
               <CardContent className="p-8">
                 <div className="flex items-center justify-center mb-6">
                   <div className="w-24 h-24 bg-gradient-to-br from-purple-500 to-blue-500 rounded-2xl flex items-center justify-center shadow-lg">
@@ -98,7 +98,7 @@ export function ConnectWallet() {
                     </h3>
                     
                     <p className="text-gray-600 text-center mb-6">
-                      Connect your Phantom wallet to enable instant micro-transactions on PayAI
+                      Connect your Phantom wallet to enable instant micro-transactions on PalPaxAI
                     </p>
 
                     <div className="space-y-4">

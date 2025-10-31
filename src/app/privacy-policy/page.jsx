@@ -4,12 +4,12 @@ import { Footer } from "@/components/layout/Footer";
 
 export default function PrivacyPolicy() {
   return (
-    <div className="min-h-screen">
+    <div className="min-h-screen bg-gradient-to-b from-purple-100/50 via-blue-100/30 to-purple-50/20">
       <Navbar />
 
       {/* Simple Header Section */}
       <section className="pt-section pb-8">
-        <div className="container-payai">
+        <div className="container-PalPaxAI">
           <div className="max-w-4xl mx-auto text-center">
             <h1 className="text-heading md:text-display font-semibold text-midnight mb-6">
               Privacy Policy
@@ -27,7 +27,7 @@ export default function PrivacyPolicy() {
 
       {/* Content Section */}
       <section className="pt-8 pb-section">
-        <div className="container-payai">
+        <div className="container-PalPaxAI">
           <div className="max-w-4xl mx-auto space-y-12">
             {/* Introduction */}
             <div>
@@ -35,7 +35,7 @@ export default function PrivacyPolicy() {
                 1. Introduction
               </h2>
               <p className="text-body md:text-body-lg text-gray-600 leading-relaxed">
-                Welcome to PayAI. We respect your privacy and are committed to
+                Welcome to PalPaxAI. We respect your privacy and are committed to
                 protecting your personal data. This privacy policy will inform
                 you about how we look after your personal data when you visit
                 our website and tell you about your privacy rights and how the
@@ -180,7 +180,7 @@ export default function PrivacyPolicy() {
                 privacy practices, please contact us at:
               </p>
               <p className="text-body font-medium text-midnight">
-                Email: privacy@payai.network
+                Email: privacy@PalPaxAI.network
               </p>
             </div>
           </div>

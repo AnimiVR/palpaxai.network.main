@@ -28,14 +28,23 @@ import {
 import { Navbar } from "@/components/layout/Navbar";
 import { Footer } from "@/components/layout/Footer";
 import { useWallet } from "@solana/wallet-adapter-react";
+import { useFaremeterPayment } from "@/hooks/useFaremeterPayment";
+import { Loader2 } from "lucide-react";
 
-// Mock services data (sẽ được thay thế bằng real data từ PayAI network)
+// Generate random prices below 0.1 SOL (0.01 to 0.099)
+const randomPrices = [
+  "0.045 SOL", "0.067 SOL", "0.023 SOL", "0.089 SOL", "0.034 SOL",
+  "0.056 SOL", "0.078 SOL", "0.012 SOL", "0.091 SOL", "0.039 SOL",
+  "0.062 SOL", "0.085 SOL"
+];
+
+// Mock services data (sẽ được thay thế bằng real data từ PalPaxAI network)
 const mockServices = [
   {
     id: "1",
     title: "Web Development Agent",
     description: "Professional AI agent specialized in modern web development using React, Next.js, and TypeScript",
-    price: "0.5 SOL",
+    price: randomPrices[0],
     category: "Development",
     rating: 4.9,
     reviews: 127,
@@ -51,7 +60,7 @@ const mockServices = [
     id: "2", 
     title: "Design Specialist Agent",
     description: "Expert UI/UX design agent with expertise in Figma, Adobe Creative Suite, and modern design systems",
-    price: "0.3 SOL",
+    price: randomPrices[1],
     category: "Design",
     rating: 4.8,
     reviews: 89,
@@ -67,7 +76,7 @@ const mockServices = [
     id: "3",
     title: "Content Writing Agent",
     description: "AI agent that creates engaging blog posts, articles, and marketing content with SEO optimization",
-    price: "0.2 SOL",
+    price: randomPrices[2],
     category: "Writing",
     rating: 4.7,
     reviews: 203,
@@ -83,7 +92,7 @@ const mockServices = [
     id: "4",
     title: "Data Analysis Agent",
     description: "Advanced analytics agent that processes data, creates visualizations, and generates insights",
-    price: "0.6 SOL",
+    price: randomPrices[3],
     category: "Analytics",
     rating: 4.9,
     reviews: 56,
@@ -99,7 +108,7 @@ const mockServices = [
     id: "5",
     title: "Social Media Manager",
     description: "Automated social media management agent for scheduling, posting, and engagement across platforms",
-    price: "0.4 SOL",
+    price: randomPrices[4],
     category: "Marketing",
     rating: 4.6,
     reviews: 145,
@@ -115,7 +124,7 @@ const mockServices = [
     id: "6",
     title: "QA Testing Agent",
     description: "Automated testing agent that performs comprehensive QA checks, bug detection, and test automation",
-    price: "0.35 SOL",
+    price: randomPrices[5],
     category: "Testing",
     rating: 4.8,
     reviews: 78,
@@ -131,7 +140,7 @@ const mockServices = [
     id: "7",
     title: "Blockchain Developer",
     description: "Smart contract development agent for Solana, Ethereum, and multi-chain protocols",
-    price: "0.8 SOL",
+    price: randomPrices[6],
     category: "Development",
     rating: 4.9,
     reviews: 234,
@@ -147,7 +156,7 @@ const mockServices = [
     id: "8",
     title: "SEO Optimization Agent",
     description: "Advanced SEO agent that analyzes, optimizes, and improves website rankings",
-    price: "0.25 SOL",
+    price: randomPrices[7],
     category: "Marketing",
     rating: 4.7,
     reviews: 156,
@@ -163,7 +172,7 @@ const mockServices = [
     id: "9",
     title: "Video Editor Agent",
     description: "AI-powered video editing agent for YouTube, social media, and professional content creation",
-    price: "0.45 SOL",
+    price: randomPrices[8],
     category: "Design",
     rating: 4.8,
     reviews: 112,
@@ -179,7 +188,7 @@ const mockServices = [
     id: "10",
     title: "Customer Support Agent",
     description: "24/7 customer support agent with natural language processing and ticket management",
-    price: "0.15 SOL",
+    price: randomPrices[9],
     category: "Support",
     rating: 4.9,
     reviews: 289,
@@ -195,7 +204,7 @@ const mockServices = [
     id: "11",
     title: "DevOps Automation Agent",
     description: "CI/CD pipeline automation agent for deployment, monitoring, and infrastructure management",
-    price: "0.7 SOL",
+    price: randomPrices[10],
     category: "Development",
     rating: 4.9,
     reviews: 67,
@@ -211,7 +220,7 @@ const mockServices = [
     id: "12",
     title: "Financial Advisor Agent",
     description: "AI financial advisor for investment strategies, portfolio analysis, and market insights",
-    price: "0.55 SOL",
+    price: randomPrices[11],
     category: "Analytics",
     rating: 4.6,
     reviews: 98,
@@ -239,6 +248,47 @@ export default function MarketplacePage() {
   const [favorites, setFavorites] = useState<string[]>([]);
   
   const { connected } = useWallet();
+  const { processPayment, isProcessing } = useFaremeterPayment();
+
+  const handleHireFromMarketplace = async (service: typeof mockServices[0]) => {
+    if (!connected) {
+      alert("⚠️ Please connect your Phantom wallet first!\n\nClick the 'Connect Wallet' button in the navigation bar.");
+      return;
+    }
+
+    const confirmHire = confirm(
+      `Hire ${service.title}?\n\n` +
+      `Price: ${service.price}\n` +
+      `Seller: ${service.seller}\n` +
+      `Delivery: ${service.timeToComplete}\n\n` +
+      `Continue?`
+    );
+
+    if (!confirmHire) return;
+
+    try {
+      const result = await processPayment(
+        service.id,
+        service.title,
+        service.price,
+        service.seller
+      );
+
+      if (result.success && result.signature) {
+        alert(
+          `✅ Payment successful!\n\n` +
+          `Agent: ${service.title}\n` +
+          `Price: ${service.price}\n` +
+          `Transaction: ${result.signature.substring(0, 8)}...${result.signature.substring(result.signature.length - 8)}\n\n` +
+          `View on Solana Explorer: https://solscan.io/tx/${result.signature}`
+        );
+      } else {
+        alert(`❌ Payment failed: ${result.error || "Unknown error"}`);
+      }
+    } catch (err: any) {
+      alert(`❌ Payment error: ${err.message || "Unknown error"}`);
+    }
+  };
 
   // Toggle favorite
   const toggleFavorite = (id: string) => {
@@ -301,8 +351,9 @@ export default function MarketplacePage() {
   }, [searchQuery, selectedCategory, sortBy, showOnlyAvailable, showOnlyVerified]);
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-white via-gray-50/50 to-white relative overflow-hidden">
-      {/* Subtle background pattern */}
+    <div className="min-h-screen relative overflow-hidden">
+      {/* Animated background effects */}
+      <div className="fixed inset-0 aurora-bg particles-bg z-0" />
       <div className="fixed inset-0 pointer-events-none opacity-[0.015] z-0" 
         style={{
           backgroundImage: `
@@ -331,12 +382,12 @@ export default function MarketplacePage() {
               variant="secondary"
               className="bg-white/10 backdrop-blur-md text-white mb-6 px-4 py-2 rounded-full font-semibold text-sm border border-white/20"
             >
-              PayAI Agent Marketplace
+              PalPaxAI Agent Marketplace
             </Badge>
             <h1 className="text-4xl md:text-5xl lg:text-6xl font-extrabold mb-6 leading-tight text-white">
               Hire AI Agents
               <br />
-              <span className="text-cyan-300">Build Faster</span>
+              <span className="text-gradient-animated">Build Faster</span>
             </h1>
             <p className="text-xl text-blue-100 max-w-2xl mx-auto mb-8">
               Discover, hire, and collaborate with autonomous AI agents. 
@@ -369,7 +420,7 @@ export default function MarketplacePage() {
 
       {/* Trending/Featured Section */}
       {featuredServices.length > 0 && (
-        <section className="relative px-[5%] py-12 bg-gradient-to-b from-gray-50/80 via-white to-white">
+        <section className="relative px-[5%] py-12 bg-gradient-to-b from-purple-100/60 via-blue-100/40 to-purple-50/30">
           <div className="container max-w-7xl mx-auto relative z-10">
             <div className="flex items-center justify-between mb-8">
               <motion.div
@@ -442,7 +493,7 @@ export default function MarketplacePage() {
       )}
 
       {/* Filters & Search Section */}
-      <section className="px-[5%] py-8 bg-white border-b border-gray-200 sticky top-0 z-10 backdrop-blur-sm bg-white/95">
+      <section className="px-[5%] py-8 bg-gradient-to-br from-purple-100/90 via-blue-100/80 to-indigo-100/90 border-b border-purple-300/60 sticky top-0 z-10 backdrop-blur-sm backdrop-brightness-110">
         <div className="container max-w-7xl mx-auto">
           <div className="flex flex-col gap-4">
             {/* Search Row */}
@@ -465,7 +516,7 @@ export default function MarketplacePage() {
                 <select
                   value={sortBy}
                   onChange={(e) => setSortBy(e.target.value)}
-                  className="flex-1 md:w-auto border border-gray-300 rounded-lg px-4 py-3 text-sm focus:outline-none focus:border-midnight cursor-pointer bg-white"
+                  className="flex-1 md:w-auto border-2 border-purple-300/60 rounded-lg px-4 py-3 text-sm focus:outline-none focus:border-purple-500 cursor-pointer bg-white/90 backdrop-blur-sm shadow-sm"
                 >
                   {sortOptions.map((option) => (
                     <option key={option} value={option}>
@@ -559,7 +610,7 @@ export default function MarketplacePage() {
                   whileHover={{ y: -8, scale: 1.02 }}
                   className="h-full"
                 >
-                  <Card className="h-full flex flex-col hover:shadow-xl transition-all duration-300 cursor-pointer border border-gray-200 group relative overflow-hidden bg-white">
+                  <Card className="h-full flex flex-col cursor-pointer group relative overflow-hidden glass-ultra border-2 border-purple-300/50 shadow-md hover:shadow-2xl hover:border-purple-400/70 card-3d magnetic neon-glow-hover">
                     {/* Top Badge Row */}
                     <div className="absolute top-0 left-0 right-0 flex items-center justify-between p-4 z-10">
                       {service.featured && (
@@ -588,7 +639,7 @@ export default function MarketplacePage() {
                             e.stopPropagation();
                             toggleFavorite(service.id);
                           }}
-                          className="p-1.5 rounded-full bg-white/90 hover:bg-white transition-all duration-200 shadow-sm border border-gray-200"
+                          className="p-1.5 rounded-full bg-gradient-to-br from-white to-purple-100/90 hover:from-purple-100 hover:to-purple-50 transition-all duration-200 shadow-md border-2 border-purple-300/70"
                         >
                           <Heart 
                             className={`h-4 w-4 transition-colors ${
@@ -638,13 +689,13 @@ export default function MarketplacePage() {
                           <Badge
                             key={idx}
                             variant="outline"
-                            className="text-xs border-gray-200 bg-white text-gray-600 px-2 py-0.5 hover:border-gray-300 transition-colors"
+                            className="text-xs border-purple-300/70 bg-gradient-to-br from-purple-100/90 to-blue-100/90 text-purple-900 px-2 py-0.5 hover:border-purple-400 hover:from-purple-200 hover:to-blue-200 transition-all font-medium"
                           >
                             {tag}
                           </Badge>
                         ))}
                         {service.tags.length > 3 && (
-                          <Badge variant="outline" className="text-xs border-gray-200 bg-white text-gray-600 px-2 py-0.5">
+                          <Badge variant="outline" className="text-xs border-purple-300/70 bg-gradient-to-br from-purple-100/90 to-blue-100/90 text-purple-900 px-2 py-0.5 font-medium">
                             +{service.tags.length - 3}
                           </Badge>
                         )}
@@ -677,30 +728,24 @@ export default function MarketplacePage() {
                         Details
                       </Button>
                       <Button
-                        className="flex-1 bg-midnight hover:bg-midnight/90 transition-all duration-200 font-semibold text-white text-sm h-9 shadow-sm"
+                        className="flex-1 bg-midnight hover:bg-midnight/90 transition-all duration-200 font-semibold text-white text-sm h-9 shadow-sm disabled:opacity-50 disabled:cursor-not-allowed"
                         onClick={(e) => {
                           e.stopPropagation();
-                          if (!connected) {
-                            alert("⚠️ Please connect your Phantom wallet first!\n\nClick the 'Connect Wallet' button in the navigation bar.");
-                            return;
-                          }
-                          
-                          const confirmHire = confirm(
-                            `Hire ${service.title}?\n\n` +
-                            `Price: ${service.price}\n` +
-                            `Seller: ${service.seller}\n` +
-                            `Delivery: ${service.timeToComplete}\n\n` +
-                            `Continue?`
-                          );
-                          
-                          if (confirmHire) {
-                            console.log("Hiring agent:", service.title);
-                            alert(`✅ Payment transaction initiated!\n\nAgent: ${service.title}\nPrice: ${service.price}\n\nCheck your wallet for confirmation.`);
-                          }
+                          handleHireFromMarketplace(service);
                         }}
+                        disabled={isProcessing || !connected}
                       >
-                        <Wallet className="mr-1.5 h-3.5 w-3.5" />
-                        Hire
+                        {isProcessing ? (
+                          <>
+                            <Loader2 className="mr-1.5 h-3.5 w-3.5 animate-spin" />
+                            Processing...
+                          </>
+                        ) : (
+                          <>
+                            <Wallet className="mr-1.5 h-3.5 w-3.5" />
+                            Hire
+                          </>
+                        )}
                       </Button>
                     </CardFooter>
                   </Card>
@@ -725,7 +770,7 @@ export default function MarketplacePage() {
               Want to sell your agent&apos;s services?
             </h2>
             <p className="text-xl text-blue-100 mb-8">
-              Join thousands of agents making money in the PayAI marketplace
+              Join thousands of agents making money in the PalPaxAI marketplace
             </p>
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
               <Button

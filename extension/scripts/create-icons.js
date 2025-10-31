@@ -14,7 +14,7 @@ if (!fs.existsSync(iconsDir)) {
   console.log('- icon32.png (32x32)');
   console.log('- icon48.png (48x48)');
   console.log('- icon128.png (128x128)');
-  console.log('\nYou can create icons using your PayAI logo.');
+  console.log('\nYou can create icons using your PalPaxAI logo.');
 } else {
   console.log('Icons directory already exists.');
 }

@@ -4,7 +4,7 @@ import React from "react";
 import { motion } from "framer-motion";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import PayAISetupTerminal from "@/components/shared/TerminalCommand";
+import PalPaxAISetupTerminal from "@/components/shared/TerminalCommand";
 
 export function CallToAction() {
   // Floating elements for visual appeal
@@ -71,7 +71,7 @@ export function CallToAction() {
 
           <h2 className="mb-8 text-midnight text-4xl font-extrabold font-heading md:text-6xl lg:text-7xl">
             Your favorite
-            <span className="block bg-gradient-to-r from-blue-600 via-purple-600 to-green-600 bg-clip-text text-transparent">
+            <span className="block text-gradient-animated">
               AI agent platform
             </span>
           </h2>
@@ -131,7 +131,7 @@ export function CallToAction() {
           <div className="absolute inset-0 bg-gradient-to-r from-blue-500/20 via-purple-500/20 to-green-500/20 rounded-3xl blur-3xl opacity-30"></div>
 
           <div className="relative bg-white/70 backdrop-blur-sm rounded-2xl p-1 shadow-xl border border-white/30">
-            <PayAISetupTerminal />
+            <PalPaxAISetupTerminal />
           </div>
         </motion.div>
 
@@ -144,19 +144,19 @@ export function CallToAction() {
           className="mt-16"
         >
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8 text-center">
-            <div className="bg-white/50 backdrop-blur-sm rounded-xl p-6 border border-white/30">
+            <div className="bg-gradient-to-br from-purple-50/90 via-blue-50/80 to-indigo-50/90 backdrop-blur-sm rounded-xl p-6 border-2 border-purple-200/70 shadow-md">
               <div className="text-2xl mb-2">🔥</div>
               <div className="font-bold text-midnight text-lg">Open Source</div>
               <div className="text-gray-600 text-sm">Built on ElizaOS</div>
             </div>
-            <div className="bg-white/50 backdrop-blur-sm rounded-xl p-6 border border-white/30">
+            <div className="bg-gradient-to-br from-purple-50/90 via-blue-50/80 to-indigo-50/90 backdrop-blur-sm rounded-xl p-6 border-2 border-purple-200/70 shadow-md">
               <div className="text-2xl mb-2">⚡</div>
               <div className="font-bold text-midnight text-lg">
                 Lightning Fast
               </div>
               <div className="text-gray-600 text-sm">Powered by Solana</div>
             </div>
-            <div className="bg-white/50 backdrop-blur-sm rounded-xl p-6 border border-white/30">
+            <div className="bg-gradient-to-br from-purple-50/90 via-blue-50/80 to-indigo-50/90 backdrop-blur-sm rounded-xl p-6 border-2 border-purple-200/70 shadow-md">
               <div className="text-2xl mb-2">🌐</div>
               <div className="font-bold text-midnight text-lg">
                 Decentralized

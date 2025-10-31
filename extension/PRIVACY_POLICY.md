@@ -1,4 +1,4 @@
-# PayAI Extension Privacy Policy
+# PalPaxAI Extension Privacy Policy
 
 **Last Updated:** [Current Date]
 
@@ -19,15 +19,15 @@
 - All data is stored locally on your device using Chrome's local storage API
 - No data is transmitted to external servers except:
   - CoinGecko API for SOL price information (public data only)
-  - Communication with PayAI website when you choose to visit it
+  - Communication with PalPaxAI website when you choose to visit it
 
 ### Third-Party Services
 - **CoinGecko API:** Used for displaying SOL token price. This is a public API and no personal data is shared.
-- **PayAI Website:** Extension may open links to payai.xyz. Standard website privacy policy applies when visiting.
+- **PalPaxAI Website:** Extension may open links to PalPaxAI.xyz. Standard website privacy policy applies when visiting.
 
 ### Permissions
 - **storage:** Required to save your wallet connection preferences locally
-- **tabs:** Required to open PayAI marketplace and related pages
+- **tabs:** Required to open PalPaxAI marketplace and related pages
 - **activeTab:** Required to interact with web pages when you click extension actions
 - **scripting:** Required for extension functionality
 - **alarms:** Used for periodic checks (optional feature)

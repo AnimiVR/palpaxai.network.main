@@ -12,18 +12,28 @@ import { PhantomWalletAdapter } from "@solana/wallet-adapter-wallets";
 import "@solana/wallet-adapter-react-ui/styles.css";
 
 export function SolanaWalletProvider({ children }: { children: React.ReactNode }) {
-  const network = WalletAdapterNetwork.Devnet;
-  const endpoint = useMemo(() => clusterApiUrl(network), [network]);
+  // Use Mainnet for production
+  const network = WalletAdapterNetwork.Mainnet;
+  
+  // Use mainnet endpoint
+  const endpoint = useMemo(() => {
+    if (network === WalletAdapterNetwork.Mainnet) {
+      // Using public mainnet RPC endpoint
+      return "https://api.mainnet-beta.solana.com";
+    }
+    return clusterApiUrl(network);
+  }, [network]);
+  
   const wallets = useMemo(
     () => [
-      new PhantomWalletAdapter({ network })
+      new PhantomWalletAdapter(),
     ],
-    [network]
+    []
   );
 
   return (
     <ConnectionProvider endpoint={endpoint}>
-      <WalletProvider wallets={wallets} autoConnect={true}>
+      <WalletProvider wallets={wallets} autoConnect={false}>
         <WalletModalProvider>
           {children}
         </WalletModalProvider>

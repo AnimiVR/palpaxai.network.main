@@ -3,29 +3,29 @@
 // Inject a bridge script to allow page scripts to communicate with extension
 function injectBridge() {
   // Check if already injected
-  if (document.getElementById('__payai_extension_bridge')) return;
+  if (document.getElementById('__PalPaxAI_extension_bridge')) return;
   
   // Inject script into page context (not content script context)
   const script = document.createElement('script');
-  script.id = '__payai_extension_bridge';
+  script.id = '__PalPaxAI_extension_bridge';
   script.textContent = `
     (function() {
-      if (window.__payaiExtensionBridge) {
-        console.log('PayAI Extension: Bridge already exists');
+      if (window.__PalPaxAIExtensionBridge) {
+        console.log('PalPaxAI Extension: Bridge already exists');
         return;
       }
       
-      window.__payaiExtensionBridge = {
+      window.__PalPaxAIExtensionBridge = {
         syncWalletState: function(connected, address) {
-          console.log('PayAI Extension Bridge: syncWalletState called', { connected, address });
+          console.log('PalPaxAI Extension Bridge: syncWalletState called', { connected, address });
           window.postMessage({
-            type: '__PAYAI_EXTENSION_SYNC_WALLET',
+            type: '__PalPaxAI_EXTENSION_SYNC_WALLET',
             connected: connected,
             address: address
           }, '*');
         }
       };
-      console.log('PayAI Extension: Bridge injected successfully');
+      console.log('PalPaxAI Extension: Bridge injected successfully');
     })();
   `;
   (document.head || document.documentElement).appendChild(script);
@@ -47,13 +47,13 @@ window.addEventListener('message', (event) => {
   // Only accept messages from same window
   if (event.source !== window) return;
   
-  if (event.data && event.data.type === '__PAYAI_EXTENSION_SYNC_WALLET') {
-    console.log('PayAI Extension Content Script: Received wallet sync', event.data);
+  if (event.data && event.data.type === '__PalPaxAI_EXTENSION_SYNC_WALLET') {
+    console.log('PalPaxAI Extension Content Script: Received wallet sync', event.data);
     chrome.storage.local.set({
       walletConnected: event.data.connected || false,
       walletAddress: event.data.address || '',
     }, () => {
-      console.log('PayAI Extension: Wallet state synced to storage', {
+      console.log('PalPaxAI Extension: Wallet state synced to storage', {
         connected: event.data.connected,
         address: event.data.address
       });
@@ -61,11 +61,11 @@ window.addEventListener('message', (event) => {
   }
 });
 
-// Inject PayAI quick access button on non-PayAI pages
-if (!window.location.hostname.includes('payai.xyz')) {
+// Inject PalPaxAI quick access button on non-PalPaxAI pages
+if (!window.location.hostname.includes('PalPaxAI.xyz')) {
   // Could add a floating button or notification here
   // For now, just console log for debugging
-  console.log('PayAI Extension: Content script loaded');
+  console.log('PalPaxAI Extension: Content script loaded');
 }
 
 // Listen for messages from popup AND from page scripts

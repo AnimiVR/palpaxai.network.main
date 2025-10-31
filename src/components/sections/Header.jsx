@@ -117,6 +117,8 @@ export function Header() {
       id="home"
       className="relative py-8 md:py-16 lg:py-18 overflow-hidden"
     >
+      {/* Animated gradient overlay */}
+      <div className="absolute inset-0 bg-gradient-to-br from-purple-600/20 via-blue-600/20 to-cyan-600/20 animate-gradient-xy opacity-50" />
       <div className="container mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-6 items-start">
           {/* Header text - Takes 8 columns on large screens */}
@@ -136,7 +138,7 @@ export function Header() {
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.4, delay: 0.2 }}
-                className="block"
+                className="block text-gradient-animated"
               >
                 Solana-first, multi-network x402 facilitator.
               </motion.span>
@@ -215,7 +217,7 @@ export function Header() {
             animate={{ scale: 1, opacity: 1 }}
             transition={{ duration: 0.4, delay: 0.3 }}
             whileHover={{ y: -4 }}
-            className="bg-white/25 backdrop-blur-xl border border-white/40 rounded-2xl p-6 md:p-8 shadow-xl w-full max-w-6xl mx-auto overflow-hidden"
+            className="glass-ultra border-2 border-purple-300/50 rounded-2xl p-6 md:p-8 shadow-xl w-full max-w-6xl mx-auto overflow-hidden neon-glow-hover shimmer"
           >
             <motion.p
               initial={{ opacity: 0 }}

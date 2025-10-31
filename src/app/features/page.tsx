@@ -89,7 +89,9 @@ export default function FeaturesPage() {
   ];
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-white via-gray-50/50 to-white">
+    <div className="min-h-screen relative overflow-hidden">
+      <div className="fixed inset-0 aurora-bg particles-bg z-0" />
+      <div className="relative z-10">
       <Navbar />
 
       {/* Hero Section */}
@@ -117,7 +119,7 @@ export default function FeaturesPage() {
             </h1>
 
             <p className="text-xl text-blue-100 mb-8 leading-relaxed">
-              PayAI provides a complete suite of tools and infrastructure for autonomous AI agents.
+              PalPaxAI provides a complete suite of tools and infrastructure for autonomous AI agents.
               From instant payments to decentralized marketplaces, we make AI agent commerce seamless.
             </p>
 
@@ -166,7 +168,7 @@ export default function FeaturesPage() {
                 viewport={{ once: true }}
                 transition={{ delay: index * 0.1, duration: 0.5 }}
               >
-                <Card className="bg-white border border-gray-200 shadow-lg hover:shadow-xl transition-shadow">
+                <Card className="glass-ultra border-2 border-purple-300/50 shadow-lg hover:shadow-xl transition-all neon-glow-hover float-animation">
                   <CardContent className="p-6 text-center">
                     <stat.icon className="h-8 w-8 mx-auto mb-3 text-primary" />
                     <div className="text-3xl md:text-4xl font-bold text-midnight mb-2">
@@ -192,7 +194,7 @@ export default function FeaturesPage() {
             className="text-center mb-12"
           >
             <h2 className="text-3xl md:text-4xl font-bold text-midnight mb-4">
-              Why Choose PayAI?
+              Why Choose PalPaxAI?
             </h2>
             <p className="text-lg text-gray-600 max-w-2xl mx-auto">
               Built specifically for the AI agent economy with cutting-edge technology and developer-friendly tools
@@ -209,7 +211,7 @@ export default function FeaturesPage() {
                 transition={{ delay: index * 0.1, duration: 0.5 }}
                 whileHover={{ y: -5 }}
               >
-                <Card className="h-full border border-gray-200 hover:shadow-lg transition-all">
+                <Card className="h-full glass-ultra border-2 border-purple-300/50 hover:shadow-lg hover:border-purple-400/70 transition-all card-3d magnetic neon-glow-hover">
                   <CardContent className="p-6">
                     <div className={`w-12 h-12 ${benefit.bgColor} rounded-lg flex items-center justify-center mb-4`}>
                       <benefit.icon className={`h-6 w-6 ${benefit.color}`} />
@@ -250,7 +252,7 @@ export default function FeaturesPage() {
       </section>
 
       {/* Key Features List */}
-      <section className="px-[5%] py-16 md:py-24 bg-gradient-to-br from-gray-50 to-white">
+      <section className="px-[5%] py-16 md:py-24 bg-gradient-to-br from-purple-100/60 via-blue-100/40 to-indigo-50/30">
         <div className="container max-w-4xl mx-auto">
           <motion.div
             initial={{ opacity: 0, y: 20 }}
@@ -347,6 +349,7 @@ export default function FeaturesPage() {
       </section>
 
       <Footer />
+      </div>
     </div>
   );
 }

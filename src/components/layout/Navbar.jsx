@@ -15,20 +15,24 @@ export function Navbar() {
   const { setVisible } = useWalletModal();
 
   const handleConnect = async () => {
-    if (!connected) {
-      // If wallet is already selected, try to connect directly
-      if (wallet && wallet.adapter && wallet.adapter.connected === false) {
+    try {
+      if (!connected) {
+        // Show wallet selection modal for user to choose wallet
+        setVisible(true);
+      }
+    } catch (err) {
+      console.error("Failed to open wallet modal:", err);
+      // Fallback: try to connect if wallet is already selected
+      if (wallet && wallet.adapter && !wallet.adapter.connected) {
         try {
           await connect();
-          return;
-        } catch (err) {
-          console.error("Failed to connect selected wallet:", err);
-          // Fall through to show modal
+        } catch (connectErr) {
+          console.error("Failed to connect wallet:", connectErr);
+          alert("Please install a Solana wallet extension (Phantom, Solflare, etc.) to connect.");
         }
+      } else {
+        alert("Please install a Solana wallet extension (Phantom, Solflare, etc.) to connect.");
       }
-      
-      // Show wallet selection modal for user to choose wallet
-      setVisible(true);
     }
   };
 
@@ -42,11 +46,11 @@ export function Navbar() {
   useEffect(() => {
     const syncToExtension = () => {
       // Use the bridge function injected by extension content script
-      if (typeof window !== 'undefined' && window.__payaiExtensionBridge) {
+      if (typeof window !== 'undefined' && window.__PalPaxAIExtensionBridge) {
         const isConnected = connected && !!publicKey;
         const address = publicKey ? publicKey.toString() : '';
         console.log('Website: Syncing wallet state to extension:', { isConnected, address });
-        window.__payaiExtensionBridge.syncWalletState(isConnected, address);
+        window.__PalPaxAIExtensionBridge.syncWalletState(isConnected, address);
       } else {
         console.log('Website: Extension bridge not available (extension may not be installed)');
       }
@@ -105,7 +109,7 @@ export function Navbar() {
           initial={{ scale: 0.95, opacity: 0 }}
           animate={{ scale: 1, opacity: 1 }}
           transition={{ duration: 0.5, delay: 0.1 }}
-          className="bg-white backdrop-blur-sm border border-blue-900 rounded-full shadow-sm px-6 py-3 flex items-center justify-between"
+          className="bg-white rounded-full shadow-sm px-6 py-1 flex items-center justify-between"
         >
           {/* Logo */}
           <Link href="/" className="flex items-center">
@@ -115,11 +119,11 @@ export function Navbar() {
               className="flex items-center space-x-2"
             >
               <Image
-                src="/horizontal-lockup.svg"
-                alt="PayAI Logo"
-                width={120}
-                height={32}
-                className="h-24 w-auto"
+                src="/logopalpaxai.png"
+                alt="PalPaxAI Logo"
+                width={100}
+                height={100}
+                className="h-16 w-auto"
                 priority={true}
               />
             </motion.div>
@@ -379,7 +383,7 @@ export function Navbar() {
                   transition={{ duration: 0.3, delay: 0.35 }}
                 >
                   <Link
-                    href={process.env.NEXT_PUBLIC_GITHUB_URL || "#"}
+                    href='https://github.com/PalPaxAI'
                     target="_blank"
                     className="inline-flex items-center justify-center bg-white/70 text-gray-800 px-5 py-2 text-body font-normal border border-gray-200 rounded-full transition-colors hover:bg-white w-full"
                   >

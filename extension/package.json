@@ -1,19 +1,19 @@
 {
-  "name": "payai-chrome-extension",
+  "name": "PalPaxAI-chrome-extension",
   "version": "1.0.0",
-  "description": "PayAI Chrome Extension - Quick access to AI Agent Marketplace",
+  "description": "PalPaxAI Chrome Extension - Quick access to AI Agent Marketplace",
   "scripts": {
     "build": "webpack --mode production",
     "dev": "webpack --mode development --watch",
-    "package": "npm run build && zip -r payai-extension.zip dist/ icons/ manifest.json"
+    "package": "npm run build && zip -r PalPaxAI-extension.zip dist/ icons/ manifest.json"
   },
   "keywords": [
     "chrome-extension",
-    "payai",
+    "PalPaxAI",
     "solana",
     "ai-agents"
   ],
-  "author": "PayAI",
+  "author": "PalPaxAI",
   "license": "MIT",
   "devDependencies": {
     "@types/chrome": "^0.0.268",

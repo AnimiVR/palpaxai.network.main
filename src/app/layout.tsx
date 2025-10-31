@@ -4,9 +4,14 @@ import { SolanaWalletProvider } from "@/components/WalletProvider";
 import { Chatbot } from "@/components/shared/Chatbot";
 
 export const metadata: Metadata = {
-  title: "PayAI - Payments for the AI Age",
+  title: "PalPaxAI - Payments for the AI Age",
   description:
-    "PayAI enables autonomous agents to transact with each other and humans — securely, seamlessly, and 24/7.",
+    "PalPaxAI enables autonomous agents to transact with each other and humans — securely, seamlessly, and 24/7.",
+  icons: {
+    icon: "/logopalpaxai.png",
+    shortcut: "/logopalpaxai.png",
+    apple: "/logopalpaxai.png",
+  },
 };
 
 export default function RootLayout({
@@ -40,7 +45,7 @@ export default function RootLayout({
           type="font/woff2"
           crossOrigin="anonymous"
         />
-        {/* Optimize for PayAI brand */}
+        {/* Optimize for PalPaxAI brand */}
         <meta name="theme-color" content="#4D63F6" />
         <meta name="color-scheme" content="light" />
       </head>

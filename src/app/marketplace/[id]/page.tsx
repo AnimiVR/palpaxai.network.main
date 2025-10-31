@@ -30,6 +30,16 @@ import {
   TrendingUp,
 } from "lucide-react";
 import { useWallet } from "@solana/wallet-adapter-react";
+import { useFaremeterPayment } from "@/hooks/useFaremeterPayment";
+import { useState } from "react";
+import { Loader2 } from "lucide-react";
+
+// Generate random prices below 0.1 SOL (0.01 to 0.099)
+const randomPrices = [
+  "0.045 SOL", "0.067 SOL", "0.023 SOL", "0.089 SOL", "0.034 SOL",
+  "0.056 SOL", "0.078 SOL", "0.012 SOL", "0.091 SOL", "0.039 SOL",
+  "0.062 SOL", "0.085 SOL"
+];
 
 // Mock services data (same as marketplace page)
 const mockServices = [
@@ -37,7 +47,7 @@ const mockServices = [
     id: "1",
     title: "Web Development Agent",
     description: "Professional AI agent specialized in modern web development using React, Next.js, and TypeScript. Delivers high-quality, scalable applications with clean code practices and modern development standards.",
-    price: "0.5 SOL",
+    price: randomPrices[0],
     category: "Development",
     rating: 4.9,
     reviews: 127,
@@ -56,7 +66,7 @@ const mockServices = [
     id: "2",
     title: "Design Specialist Agent",
     description: "Expert UI/UX design agent with expertise in Figma, Adobe Creative Suite, and modern design systems. Creates beautiful, user-friendly interfaces that convert.",
-    price: "0.3 SOL",
+    price: randomPrices[1],
     category: "Design",
     rating: 4.8,
     reviews: 89,
@@ -75,7 +85,7 @@ const mockServices = [
     id: "3",
     title: "Content Writing Agent",
     description: "AI agent that creates engaging blog posts, articles, and marketing content with SEO optimization. Perfect for content marketing and SEO strategies.",
-    price: "0.2 SOL",
+    price: randomPrices[2],
     category: "Writing",
     rating: 4.7,
     reviews: 203,
@@ -94,7 +104,7 @@ const mockServices = [
     id: "4",
     title: "Data Analysis Agent",
     description: "Advanced analytics agent that processes data, creates visualizations, and generates insights. Perfect for business intelligence and data-driven decisions.",
-    price: "0.6 SOL",
+    price: randomPrices[3],
     category: "Analytics",
     rating: 4.9,
     reviews: 56,
@@ -113,7 +123,7 @@ const mockServices = [
     id: "5",
     title: "Social Media Manager",
     description: "Automated social media management agent for scheduling, posting, and engagement across platforms. Manages your social presence 24/7.",
-    price: "0.4 SOL",
+    price: randomPrices[4],
     category: "Marketing",
     rating: 4.6,
     reviews: 145,
@@ -132,7 +142,7 @@ const mockServices = [
     id: "6",
     title: "QA Testing Agent",
     description: "Automated testing agent that performs comprehensive QA checks, bug detection, and test automation. Ensures your applications are bug-free.",
-    price: "0.35 SOL",
+    price: randomPrices[5],
     category: "Testing",
     rating: 4.8,
     reviews: 78,
@@ -151,7 +161,7 @@ const mockServices = [
     id: "7",
     title: "Blockchain Developer",
     description: "Smart contract development agent for Solana, Ethereum, and multi-chain protocols. Expert in DeFi, NFTs, and Web3 development.",
-    price: "0.8 SOL",
+    price: randomPrices[6],
     category: "Development",
     rating: 4.9,
     reviews: 234,
@@ -170,7 +180,7 @@ const mockServices = [
     id: "8",
     title: "SEO Optimization Agent",
     description: "Advanced SEO agent that analyzes, optimizes, and improves website rankings. Implements best SEO practices for maximum visibility.",
-    price: "0.25 SOL",
+    price: randomPrices[7],
     category: "Marketing",
     rating: 4.7,
     reviews: 156,
@@ -189,7 +199,7 @@ const mockServices = [
     id: "9",
     title: "Video Editor Agent",
     description: "AI-powered video editing agent for YouTube, social media, and professional content creation. Creates engaging videos that capture attention.",
-    price: "0.45 SOL",
+    price: randomPrices[8],
     category: "Design",
     rating: 4.8,
     reviews: 112,
@@ -208,7 +218,7 @@ const mockServices = [
     id: "10",
     title: "Customer Support Agent",
     description: "24/7 customer support agent with natural language processing and ticket management. Provides instant, helpful customer service.",
-    price: "0.15 SOL",
+    price: randomPrices[9],
     category: "Support",
     rating: 4.9,
     reviews: 289,
@@ -227,7 +237,7 @@ const mockServices = [
     id: "11",
     title: "DevOps Automation Agent",
     description: "CI/CD pipeline automation agent for deployment, monitoring, and infrastructure management. Streamlines your development workflow.",
-    price: "0.7 SOL",
+    price: randomPrices[10],
     category: "Development",
     rating: 4.9,
     reviews: 67,
@@ -246,7 +256,7 @@ const mockServices = [
     id: "12",
     title: "Financial Advisor Agent",
     description: "AI financial advisor for investment strategies, portfolio analysis, and market insights. Helps make informed financial decisions.",
-    price: "0.55 SOL",
+    price: randomPrices[11],
     category: "Analytics",
     rating: 4.6,
     reviews: 98,
@@ -268,8 +278,51 @@ export default function ServiceDetailPage() {
   const router = useRouter();
   const { connected } = useWallet();
   const serviceId = params?.id as string;
+  const { processPayment, isProcessing, error } = useFaremeterPayment();
+  const [paymentSuccess, setPaymentSuccess] = useState(false);
+  const [transactionSignature, setTransactionSignature] = useState<string | null>(null);
 
   const service = mockServices.find((s) => s.id === serviceId);
+
+  const handleHireAgent = async () => {
+    if (!connected) {
+      alert("⚠️ Please connect your Phantom wallet first!");
+      return;
+    }
+
+    if (!service) return;
+
+    const confirmHire = confirm(
+      `Hire ${service.title}?\n\nPrice: ${service.price}\nSeller: ${service.seller}\n\nContinue?`
+    );
+
+    if (!confirmHire) return;
+
+    try {
+      const result = await processPayment(
+        service.id,
+        service.title,
+        service.price,
+        service.seller
+      );
+
+      if (result.success && result.signature) {
+        setPaymentSuccess(true);
+        setTransactionSignature(result.signature);
+        alert(
+          `✅ Payment successful!\n\n` +
+          `Agent: ${service.title}\n` +
+          `Price: ${service.price}\n` +
+          `Transaction: ${result.signature.substring(0, 8)}...${result.signature.substring(result.signature.length - 8)}\n\n` +
+          `View on Solana Explorer: https://solscan.io/tx/${result.signature}`
+        );
+      } else {
+        alert(`❌ Payment failed: ${result.error || "Unknown error"}`);
+      }
+    } catch (err: any) {
+      alert(`❌ Payment error: ${err.message || "Unknown error"}`);
+    }
+  };
 
   if (!service) {
     return (
@@ -289,7 +342,7 @@ export default function ServiceDetailPage() {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-white via-gray-50/50 to-white">
+    <div className="min-h-screen bg-gradient-to-b from-purple-100/50 via-blue-100/30 to-purple-50/20">
       <Navbar />
       
       {/* Header Section */}
@@ -361,22 +414,21 @@ export default function ServiceDetailPage() {
                   <p className="text-blue-200 text-sm mb-6">One-time payment</p>
                   <Button
                     size="lg"
-                    className="bg-white text-midnight hover:bg-gray-100 w-full md:w-auto px-8 py-6 text-lg font-semibold"
-                    onClick={() => {
-                      if (!connected) {
-                        alert("⚠️ Please connect your Phantom wallet first!");
-                        return;
-                      }
-                      const confirmHire = confirm(
-                        `Hire ${service.title}?\n\nPrice: ${service.price}\nSeller: ${service.seller}\n\nContinue?`
-                      );
-                      if (confirmHire) {
-                        alert(`✅ Payment transaction initiated!\n\nAgent: ${service.title}\nPrice: ${service.price}`);
-                      }
-                    }}
+                    className="bg-white text-midnight hover:bg-gray-100 w-full md:w-auto px-8 py-6 text-lg font-semibold disabled:opacity-50 disabled:cursor-not-allowed"
+                    onClick={handleHireAgent}
+                    disabled={isProcessing || !connected}
                   >
-                    <Wallet className="mr-2 h-5 w-5" />
-                    Hire Now
+                    {isProcessing ? (
+                      <>
+                        <Loader2 className="mr-2 h-5 w-5 animate-spin" />
+                        Processing...
+                      </>
+                    ) : (
+                      <>
+                        <Wallet className="mr-2 h-5 w-5" />
+                        Hire Now
+                      </>
+                    )}
                   </Button>
                 </div>
               </div>
@@ -392,7 +444,7 @@ export default function ServiceDetailPage() {
             {/* Left Column - Main Info */}
             <div className="lg:col-span-2 space-y-6">
               {/* About Section */}
-              <Card>
+              <Card className="bg-gradient-to-br from-purple-50/90 via-blue-50/80 to-indigo-50/90 border-2 border-purple-200/70 shadow-lg">
                 <CardHeader>
                   <CardTitle>About This Service</CardTitle>
                 </CardHeader>
@@ -426,7 +478,7 @@ export default function ServiceDetailPage() {
               </Card>
 
               {/* Tags Section */}
-              <Card>
+              <Card className="bg-gradient-to-br from-indigo-50/90 via-purple-50/80 to-blue-50/90 border-2 border-indigo-200/70 shadow-lg">
                 <CardHeader>
                   <CardTitle>Skills & Technologies</CardTitle>
                 </CardHeader>
@@ -436,7 +488,7 @@ export default function ServiceDetailPage() {
                       <Badge
                         key={idx}
                         variant="outline"
-                        className="text-sm px-3 py-1 border-gray-300 bg-white hover:border-midnight hover:bg-midnight/5 transition-colors"
+                        className="text-sm px-3 py-1 border-2 border-purple-300/80 bg-gradient-to-br from-purple-100/95 to-indigo-100/95 hover:border-purple-400 hover:from-purple-200 hover:to-indigo-200 transition-all text-purple-900 font-medium shadow-sm"
                       >
                         {tag}
                       </Badge>
@@ -449,7 +501,7 @@ export default function ServiceDetailPage() {
             {/* Right Column - Sidebar */}
             <div className="space-y-6">
               {/* Service Details Card */}
-              <Card>
+              <Card className="bg-gradient-to-br from-blue-50/90 via-cyan-50/80 to-indigo-50/90 border-2 border-blue-200/70 shadow-lg">
                 <CardHeader>
                   <CardTitle>Service Details</CardTitle>
                 </CardHeader>
@@ -489,7 +541,7 @@ export default function ServiceDetailPage() {
               </Card>
 
               {/* Seller Info Card */}
-              <Card>
+              <Card className="bg-gradient-to-br from-indigo-50/90 via-purple-50/80 to-blue-50/90 border-2 border-indigo-200/70 shadow-lg">
                 <CardHeader>
                   <CardTitle>About Seller</CardTitle>
                 </CardHeader>
@@ -539,23 +591,38 @@ export default function ServiceDetailPage() {
                     </div>
                     <Button
                       size="lg"
-                      className="w-full bg-midnight hover:bg-midnight/90 text-white font-semibold"
-                      onClick={() => {
-                        if (!connected) {
-                          alert("⚠️ Please connect your Phantom wallet first!");
-                          return;
-                        }
-                        const confirmHire = confirm(
-                          `Hire ${service.title}?\n\nPrice: ${service.price}\nSeller: ${service.seller}\n\nContinue?`
-                        );
-                        if (confirmHire) {
-                          alert(`✅ Payment transaction initiated!\n\nAgent: ${service.title}\nPrice: ${service.price}`);
-                        }
-                      }}
+                      className="w-full bg-midnight hover:bg-midnight/90 text-white font-semibold disabled:opacity-50 disabled:cursor-not-allowed"
+                      onClick={handleHireAgent}
+                      disabled={isProcessing || !connected}
                     >
-                      <Wallet className="mr-2 h-5 w-5" />
-                      Hire Agent
+                      {isProcessing ? (
+                        <>
+                          <Loader2 className="mr-2 h-5 w-5 animate-spin" />
+                          Processing...
+                        </>
+                      ) : (
+                        <>
+                          <Wallet className="mr-2 h-5 w-5" />
+                          Hire Agent
+                        </>
+                      )}
                     </Button>
+                    {error && (
+                      <p className="text-sm text-red-500 mt-2 text-center">{error}</p>
+                    )}
+                    {paymentSuccess && transactionSignature && (
+                      <div className="mt-4 p-3 bg-green-50 border border-green-200 rounded-lg">
+                        <p className="text-sm text-green-800 font-semibold mb-1">✅ Payment Successful!</p>
+                        <a
+                          href={`https://solscan.io/tx/${transactionSignature}`}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="text-xs text-green-600 hover:underline break-all"
+                        >
+                          View Transaction: {transactionSignature.substring(0, 16)}...
+                        </a>
+                      </div>
+                    )}
                   </div>
                 </CardContent>
               </Card>

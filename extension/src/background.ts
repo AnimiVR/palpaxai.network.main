@@ -1,10 +1,10 @@
-// Background service worker for PayAI Extension
+// Background service worker for PalPaxAI Extension
 
 // Listen for extension install
 chrome.runtime.onInstalled.addListener((details) => {
   try {
     if (details.reason === 'install') {
-      console.log('PayAI Extension installed');
+      console.log('PalPaxAI Extension installed');
       // Set default settings
       chrome.storage.local.set({
         walletConnected: false,
@@ -51,13 +51,13 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
     return true;
   }
 
-  if (request.action === 'openPayAI') {
-    chrome.tabs.create({ url: 'https://payai.xyz' });
+  if (request.action === 'openPalPaxAI') {
+    chrome.tabs.create({ url: 'https://PalPaxAI.xyz' });
     sendResponse({ success: true });
   }
 
   if (request.action === 'openMarketplace') {
-    chrome.tabs.create({ url: 'https://payai.xyz/marketplace' });
+    chrome.tabs.create({ url: 'https://PalPaxAI.xyz/marketplace' });
     sendResponse({ success: true });
   }
 

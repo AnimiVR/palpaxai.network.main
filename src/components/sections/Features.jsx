@@ -126,7 +126,7 @@ const FEATURES = [
     statusIcon: Sparkles,
     title: "Test X402 Payments, Zero Cost",
     description:
-      "Run real X402 transactions against a live merchant—for free. Get 100% of your payment refunded, with PayAI covering the network fees.",
+      "Run real X402 transactions against a live merchant—for free. Get 100% of your payment refunded, with PalPaxAI covering the network fees.",
     type: "terminal",
     primaryCta: {
       label: "Try Now",
@@ -322,17 +322,17 @@ function RenderVisual({ feature }) {
               </button>
             </DialogTrigger>
             <DialogContent className="max-w-4xl p-0 overflow-hidden bg-black border-gray-800">
-              <DialogTitle className="sr-only">PayAI Demo Video</DialogTitle>
+              <DialogTitle className="sr-only">PalPaxAI Demo Video</DialogTitle>
               <DialogDescription className="sr-only">
-                Demonstration video of PayAI features and workflow
+                Demonstration video of PalPaxAI features and workflow
               </DialogDescription>
               <DialogClose className="absolute right-4 top-4 z-10 rounded-full bg-white/90 hover:bg-white p-2 transition-colors">
                 <X className="h-4 w-4 text-gray-900" />
                 <span className="sr-only">Close</span>
               </DialogClose>
               <video
-                src="/payai-demo.mp4"
-                poster="/payai-demo-thumbnail.png"
+                src="/PalPaxAI-demo.mp4"
+                poster="/PalPaxAI-demo-thumbnail.png"
                 controls
                 autoPlay
                 className="w-full h-auto"
@@ -429,7 +429,7 @@ function FeatureCard({ feature, index }) {
           }}
           transition={{ duration: 0.3, ease: "easeOut" }}
         >
-          <Card className="z-10 overflow-hidden border border-purple-200/30 shadow-xl rounded-2xl bg-gradient-to-r from-purple-50 via-blue-50 to-purple-100">
+          <Card className="z-10 overflow-hidden glass-ultra border-2 border-purple-300/50 shadow-xl rounded-2xl hover:border-purple-400/70 card-3d magnetic neon-glow-hover shimmer">
             <CardContent className="p-0">
               <div className="grid grid-cols-1 lg:grid-cols-2 min-h-[460px] md:min-h-[460px]">
                 {/* Content */}
@@ -445,7 +445,7 @@ function FeatureCard({ feature, index }) {
                         className={`${
                           feature.status === "LIVE"
                             ? "bg-purple-100 text-purple-700 border-purple-200"
-                            : "bg-gray-100 text-gray-600 border-gray-200"
+                            : "bg-purple-100/80 text-purple-700 border-2 border-purple-200/70"
                         } border px-3 py-1.5 rounded-lg text-caption font-normal flex items-center gap-1.5 w-fit`}
                       >
                         <feature.statusIcon className="w-3 h-3" />
@@ -462,7 +462,7 @@ function FeatureCard({ feature, index }) {
                     {feature.secondaryCta && (
                       feature.secondaryCta.disabled ? (
                         <Button
-                          className="inline-flex items-center justify-center bg-white/60 px-6 py-3 text-body font-normal border border-gray-200 rounded-full min-h-[44px] text-gray-400 cursor-not-allowed shadow-none"
+                          className="inline-flex items-center justify-center bg-gradient-to-br from-purple-50/80 to-blue-50/80 px-6 py-3 text-body font-normal border-2 border-purple-200/50 rounded-full min-h-[44px] text-purple-600/60 cursor-not-allowed shadow-sm"
                           disabled
                           title="Coming soon"
                         >
@@ -472,7 +472,7 @@ function FeatureCard({ feature, index }) {
                       ) : (
                         <Button
                           asChild
-                          className="inline-flex items-center justify-center bg-white/70 px-6 py-3 text-body font-normal border border-gray-200 rounded-full transition-colors hover:bg-white min-h-[44px]"
+                          className="inline-flex items-center justify-center bg-gradient-to-br from-purple-50/90 to-blue-50/90 px-6 py-3 text-body font-normal border-2 border-purple-200/70 rounded-full transition-all hover:bg-gradient-to-br hover:from-purple-100 hover:to-blue-100 hover:border-purple-300/90 min-h-[44px] shadow-sm"
                         >
                           <a
                             href={feature.secondaryCta.href}

@@ -4,8 +4,8 @@
 Write-Host "Creating Chrome Web Store package..." -ForegroundColor Green
 
 # Remove old package if exists
-if (Test-Path "payai-extension-store.zip") {
-    Remove-Item "payai-extension-store.zip" -Force
+if (Test-Path "PalPaxAI-extension-store.zip") {
+    Remove-Item "PalPaxAI-extension-store.zip" -Force
     Write-Host "Removed old package" -ForegroundColor Yellow
 }
 
@@ -56,17 +56,17 @@ foreach ($file in $requiredFiles) {
 
 # Create ZIP file
 Write-Host "Creating ZIP package..." -ForegroundColor Cyan
-Compress-Archive -Path "$tempDir/*" -DestinationPath "payai-extension-store.zip" -Force
+Compress-Archive -Path "$tempDir/*" -DestinationPath "PalPaxAI-extension-store.zip" -Force
 
 # Cleanup
 Remove-Item $tempDir -Recurse -Force
 
 Write-Host ""
-Write-Host "✅ Package created successfully: payai-extension-store.zip" -ForegroundColor Green
+Write-Host "✅ Package created successfully: PalPaxAI-extension-store.zip" -ForegroundColor Green
 Write-Host ""
 Write-Host "Next steps:" -ForegroundColor Yellow
 Write-Host "1. Go to https://chrome.google.com/webstore/devconsole"
-Write-Host "2. Upload payai-extension-store.zip"
+Write-Host "2. Upload PalPaxAI-extension-store.zip"
 Write-Host "3. Fill in store listing information"
 Write-Host "4. Submit for review"
 Write-Host ""

@@ -41,7 +41,7 @@ export function NewsletterSignup() {
                 <Mail className="w-8 h-8 text-white" />
               </div>
               <h2 className="text-3xl md:text-4xl font-bold mb-4">
-                Stay Updated with PayAI
+                Stay Updated with PalPaxAI
               </h2>
               <p className="text-lg text-blue-100 max-w-2xl mx-auto mb-8">
                 Get the latest updates on AI agent marketplace, new features, and exclusive insights delivered to your inbox.

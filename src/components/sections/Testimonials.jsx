@@ -10,7 +10,7 @@ export function Testimonials() {
       role: "AI Developer",
       company: "TechCorp",
       avatar: "👩‍💻",
-      content: "PayAI has revolutionized how we deploy AI agents. The marketplace is incredibly intuitive and the payment system works flawlessly.",
+      content: "PalPaxAI has revolutionized how we deploy AI agents. The marketplace is incredibly intuitive and the payment system works flawlessly.",
       rating: 5,
     },
     {

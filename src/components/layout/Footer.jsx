@@ -84,7 +84,7 @@ export function Footer() {
                 transition={{ duration: 0.2 }}
               >
                 <Link href="/" className="flex items-center gap-2">
-                  <Image src="/horizontal-lockup.svg" alt="PayAI Logo" width={120} height={32} />
+                  <Image src="/logopalpaxai.png" alt="PalPaxAI Logo" width={100} height={100} />
                 </Link>
               </motion.div>
 
@@ -232,7 +232,7 @@ export function Footer() {
         viewport={{ once: true }}
         className="pointer-events-none select-none absolute inset-x-0 bottom-[-0.25rem] -z-10 text-[6rem] md:text-[9rem] lg:text-[12rem] leading-none font-bold text-gray-100/60 tracking-tight truncate"
       >
-        <div className="px-[5%]">payai.network</div>
+        <div className="px-[5%]">PalPaxAI.network</div>
       </motion.div>
     </motion.footer>
   );

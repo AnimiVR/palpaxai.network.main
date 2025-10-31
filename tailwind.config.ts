@@ -25,7 +25,7 @@ export default {
         "7xl": ["4.5rem", { lineHeight: "1" }],
         "8xl": ["6rem", { lineHeight: "1" }],
         "9xl": ["8rem", { lineHeight: "1" }],
-        // PayAI Design System Typography Scale
+        // PalPaxAI Design System Typography Scale
         hero: ["4.5rem", { lineHeight: "1.1", letterSpacing: "-0.02em" }],
         display: ["3.5rem", { lineHeight: "1.2", letterSpacing: "-0.01em" }],
         heading: ["2.5rem", { lineHeight: "1.3" }],
@@ -45,7 +45,7 @@ export default {
         "72": "18rem",
         "84": "21rem",
         "96": "24rem",
-        // PayAI custom spacing
+        // PalPaxAI custom spacing
         section: "5rem",
         "section-sm": "3rem",
         "section-lg": "7rem",
@@ -55,7 +55,7 @@ export default {
         "7xl": "80rem", // 1280px
       },
       colors: {
-        // Primary PayAI Brand Colors - Updated to match design system
+        // Primary PalPaxAI Brand Colors - Updated to match design system
         primary: {
           DEFAULT: "#4D63F6",
           50: "#F0F2FE",
@@ -252,7 +252,7 @@ export default {
         ],
       },
       boxShadow: {
-        // PayAI custom shadows
+        // PalPaxAI custom shadows
         "glow-sm": "0 0 10px rgba(77, 99, 246, 0.3)",
         "glow-md": "0 0 20px rgba(77, 99, 246, 0.4)",
         "glow-lg": "0 0 30px rgba(77, 99, 246, 0.5)",
@@ -284,6 +284,15 @@ export default {
         "gradient-x": "gradientX 3s ease infinite",
         "gradient-y": "gradientY 3s ease infinite",
         "gradient-xy": "gradientXY 3s ease infinite",
+        "mesh-gradient": "meshGradient 15s ease infinite",
+        "pulse-glow": "pulseGlow 2s ease-in-out infinite",
+        "float-slow": "float 6s ease-in-out infinite",
+        "shimmer": "shimmer 3s infinite",
+        "border-rotate": "borderRotate 3s linear infinite",
+        "aurora": "aurora 20s ease infinite",
+        "liquid": "liquid 15s ease infinite",
+        "particles": "particles 20s linear infinite",
+        "gradient-text": "gradientText 3s ease infinite",
       },
       keyframes: {
         fadeIn: {
@@ -337,7 +346,7 @@ export default {
         lg: "var(--radius)",
         md: "calc(var(--radius) - 2px)",
         sm: "calc(var(--radius) - 4px)",
-        // PayAI custom radii
+        // PalPaxAI custom radii
         xs: "0.25rem",
         "4xl": "2rem",
         "5xl": "3rem",

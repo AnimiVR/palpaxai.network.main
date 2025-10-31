@@ -25,7 +25,7 @@ export function AgentMarketplace() {
   return (
     <section
       id="preview"
-      className="px-[5%] py-16 md:py-24 lg:py-28 bg-gradient-to-b from-white via-white to-gray-50/30"
+      className="px-[5%] py-16 md:py-24 lg:py-28 bg-gradient-to-b from-purple-100/50 via-blue-100/30 to-indigo-50/20"
     >
       <div className="container max-w-7xl mx-auto">
         {/* Main Content */}
@@ -44,10 +44,10 @@ export function AgentMarketplace() {
               AI Agent Economy
             </Badge>
             <h2 className="text-midnight text-4xl font-extrabold leading-tight font-heading md:text-6xl md:leading-tight lg:text-7xl lg:leading-tight">
-              Access the full power of AI Agents
+              <span className="text-gradient-animated">Access the full power</span> of AI Agents
             </h2>
             <p className="text-gray-600 text-lg leading-relaxed md:text-xl max-w-lg">
-              PayAI is the world's largest AI agent marketplace.
+              PalPaxAI is the world's largest AI agent marketplace.
               <br />
               <span className="font-semibold text-midnight">
                 Hire, collaborate, monetize and more.
@@ -80,7 +80,7 @@ export function AgentMarketplace() {
             className="relative"
           >
             {/* Simple Stats Grid */}
-            <div className="bg-white rounded-2xl p-8 shadow-lg border border-gray-100">
+            <div className="glass-ultra rounded-2xl p-8 shadow-lg border-2 border-purple-300/50 neon-glow-hover float-animation">
               <p className="text-sm font-medium text-gray-500 mb-8">
                 <span className="inline-block w-2 h-2 bg-midnight rounded-full mr-2"></span>
                 Agent marketplace metrics

@@ -63,19 +63,19 @@
 ## 📝 Store Listing Content
 
 ### Short Description (132 chars):
-"Quick access to PayAI marketplace, wallet connection, and AI agent services"
+"Quick access to PalPaxAI marketplace, wallet connection, and AI agent services"
 
 ### Full Description Example:
 ```
-PayAI Extension - Your Gateway to AI Agent Marketplace
+PalPaxAI Extension - Your Gateway to AI Agent Marketplace
 
-Access the PayAI AI Agent Marketplace directly from your browser. Connect your Solana wallet and browse thousands of AI agents ready to help with development, design, writing, analytics, and more.
+Access the PalPaxAI AI Agent Marketplace directly from your browser. Connect your Solana wallet and browse thousands of AI agents ready to help with development, design, writing, analytics, and more.
 
 KEY FEATURES:
 ✨ Browse AI Agents Marketplace
 🔗 Quick Wallet Connection
 📊 Real-time SOL Price Tracking
-🚀 Fast Access to PayAI Services
+🚀 Fast Access to PalPaxAI Services
 ⚡ Instant Agent Search & Discovery
 
 Perfect for developers, designers, and anyone looking to leverage AI agents for their projects. Transactions secured on Solana blockchain.
@@ -112,7 +112,7 @@ Privacy-focused: All wallet data stored locally. No tracking, no ads.
 
 ## ⚠️ Important Notes
 
-- **Host Permissions:** Extension requests access to `https://*.payai.xyz/*` - make sure this is justified in description
+- **Host Permissions:** Extension requests access to `https://*.PalPaxAI.xyz/*` - make sure this is justified in description
 - **Privacy Policy:** MUST be publicly accessible URL, not just a file
 - **Screenshots:** you can take screenshots of the extension popup
 - **Testing:** Test extension in Chrome before submitting
@@ -127,5 +127,5 @@ Privacy-focused: All wallet data stored locally. No tracking, no ads.
 
 ---
 
-**Note:** Website (payai.xyz) does NOT need to be live before publishing extension, but it's recommended for better user experience.
+**Note:** Website (PalPaxAI.xyz) does NOT need to be live before publishing extension, but it's recommended for better user experience.
 

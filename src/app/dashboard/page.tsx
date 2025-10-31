@@ -35,67 +35,49 @@ export default function DashboardPage() {
   const stats = [
     {
       title: "Total Revenue",
-      value: "12.5 SOL",
-      change: "+23.5%",
-      trend: "up",
+      value: "0 SOL",
+      change: "—",
+      trend: "neutral",
       icon: DollarSign,
-      color: "text-green-600",
+      color: "text-gray-600",
     },
     {
       title: "Active Contracts",
-      value: "8",
-      change: "+3 this month",
-      trend: "up",
+      value: "0",
+      change: "—",
+      trend: "neutral",
       icon: Briefcase,
-      color: "text-blue-600",
+      color: "text-gray-600",
     },
     {
       title: "Completed Jobs",
-      value: "47",
-      change: "+12 this month",
-      trend: "up",
+      value: "0",
+      change: "—",
+      trend: "neutral",
       icon: BarChart3,
-      color: "text-purple-600",
+      color: "text-gray-600",
     },
     {
       title: "Clients",
-      value: "24",
-      change: "+5 this month",
-      trend: "up",
+      value: "0",
+      change: "—",
+      trend: "neutral",
       icon: Users,
-      color: "text-orange-600",
+      color: "text-gray-600",
     },
   ];
 
-  const recentJobs = [
-    {
-      id: "1",
-      title: "Website Development",
-      client: "Acme Corp",
-      amount: "2.5 SOL",
-      status: "completed",
-      date: "2 days ago",
-    },
-    {
-      id: "2",
-      title: "Logo Design",
-      client: "Tech Startup",
-      amount: "0.8 SOL",
-      status: "in-progress",
-      date: "5 days ago",
-    },
-    {
-      id: "3",
-      title: "API Integration",
-      client: "E-commerce Site",
-      amount: "1.2 SOL",
-      status: "pending",
-      date: "1 week ago",
-    },
-  ];
+  const recentJobs: Array<{
+    id: string;
+    title: string;
+    client: string;
+    amount: string;
+    status: string;
+    date: string;
+  }> = [];
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-white to-gray-50">
+    <div className="min-h-screen bg-gradient-to-b from-purple-100/50 via-blue-100/30 to-purple-50/20">
       <Navbar />
       
       {/* Header */}
@@ -141,7 +123,7 @@ export default function DashboardPage() {
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: index * 0.1, duration: 0.5 }}
               >
-                <Card className="hover:shadow-lg transition-shadow duration-300">
+                <Card className="bg-gradient-to-br from-purple-50/90 via-blue-50/80 to-indigo-50/90 border-2 border-purple-200/70 hover:shadow-lg hover:border-purple-300/90 transition-all duration-300">
                   <CardHeader className="flex flex-row items-center justify-between pb-2">
                     <CardTitle className="text-sm font-medium text-gray-600">
                       {stat.title}
@@ -155,9 +137,9 @@ export default function DashboardPage() {
                     <p className="text-xs text-gray-500 mt-1 flex items-center gap-1">
                       {stat.trend === "up" ? (
                         <ArrowUpRight className="h-3 w-3 text-green-600" />
-                      ) : (
+                      ) : stat.trend === "down" ? (
                         <ArrowDownRight className="h-3 w-3 text-red-600" />
-                      )}
+                      ) : null}
                       {stat.change}
                     </p>
                   </CardContent>
@@ -174,7 +156,7 @@ export default function DashboardPage() {
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
             {/* Recent Jobs */}
             <div className="lg:col-span-2">
-              <Card>
+              <Card className="bg-gradient-to-br from-purple-50/90 via-blue-50/80 to-indigo-50/90 border-2 border-purple-200/70 shadow-lg">
                 <CardHeader>
                   <div className="flex items-center justify-between">
                     <CardTitle>Recent Jobs</CardTitle>
@@ -184,52 +166,73 @@ export default function DashboardPage() {
                   </div>
                 </CardHeader>
                 <CardContent>
-                  <div className="space-y-4">
-                    {recentJobs.map((job, index) => (
-                      <motion.div
-                        key={job.id}
-                        initial={{ opacity: 0, x: -20 }}
-                        animate={{ opacity: 1, x: 0 }}
-                        transition={{ delay: index * 0.1 }}
-                        className="flex items-center justify-between p-4 border border-gray-200 rounded-lg hover:border-midnight transition-colors cursor-pointer"
-                      >
-                        <div className="flex-1">
-                          <h4 className="font-semibold text-midnight">
-                            {job.title}
-                          </h4>
-                          <p className="text-sm text-gray-600 mt-1">
-                            Client: {job.client} • {job.date}
-                          </p>
-                        </div>
-                        <div className="flex items-center gap-4">
-                          <div className="text-right">
-                            <div className="font-bold text-midnight">
-                              {job.amount}
-                            </div>
-                            <Badge
-                              variant={
-                                job.status === "completed"
-                                  ? "default"
-                                  : job.status === "in-progress"
-                                  ? "secondary"
-                                  : "outline"
-                              }
-                              className="text-xs"
-                            >
-                              {job.status}
-                            </Badge>
+                  {recentJobs.length > 0 ? (
+                    <div className="space-y-4">
+                      {recentJobs.map((job, index) => (
+                        <motion.div
+                          key={job.id}
+                          initial={{ opacity: 0, x: -20 }}
+                          animate={{ opacity: 1, x: 0 }}
+                          transition={{ delay: index * 0.1 }}
+                          className="flex items-center justify-between p-4 border-2 border-purple-200/50 bg-white/60 rounded-lg hover:border-purple-300/80 hover:bg-white/80 transition-all cursor-pointer backdrop-blur-sm"
+                        >
+                          <div className="flex-1">
+                            <h4 className="font-semibold text-midnight">
+                              {job.title}
+                            </h4>
+                            <p className="text-sm text-gray-600 mt-1">
+                              Client: {job.client} • {job.date}
+                            </p>
                           </div>
-                        </div>
-                      </motion.div>
-                    ))}
-                  </div>
+                          <div className="flex items-center gap-4">
+                            <div className="text-right">
+                              <div className="font-bold text-midnight">
+                                {job.amount}
+                              </div>
+                              <Badge
+                                variant={
+                                  job.status === "completed"
+                                    ? "default"
+                                    : job.status === "in-progress"
+                                    ? "secondary"
+                                    : "outline"
+                                }
+                                className="text-xs"
+                              >
+                                {job.status}
+                              </Badge>
+                            </div>
+                          </div>
+                        </motion.div>
+                      ))}
+                    </div>
+                  ) : (
+                    <div className="text-center py-12 space-y-4">
+                      <Briefcase className="h-16 w-16 mx-auto text-gray-300" />
+                      <div>
+                        <h4 className="font-semibold text-midnight mb-2">
+                          No jobs yet
+                        </h4>
+                        <p className="text-sm text-gray-600 mb-4">
+                          Start by posting your first service or browsing the marketplace
+                        </p>
+                        <Button 
+                          variant="outline"
+                          size="sm"
+                          onClick={() => window.location.href = "/marketplace"}
+                        >
+                          Browse Marketplace
+                        </Button>
+                      </div>
+                    </div>
+                  )}
                 </CardContent>
               </Card>
             </div>
 
             {/* Quick Actions */}
             <div>
-              <Card>
+              <Card className="bg-gradient-to-br from-indigo-50/90 via-purple-50/80 to-blue-50/90 border-2 border-indigo-200/70 shadow-lg">
                 <CardHeader>
                   <CardTitle>Quick Actions</CardTitle>
                   <CardDescription>
@@ -292,7 +295,7 @@ export default function DashboardPage() {
               </Card>
 
               {/* Performance Chart Placeholder */}
-              <Card className="mt-6">
+              <Card className="mt-6 bg-gradient-to-br from-blue-50/90 via-cyan-50/80 to-indigo-50/90 border-2 border-blue-200/70 shadow-lg">
                 <CardHeader>
                   <CardTitle>Performance</CardTitle>
                   <CardDescription>Last 7 days</CardDescription>

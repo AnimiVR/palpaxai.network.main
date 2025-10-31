@@ -14,12 +14,12 @@ interface Message {
 }
 
 const QUICK_QUESTIONS = [
-  "What is PayAI?",
+  "What is PalPaxAI?",
   "How do I hire an AI agent?",
   "What is x402 protocol?",
   "How to connect my wallet?",
   "What services are available?",
-  "Is PayAI free to use?",
+  "Is PalPaxAI free to use?",
   "How does payment work?",
   "Can I sell my agent?",
   "What is Solana?",
@@ -27,7 +27,7 @@ const QUICK_QUESTIONS = [
 ];
 
 const BOT_RESPONSES: { [key: string]: string } = {
-  "what is payai": "PayAI is a decentralized marketplace and payment platform for AI agents. It enables autonomous agents to transact with each other and humans using Solana blockchain and x402 protocol. PayAI makes AI agent payments seamless, instant, and 24/7.",
+  "what is PalPaxAI": "PalPaxAI is a decentralized marketplace and payment platform for AI agents. It enables autonomous agents to transact with each other and humans using Solana blockchain and x402 protocol. PalPaxAI makes AI agent payments seamless, instant, and 24/7.",
   
   "how do i hire an ai agent": "To hire an AI agent, browse the marketplace, select a service that matches your needs, connect your Phantom wallet, and click 'Hire'. The payment will be processed instantly on Solana blockchain. The agent will start working autonomously immediately after payment.",
   
@@ -35,17 +35,17 @@ const BOT_RESPONSES: { [key: string]: string } = {
   
   "how to connect my wallet": "Click the 'Connect Wallet' button in the navigation bar. Make sure you have Phantom wallet installed. If you don't have it, download from phantom.app. Once connected, you'll see your wallet address in the navbar.",
   
-  "what services are available": "PayAI marketplace offers various AI agent services including Web Development, Design, Content Writing, Data Analysis, Social Media Management, QA Testing, Blockchain Development, SEO Optimization, Video Editing, Customer Support, DevOps, and Financial Advice. Browse the marketplace to see all available agents.",
+  "what services are available": "PalPaxAI marketplace offers various AI agent services including Web Development, Design, Content Writing, Data Analysis, Social Media Management, QA Testing, Blockchain Development, SEO Optimization, Video Editing, Customer Support, DevOps, and Financial Advice. Browse the marketplace to see all available agents.",
   
-  "is payai free to use": "PayAI platform itself is free to use. You only pay when you hire an AI agent for a specific service. The cost varies by agent and service type, typically ranging from 0.15 SOL to 0.8 SOL per job. Network fees on Solana are minimal.",
+  "is PalPaxAI free to use": "PalPaxAI platform itself is free to use. You only pay when you hire an AI agent for a specific service. The cost varies by agent and service type, typically ranging from 0.15 SOL to 0.8 SOL per job. Network fees on Solana are minimal.",
   
-  "how does payment work": "Payments on PayAI use Solana blockchain for instant transactions. When you hire an agent, payment is processed immediately. Funds are escrowed until work is completed, then released automatically. All payments are transparent and secure on the blockchain.",
+  "how does payment work": "Payments on PalPaxAI use Solana blockchain for instant transactions. When you hire an agent, payment is processed immediately. Funds are escrowed until work is completed, then released automatically. All payments are transparent and secure on the blockchain.",
   
-  "can i sell my agent": "Yes! You can monetize your AI agent on PayAI marketplace. Create an account, list your agent's capabilities, set your price, and start earning. PayAI provides tools and infrastructure for agents to offer their services 24/7 autonomously.",
+  "can i sell my agent": "Yes! You can monetize your AI agent on PalPaxAI marketplace. Create an account, list your agent's capabilities, set your price, and start earning. PalPaxAI provides tools and infrastructure for agents to offer their services 24/7 autonomously.",
   
-  "what is solana": "Solana is a high-performance blockchain network that powers PayAI. It enables fast, low-cost transactions perfect for micro-payments and AI agent economies. Solana processes thousands of transactions per second with minimal fees.",
+  "what is solana": "Solana is a high-performance blockchain network that powers PalPaxAI. It enables fast, low-cost transactions perfect for micro-payments and AI agent economies. Solana processes thousands of transactions per second with minimal fees.",
   
-  "how to get started": "Getting started is easy! 1) Install Phantom wallet, 2) Connect your wallet on PayAI, 3) Browse the marketplace to find agents, 4) Hire an agent and make your first payment. You can also start selling your own agent services. Visit our documentation for detailed guides.",
+  "how to get started": "Getting started is easy! 1) Install Phantom wallet, 2) Connect your wallet on PalPaxAI, 3) Browse the marketplace to find agents, 4) Hire an agent and make your first payment. You can also start selling your own agent services. Visit our documentation for detailed guides.",
 };
 
 function getBotResponse(message: string): string {
@@ -64,7 +64,7 @@ function getBotResponse(message: string): string {
   }
   
   // Default response
-  return "I'm PayAI Assistant, here to help you with questions about our AI agent marketplace, x402 protocol, and payment system. Try asking about services, how to hire agents, or connecting your wallet. For more specific questions, feel free to browse our documentation.";
+  return "I'm PalPaxAI Assistant, here to help you with questions about our AI agent marketplace, x402 protocol, and payment system. Try asking about services, how to hire agents, or connecting your wallet. For more specific questions, feel free to browse our documentation.";
 }
 
 export function Chatbot() {
@@ -72,7 +72,7 @@ export function Chatbot() {
   const [messages, setMessages] = useState<Message[]>([
     {
       id: "1",
-      text: "Hi! I'm PayAI Assistant. How can I help you today? You can ask me about our services, payments, or how to get started!",
+      text: "Hi! I'm PalPaxAI Assistant. How can I help you today? You can ask me about our services, payments, or how to get started!",
       sender: "bot",
       timestamp: new Date(),
     },
@@ -202,7 +202,7 @@ export function Chatbot() {
                     <Bot className="h-5 w-5" />
                   </div>
                   <div>
-                    <div className="font-semibold text-white">PayAI Assistant</div>
+                    <div className="font-semibold text-white">PalPaxAI Assistant</div>
                     <p className="text-xs text-blue-100">AI-powered help</p>
                   </div>
                 </div>
@@ -316,7 +316,7 @@ export function Chatbot() {
                     value={inputValue}
                     onChange={(e) => setInputValue(e.target.value)}
                     onKeyPress={handleKeyPress}
-                    placeholder="Ask me anything about PayAI..."
+                    placeholder="Ask me anything about PalPaxAI..."
                     className="flex-1 text-sm border-gray-300 focus:border-primary rounded-xl"
                   />
                   <Button

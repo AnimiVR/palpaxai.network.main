@@ -4,12 +4,12 @@ import { Footer } from "@/components/layout/Footer";
 
 export default function TermsOfService() {
   return (
-    <div className="min-h-screen">
+    <div className="min-h-screen bg-gradient-to-b from-purple-100/50 via-blue-100/30 to-purple-50/20">
       <Navbar />
 
       {/* Simple Header Section */}
       <section className="pt-section pb-8">
-        <div className="container-payai">
+        <div className="container-PalPaxAI">
           <div className="max-w-4xl mx-auto text-center">
             <h1 className="text-heading md:text-display font-semibold text-midnight mb-6">
               Terms of Service
@@ -26,7 +26,7 @@ export default function TermsOfService() {
 
       {/* Content Section */}
       <section className="pt-8 pb-section">
-        <div className="container-payai">
+        <div className="container-PalPaxAI">
           <div className="max-w-4xl mx-auto space-y-12">
             {/* Agreement to Terms */}
             <div>
@@ -34,7 +34,7 @@ export default function TermsOfService() {
                 1. Agreement to Terms
               </h2>
               <p className="text-body md:text-body-lg text-gray-600 leading-relaxed">
-                By accessing and using PayAI's services, you agree to be bound
+                By accessing and using PalPaxAI's services, you agree to be bound
                 by these Terms of Service and all applicable laws and
                 regulations. If you do not agree with any of these terms, you
                 are prohibited from using or accessing this site.
@@ -48,7 +48,7 @@ export default function TermsOfService() {
               </h2>
               <p className="text-body md:text-body-lg text-gray-600 mb-6 leading-relaxed">
                 Permission is granted to temporarily download one copy of the
-                materials (information or software) on PayAI's website for
+                materials (information or software) on PalPaxAI's website for
                 personal, non-commercial transitory viewing only. This is the
                 grant of a license, not a transfer of title, and under this
                 license you may not:
@@ -63,7 +63,7 @@ export default function TermsOfService() {
                 </li>
                 <li className="text-body text-gray-600">
                   • Attempt to decompile or reverse engineer any software
-                  contained on PayAI's website
+                  contained on PalPaxAI's website
                 </li>
                 <li className="text-body text-gray-600">
                   • Remove any copyright or other proprietary notations from the
@@ -82,8 +82,8 @@ export default function TermsOfService() {
                 3. Disclaimer
               </h2>
               <p className="text-body md:text-body-lg text-gray-600 leading-relaxed">
-                The materials on PayAI's website are provided on an 'as is'
-                basis. PayAI makes no warranties, expressed or implied, and
+                The materials on PalPaxAI's website are provided on an 'as is'
+                basis. PalPaxAI makes no warranties, expressed or implied, and
                 hereby disclaims and negates all other warranties including,
                 without limitation, implied warranties or conditions of
                 merchantability, fitness for a particular purpose, or
@@ -98,11 +98,11 @@ export default function TermsOfService() {
                 4. Limitations
               </h2>
               <p className="text-body md:text-body-lg text-gray-600 leading-relaxed">
-                In no event shall PayAI or its suppliers be liable for any
+                In no event shall PalPaxAI or its suppliers be liable for any
                 damages (including, without limitation, damages for loss of data
                 or profit, or due to business interruption) arising out of the
-                use or inability to use the materials on PayAI's website, even
-                if PayAI or a PayAI authorized representative has been notified
+                use or inability to use the materials on PalPaxAI's website, even
+                if PalPaxAI or a PalPaxAI authorized representative has been notified
                 orally or in writing of the possibility of such damage.
               </p>
             </div>
@@ -113,10 +113,10 @@ export default function TermsOfService() {
                 5. Accuracy of Materials
               </h2>
               <p className="text-body md:text-body-lg text-gray-600 leading-relaxed">
-                The materials appearing on PayAI's website could include
-                technical, typographical, or photographic errors. PayAI does not
+                The materials appearing on PalPaxAI's website could include
+                technical, typographical, or photographic errors. PalPaxAI does not
                 warrant that any of the materials on its website are accurate,
-                complete or current. PayAI may make changes to the materials
+                complete or current. PalPaxAI may make changes to the materials
                 contained on its website at any time without notice.
               </p>
             </div>
@@ -127,9 +127,9 @@ export default function TermsOfService() {
                 6. Links
               </h2>
               <p className="text-body md:text-body-lg text-gray-600 leading-relaxed">
-                PayAI has not reviewed all of the sites linked to its website
+                PalPaxAI has not reviewed all of the sites linked to its website
                 and is not responsible for the contents of any such linked site.
-                The inclusion of any link does not imply endorsement by PayAI of
+                The inclusion of any link does not imply endorsement by PalPaxAI of
                 the site. Use of any such linked website is at the user's own
                 risk.
               </p>
@@ -141,7 +141,7 @@ export default function TermsOfService() {
                 7. Modifications
               </h2>
               <p className="text-body md:text-body-lg text-gray-600 leading-relaxed">
-                PayAI may revise these terms of service for its website at any
+                PalPaxAI may revise these terms of service for its website at any
                 time without notice. By using this website you are agreeing to
                 be bound by the then current version of these terms of service.
               </p>
@@ -169,7 +169,7 @@ export default function TermsOfService() {
                 contact us at:
               </p>
               <p className="text-body font-medium text-midnight">
-                Email: legal@payai.network
+                Email: legal@PalPaxAI.network
               </p>
             </div>
           </div>

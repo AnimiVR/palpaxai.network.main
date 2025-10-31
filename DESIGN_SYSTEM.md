@@ -1,4 +1,4 @@
-# PayAI Design System
+# PalPaxAI Design System
 
 ## 🎨 Color Palette
 
@@ -131,7 +131,7 @@ text-body-xsmall: 0.75rem (12px) - line-height: 1.4
 ### Containers
 
 ```html
-<div class="container-payai">Max-width container</div>
+<div class="container-PalPaxAI">Max-width container</div>
 <section class="section-padding">Section with padding</section>
 ```
 
@@ -140,7 +140,7 @@ text-body-xsmall: 0.75rem (12px) - line-height: 1.4
 ### Background Gradients
 
 ```html
-<div class="gradient-payai">PayAI Brand Gradient</div>
+<div class="gradient-PalPaxAI">PalPaxAI Brand Gradient</div>
 <div class="gradient-cyan">Cyan Gradient</div>
 <div class="gradient-purple">Purple Gradient</div>
 ```
@@ -148,7 +148,7 @@ text-body-xsmall: 0.75rem (12px) - line-height: 1.4
 ### Text Gradients
 
 ```html
-<h1 class="text-gradient-payai">Gradient Text</h1>
+<h1 class="text-gradient-PalPaxAI">Gradient Text</h1>
 <h2 class="text-gradient-cyan">Cyan Text</h2>
 ```
 
@@ -208,9 +208,9 @@ section-lg: 7rem (112px)
 
 ```html
 <section class="section-padding bg-primary">
-  <div class="container-payai">
+  <div class="container-PalPaxAI">
     <h1 class="text-display md:text-hero font-semibold text-white">
-      PayAI: AI Agent Economy
+      PalPaxAI: AI Agent Economy
     </h1>
     <p class="text-body md:text-body-lg text-white/80 mt-6">
       The future of AI collaboration

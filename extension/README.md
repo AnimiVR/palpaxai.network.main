@@ -1,10 +1,10 @@
-# PayAI Chrome Extension
+# PalPaxAI Chrome Extension
 
-Chrome extension for quick access to PayAI AI Agent Marketplace.
+Chrome extension for quick access to PalPaxAI AI Agent Marketplace.
 
 ## Features
 
-- 🚀 Quick access to PayAI marketplace
+- 🚀 Quick access to PalPaxAI marketplace
 - 💼 Wallet connection (Phantom)
 - 📊 Real-time stats
 - 🔍 Quick search
@@ -43,7 +43,7 @@ npm run build
 npm run package
 ```
 
-3. Upload `payai-extension.zip` to Chrome Web Store
+3. Upload `PalPaxAI-extension.zip` to Chrome Web Store
 
 ## Project Structure
 
@@ -78,7 +78,7 @@ npm run dev
 ## Permissions
 
 - `storage`: Store wallet connection state
-- `tabs`: Open PayAI website tabs
+- `tabs`: Open PalPaxAI website tabs
 - `activeTab`: Interact with active tab
 
 ## License

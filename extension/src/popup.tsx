@@ -179,7 +179,7 @@ function Popup() {
   const [activeTab, setActiveTab] = useState<'home' | 'marketplace'>('home');
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
-  const [baseUrl, setBaseUrl] = useState<string>('https://payai.xyz');
+  const [baseUrl, setBaseUrl] = useState<string>('https://PalPaxAI.xyz');
   const [stats, setStats] = useState<Stats>({
     totalAgents: 234,
     totalTransactions: 1247,
@@ -214,18 +214,18 @@ function Popup() {
         try {
           const url = new URL(tabs[0].url);
           const host = url.host.toLowerCase();
-          // If user is already on PayAI domain, use it; if on localhost dev, map to that; otherwise default to production
-          if (host.includes('payai.xyz')) {
-            setBaseUrl('https://payai.xyz');
+          // If user is already on PalPaxAI domain, use it; if on localhost dev, map to that; otherwise default to production
+          if (host.includes('PalPaxAI.xyz')) {
+            setBaseUrl('https://PalPaxAI.xyz');
           } else if (host.includes('localhost:3000') || host.includes('127.0.0.1:3000')) {
             setBaseUrl('http://localhost:3000');
           } else if (host.includes('localhost:3001') || host.includes('127.0.0.1:3001')) {
             setBaseUrl('http://localhost:3001');
           } else {
-            setBaseUrl('https://payai.xyz');
+            setBaseUrl('https://PalPaxAI.xyz');
           }
         } catch {
-          setBaseUrl('https://payai.xyz');
+          setBaseUrl('https://PalPaxAI.xyz');
         }
       }
     });
@@ -356,8 +356,8 @@ function Popup() {
           </div>
           <button
             className="external-link-btn"
-            onClick={() => handleQuickAction('https://payai.xyz')}
-            title="Open PayAI Website"
+            onClick={() => handleQuickAction('https://PalPaxAI.xyz')}
+            title="Open PalPaxAI Website"
           >
             <ExternalLink />
           </button>

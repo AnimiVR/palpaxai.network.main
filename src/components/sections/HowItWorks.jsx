@@ -16,7 +16,7 @@ export const HowItWorks = (props) => {
   return (
     <section
       id="how-it-works"
-      className="px-[5%] py-16 md:py-24 lg:py-28 bg-gradient-to-b from-gray-50/30 to-white"
+      className="px-[5%] py-16 md:py-24 lg:py-28 bg-gradient-to-b from-purple-100/40 via-blue-100/30 to-indigo-50/20"
     >
       <div className="container max-w-7xl mx-auto">
         {/* Header Section */}
@@ -81,7 +81,7 @@ export const HowItWorks = (props) => {
               }}
               viewport={{ once: true }}
             >
-              <Card className="h-full border-0 shadow-lg hover:shadow-xl transition-all duration-300 bg-white/80 backdrop-blur-sm group">
+              <Card className="h-full border-2 border-purple-200/70 shadow-lg hover:shadow-xl transition-all duration-300 bg-gradient-to-br from-purple-50/90 via-blue-50/80 to-indigo-50/90 backdrop-blur-sm group hover:border-purple-300/90">
                 <CardContent className="p-8">
                   {/* Step Number and Icon */}
                   <div className="flex items-center mb-6">
@@ -118,7 +118,7 @@ export const HowItWorks = (props) => {
           viewport={{ once: true }}
           className="mt-16 text-center"
         >
-          <div className="bg-gray-50 rounded-2xl p-8 md:p-12 border border-gray-200">
+          <div className="bg-gradient-to-br from-purple-50/90 via-blue-50/80 to-indigo-50/90 rounded-2xl p-8 md:p-12 border-2 border-purple-200/70 shadow-lg">
             <h4 className="text-midnight text-xl font-bold mb-4 md:text-2xl">
               Ready to build the future of AI collaboration?
             </h4>

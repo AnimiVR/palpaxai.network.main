@@ -15,7 +15,7 @@ export const TerminalCommand = ({ text, language = "javascript" }) => {
 };
 
 // Original terminal command component
-const PayAISetupTerminal = () => {
+const PalPaxAISetupTerminal = () => {
   const [mounted, setMounted] = useState(false);
   useEffect(() => setMounted(true), []);
 
@@ -47,7 +47,7 @@ const PayAISetupTerminal = () => {
                     <Typewriter
                       options={{
                         strings: [
-                          "git clone git@github.com:elizaOS/eliza.git<br/>cd eliza && npm install<br/>npx elizaos plugins add @elizaos-plugins/plugin-payai",
+                          "git clone git@github.com:elizaOS/eliza.git<br/>cd eliza && npm install<br/>npx elizaos plugins add @elizaos-plugins/plugin-PalPaxAI",
                         ],
                         autoStart: true,
                         loop: true,
@@ -135,4 +135,4 @@ const PayAISetupTerminal = () => {
   );
 };
 
-export default PayAISetupTerminal;
+export default PalPaxAISetupTerminal;

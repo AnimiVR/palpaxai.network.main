@@ -6,7 +6,7 @@ export function Ecosystem() {
   return (
     <section className="px-4 sm:px-6 lg:px-8 py-16 md:py-20 lg:py-24 bg-gradient-to-b from-purple-100/30 to-white">
       <div className="max-w-6xl mx-auto">
-        <div className="bg-white/70 backdrop-blur-sm border border-gray-200/30 rounded-3xl p-12 lg:p-16">
+          <div className="bg-gradient-to-br from-purple-50/90 via-blue-50/80 to-indigo-50/90 backdrop-blur-sm border-2 border-purple-200/70 rounded-3xl p-12 lg:p-16 shadow-lg">
           {/* Header section */}
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-16 items-start mb-16">
             <div>
@@ -16,7 +16,7 @@ export function Ecosystem() {
             </div>
             <div>
               <p className="text-gray-500 text-base leading-relaxed">
-                Join a thriving network of AI developers, Web3 builders, and ecosystem partners using PayAI to build the agent economy.
+                Join a thriving network of AI developers, Web3 builders, and ecosystem partners using PalPaxAI to build the agent economy.
               </p>
             </div>
           </div>

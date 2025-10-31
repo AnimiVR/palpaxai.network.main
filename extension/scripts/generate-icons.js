@@ -9,7 +9,7 @@ if (!fs.existsSync(iconsDir)) {
   fs.mkdirSync(iconsDir, { recursive: true });
 }
 
-// SVG template for PayAI icon
+// SVG template for PalPaxAI icon
 const svgTemplate = (size) => `
 <svg width="${size}" height="${size}" xmlns="http://www.w3.org/2000/svg">
   <defs>

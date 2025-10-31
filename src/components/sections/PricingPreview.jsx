@@ -54,7 +54,7 @@ export function PricingPreview() {
   ];
 
   return (
-    <section className="px-[5%] py-16 md:py-20 bg-gradient-to-br from-white to-gray-50">
+    <section className="px-[5%] py-16 md:py-20 bg-gradient-to-br from-purple-100/50 via-blue-100/40 to-indigo-50/30">
       <div className="container max-w-7xl mx-auto">
         <motion.div
           initial={{ opacity: 0, y: 30 }}
@@ -79,10 +79,10 @@ export function PricingPreview() {
               whileInView={{ opacity: 1, y: 0 }}
               transition={{ delay: index * 0.1, duration: 0.6 }}
               viewport={{ once: true }}
-              className={`relative bg-white rounded-2xl p-8 shadow-lg border-2 transition-all duration-300 hover:shadow-xl ${
+              className={`relative bg-gradient-to-br from-purple-50/90 via-blue-50/80 to-indigo-50/90 rounded-2xl p-8 shadow-lg border-2 transition-all duration-300 hover:shadow-xl ${
                 plan.popular 
-                  ? "border-midnight scale-105" 
-                  : "border-gray-200 hover:border-gray-300"
+                  ? "border-purple-400/90 scale-105 shadow-xl" 
+                  : "border-purple-200/70 hover:border-purple-300/90"
               }`}
             >
               {plan.popular && (

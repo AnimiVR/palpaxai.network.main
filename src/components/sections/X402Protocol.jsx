@@ -33,7 +33,7 @@ export function X402Protocol() {
   return (
     <section
       id="x402"
-      className="px-[5%] py-16 md:py-24 lg:py-28 bg-gradient-to-b from-gray-50/50 to-white"
+      className="px-[5%] py-16 md:py-24 lg:py-28 bg-gradient-to-b from-purple-100/60 via-blue-100/40 to-indigo-50/30"
     >
       <div className="container max-w-7xl mx-auto">
         <div className="grid grid-cols-1 gap-12 lg:grid-cols-2 lg:gap-20 items-center">
@@ -52,7 +52,7 @@ export function X402Protocol() {
               >
                 Payment Protocol
               </Badge>
-              <h1 className="text-midnight text-4xl font-extrabold font-heading md:text-6xl lg:text-7xl mb-6">
+              <h1 className="text-4xl font-extrabold font-heading md:text-6xl lg:text-7xl mb-6 text-gradient-animated">
                 X402
               </h1>
               <div className="bg-gradient-to-r from-green-50 to-blue-50 rounded-xl p-6 border border-green-100 mb-6">
@@ -111,7 +111,7 @@ export function X402Protocol() {
                   }}
                   viewport={{ once: true }}
                 >
-                  <Card className="h-full border-0 shadow-lg hover:shadow-xl transition-all duration-300 bg-white/80 backdrop-blur-sm group">
+                  <Card className="h-full glass-ultra border-2 border-purple-300/50 shadow-lg hover:shadow-xl transition-all duration-300 group hover:border-purple-400/70 card-3d magnetic neon-glow-hover">
                     <CardContent className="p-6 text-center">
                       <div className="text-3xl mb-4 group-hover:scale-110 transition-transform">
                         {feature.icon}
@@ -135,7 +135,7 @@ export function X402Protocol() {
               transition={{ delay: 0.4, duration: 0.6, ease: "easeOut" }}
               viewport={{ once: true }}
             >
-              <Card className="border-0 shadow-lg bg-gradient-to-br from-green-50 to-blue-50 border border-green-100">
+              <Card className="glass-ultra border-2 border-purple-300/50 shadow-lg hover:shadow-xl hover:border-purple-400/70 pulse-glow float-animation">
                 <CardContent className="p-6">
                   <h4 className="text-midnight text-lg font-bold mb-3">
                     💡 Real-World Example
@@ -163,7 +163,7 @@ export function X402Protocol() {
           viewport={{ once: true }}
           className="mt-16 text-center"
         >
-          <div className="bg-white rounded-2xl p-8 shadow-lg border border-gray-100">
+          <div className="bg-gradient-to-br from-purple-50/90 via-indigo-50/80 to-blue-50/90 rounded-2xl p-8 shadow-lg border-2 border-purple-200/70">
             <h4 className="text-midnight text-xl font-bold mb-4 md:text-2xl">
               The Future of Digital Payments
             </h4>

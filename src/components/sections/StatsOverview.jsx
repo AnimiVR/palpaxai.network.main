@@ -40,7 +40,7 @@ export function StatsOverview() {
   ];
 
   return (
-    <section className="px-[5%] py-16 md:py-20 bg-gradient-to-br from-gray-50 to-white">
+    <section className="px-[5%] py-16 md:py-20 bg-gradient-to-br from-purple-100/50 via-blue-100/40 to-indigo-50/30">
       <div className="container max-w-7xl mx-auto">
         <motion.div
           initial={{ opacity: 0, y: 30 }}
@@ -65,7 +65,7 @@ export function StatsOverview() {
               whileInView={{ opacity: 1, y: 0 }}
               transition={{ delay: index * 0.1, duration: 0.6 }}
               viewport={{ once: true }}
-              className="bg-white rounded-2xl p-6 shadow-lg hover:shadow-xl transition-all duration-300 border border-gray-100"
+              className="bg-gradient-to-br from-purple-50/90 via-blue-50/80 to-indigo-50/90 rounded-2xl p-6 shadow-lg hover:shadow-xl transition-all duration-300 border-2 border-purple-200/70 hover:border-purple-300/90"
             >
               <div className={`w-12 h-12 ${stat.bgColor} rounded-xl flex items-center justify-center mb-4`}>
                 <stat.icon className={`w-6 h-6 ${stat.color}`} />
