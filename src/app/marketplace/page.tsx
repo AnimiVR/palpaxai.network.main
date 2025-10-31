@@ -285,8 +285,9 @@ export default function MarketplacePage() {
       } else {
         alert(`❌ Payment failed: ${result.error || "Unknown error"}`);
       }
-    } catch (err: any) {
-      alert(`❌ Payment error: ${err.message || "Unknown error"}`);
+    } catch (err: unknown) {
+      const errorMessage = err instanceof Error ? err.message : "Unknown error";
+      alert(`❌ Payment error: ${errorMessage}`);
     }
   };
 

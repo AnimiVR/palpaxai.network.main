@@ -1,5 +1,4 @@
-import { LAMPORTS_PER_SOL, PublicKey, Transaction } from "@solana/web3.js";
-import { useWallet, useConnection } from "@solana/wallet-adapter-react";
+import { LAMPORTS_PER_SOL } from "@solana/web3.js";
 
 /**
  * Convert SOL price string (e.g., "0.5 SOL") to lamports

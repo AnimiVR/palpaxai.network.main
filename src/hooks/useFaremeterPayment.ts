@@ -5,19 +5,30 @@ import { useWallet, useConnection } from "@solana/wallet-adapter-react";
 import { 
   PublicKey, 
   Transaction, 
-  SystemProgram, 
-  LAMPORTS_PER_SOL,
-  sendAndConfirmTransaction 
+  SystemProgram
 } from "@solana/web3.js";
 import { parseSolPrice, getSellerWalletAddress } from "@/lib/payment";
 
 // Dynamic imports for Faremeter packages (in case they're ESM only)
 // Note: Faremeter packages are temporarily disabled
-let faremeterPayment: any = null;
-let faremeterFetch: any = null;
-let faremeterInfo: any = null;
+type FaremeterModule = {
+  createPayment?: (params: {
+    amount: number;
+    recipient: string;
+    serviceId: string;
+    metadata: Record<string, string>;
+  }) => Promise<{ transaction?: Transaction; signature?: string }>;
+} | null;
 
-async function loadFaremeterModules() {
+const faremeterPayment: FaremeterModule = null;
+const faremeterFetch: FaremeterModule = null;
+const faremeterInfo: FaremeterModule = null;
+
+async function loadFaremeterModules(): Promise<{
+  faremeterPayment: FaremeterModule;
+  faremeterFetch: FaremeterModule;
+  faremeterInfo: FaremeterModule;
+}> {
   // Faremeter packages are temporarily disabled - always use direct Solana transactions
   // if (!faremeterPayment) {
   //   try {
@@ -72,8 +83,9 @@ export function useFaremeterPayment() {
       let lamports: number;
       try {
         lamports = parseSolPrice(priceString);
-      } catch (parseError: any) {
-        throw new Error(`Invalid price format: ${priceString}. ${parseError.message}`);
+      } catch (parseError: unknown) {
+        const errorMessage = parseError instanceof Error ? parseError.message : "Invalid format";
+        throw new Error(`Invalid price format: ${priceString}. ${errorMessage}`);
       }
 
       // Get seller wallet address
@@ -81,8 +93,9 @@ export function useFaremeterPayment() {
       try {
         const recipientAddress = sellerWalletAddress || getSellerWalletAddress(serviceId, sellerName);
         recipientPubkey = new PublicKey(recipientAddress);
-      } catch (pubkeyError: any) {
-        throw new Error(`Invalid seller wallet address. ${pubkeyError.message}`);
+      } catch (pubkeyError: unknown) {
+        const errorMessage = pubkeyError instanceof Error ? pubkeyError.message : "Invalid address";
+        throw new Error(`Invalid seller wallet address. ${errorMessage}`);
       }
 
       // Try to load Faremeter modules (non-blocking)
@@ -120,7 +133,7 @@ export function useFaremeterPayment() {
               signature: paymentResult.signature,
             };
           }
-        } catch (faremeterError: any) {
+        } catch (faremeterError: unknown) {
           console.warn("Faremeter payment SDK error, falling back to direct Solana transaction:", faremeterError);
           // Continue to fallback method
         }
@@ -175,21 +188,24 @@ export function useFaremeterPayment() {
         success: true,
         signature,
       };
-    } catch (err: any) {
+    } catch (err: unknown) {
       console.error("Payment error:", err);
       
       // Provide user-friendly error messages
       let errorMessage = "Payment failed. Please try again.";
-      if (err.message) {
-        errorMessage = err.message;
-      } else if (err.name === "UserRejectedRequestError") {
-        errorMessage = "Transaction was cancelled by user.";
-      } else if (err.code === 4001) {
+      
+      if (err instanceof Error) {
+        if (err.name === "UserRejectedRequestError") {
+          errorMessage = "Transaction was cancelled by user.";
+        } else if (err.message.includes("insufficient funds")) {
+          errorMessage = "Insufficient funds in your wallet. Please add more SOL.";
+        } else if (err.message.includes("network")) {
+          errorMessage = "Network error. Please check your connection and try again.";
+        } else if (err.message) {
+          errorMessage = err.message;
+        }
+      } else if (typeof err === "object" && err !== null && "code" in err && err.code === 4001) {
         errorMessage = "Transaction was rejected. Please try again.";
-      } else if (err.message?.includes("insufficient funds")) {
-        errorMessage = "Insufficient funds in your wallet. Please add more SOL.";
-      } else if (err.message?.includes("network")) {
-        errorMessage = "Network error. Please check your connection and try again.";
       }
       
       setError(errorMessage);
