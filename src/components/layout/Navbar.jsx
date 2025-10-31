@@ -181,6 +181,20 @@ export function Navbar() {
                 Features
               </Link>
             </motion.div>
+            <motion.div
+              initial={{ opacity: 0, y: -10 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.4, delay: 0.35 }}
+            >
+              <Link
+                href="https://docs.palpaxai.network"
+                target="_blank"
+                // onClick={(e) => handleNavClick(e, "features")}
+                className="text-body font-normal text-gray-700 hover:text-gray-900 transition-colors"
+              >
+                Docs
+              </Link>
+            </motion.div>
           </nav>
 
           {/* CTA Buttons */}
