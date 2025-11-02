@@ -2,63 +2,13 @@
 
 import React, { useState, useEffect } from "react";
 import Link from "next/link";
-import { Menu, X, Github, Wallet } from "lucide-react";
+import { Menu, X, Github } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import Image from "next/image";
-import { useWallet } from "@solana/wallet-adapter-react";
-import { useWalletModal } from "@solana/wallet-adapter-react-ui";
 
 export function Navbar() {
   const [isScrolled, setIsScrolled] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
-  const { wallet, select, wallets, connect, disconnect, connected, publicKey } = useWallet();
-  const { setVisible } = useWalletModal();
-
-  const handleConnect = async () => {
-    try {
-      if (!connected) {
-        // Show wallet selection modal for user to choose wallet
-        setVisible(true);
-      }
-    } catch (err) {
-      console.error("Failed to open wallet modal:", err);
-      // Fallback: try to connect if wallet is already selected
-      if (wallet && wallet.adapter && !wallet.adapter.connected) {
-        try {
-          await connect();
-        } catch (connectErr) {
-          console.error("Failed to connect wallet:", connectErr);
-          alert("Please install a Solana wallet extension (Phantom, Solflare, etc.) to connect.");
-        }
-      } else {
-        alert("Please install a Solana wallet extension (Phantom, Solflare, etc.) to connect.");
-      }
-    }
-  };
-
-  const handleDisconnect = () => {
-    disconnect().catch((err) => {
-      console.error("Failed to disconnect wallet:", err);
-    });
-  };
-
-  // Sync wallet state to extension storage via injected bridge
-  useEffect(() => {
-    const syncToExtension = () => {
-      // Use the bridge function injected by extension content script
-      if (typeof window !== 'undefined' && window.__PalPaxAIExtensionBridge) {
-        const isConnected = connected && !!publicKey;
-        const address = publicKey ? publicKey.toString() : '';
-        console.log('Website: Syncing wallet state to extension:', { isConnected, address });
-        window.__PalPaxAIExtensionBridge.syncWalletState(isConnected, address);
-      } else {
-        console.log('Website: Extension bridge not available (extension may not be installed)');
-      }
-    };
-    
-    // Sync when wallet state changes
-    syncToExtension();
-  }, [connected, publicKey]);
 
   useEffect(() => {
     const handleScroll = () => {
@@ -138,7 +88,6 @@ export function Navbar() {
             >
               <Link
                 href="/"
-                // onClick={(e) => handleNavClick(e, "home")}
                 className="text-body font-normal text-gray-700 hover:text-gray-900 transition-colors"
               >
                 Home
@@ -148,18 +97,6 @@ export function Navbar() {
               initial={{ opacity: 0, y: -10 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.4, delay: 0.25 }}
-            >
-              <Link
-                href="/marketplace"
-                className="text-body font-normal text-gray-700 hover:text-gray-900 transition-colors"
-              >
-                Marketplace
-              </Link>
-            </motion.div>
-            <motion.div
-              initial={{ opacity: 0, y: -10 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.4, delay: 0.3 }}
             >
               <Link
                 href="/dashboard"
@@ -175,7 +112,6 @@ export function Navbar() {
             >
               <Link
                 href="/features"
-                // onClick={(e) => handleNavClick(e, "features")}
                 className="text-body font-normal text-gray-700 hover:text-gray-900 transition-colors"
               >
                 Features
@@ -189,7 +125,6 @@ export function Navbar() {
               <Link
                 href="https://docs.palpaxai.network"
                 target="_blank"
-                // onClick={(e) => handleNavClick(e, "features")}
                 className="text-body font-normal text-gray-700 hover:text-gray-900 transition-colors"
               >
                 Docs
@@ -199,46 +134,6 @@ export function Navbar() {
 
           {/* CTA Buttons */}
           <div className="hidden md:flex items-center space-x-3">
-            {/* Wallet Button */}
-            {!connected ? (
-              <motion.div
-                initial={{ opacity: 0, x: 20 }}
-                animate={{ opacity: 1, x: 0 }}
-                transition={{ duration: 0.4, delay: 0.4 }}
-                whileHover={{ scale: 1.05 }}
-                whileTap={{ scale: 0.95 }}
-              >
-                <button
-                  onClick={handleConnect}
-                  className="inline-flex items-center justify-center bg-midnight text-white px-5 py-2 text-body font-semibold border border-midnight rounded-full transition-colors hover:bg-midnight/90"
-                >
-                  <Wallet className="w-4 h-4 mr-2" />
-                  Connect Wallet
-                </button>
-              </motion.div>
-            ) : (
-              <motion.div
-                initial={{ opacity: 0, x: 20 }}
-                animate={{ opacity: 1, x: 0 }}
-                transition={{ duration: 0.4, delay: 0.4 }}
-                whileHover={{ scale: 1.05 }}
-                whileTap={{ scale: 0.95 }}
-                className="flex items-center space-x-3"
-              >
-                <div className="bg-green-50 border border-green-200 rounded-full px-4 py-2 flex items-center space-x-2">
-                  <div className="w-2 h-2 bg-green-500 rounded-full"></div>
-                  <span className="text-sm font-medium text-green-700">
-                    {publicKey?.toString().substring(0, 4)}...{publicKey?.toString().slice(-4)}
-                  </span>
-                </div>
-                <button
-                  onClick={handleDisconnect}
-                  className="inline-flex items-center justify-center bg-white/70 text-gray-800 px-5 py-2 text-body font-normal border border-gray-200 rounded-full transition-colors hover:bg-white"
-                >
-                  Disconnect
-                </button>
-              </motion.div>
-            )}
             <motion.div
               initial={{ opacity: 0, x: 20 }}
               animate={{ opacity: 1, x: 0 }}
@@ -247,7 +142,7 @@ export function Navbar() {
               whileTap={{ scale: 0.95 }}
             >
               <Link
-                href={process.env.NEXT_PUBLIC_GITHUB_URL || "#"}
+                href='https://github.com/PalPaxAI'
                 target="_blank"
                 className="inline-flex items-center justify-center bg-white/70 text-gray-800 px-5 py-2 text-body font-normal border border-gray-200 rounded-full transition-colors hover:bg-white"
               >
@@ -311,7 +206,6 @@ export function Navbar() {
               >
                 <Link
                   href="/"
-                  // onClick={(e) => handleNavClick(e, "home")}
                   className="block py-2 text-body font-normal text-gray-900 hover:text-gray-600"
                 >
                   Home
@@ -321,18 +215,6 @@ export function Navbar() {
                 initial={{ opacity: 0, x: -20 }}
                 animate={{ opacity: 1, x: 0 }}
                 transition={{ duration: 0.3, delay: 0.15 }}
-              >
-                <Link
-                  href="/marketplace"
-                  className="block py-2 text-body font-normal text-gray-900 hover:text-gray-600"
-                >
-                  Marketplace
-                </Link>
-              </motion.div>
-              <motion.div
-                initial={{ opacity: 0, x: -20 }}
-                animate={{ opacity: 1, x: 0 }}
-                transition={{ duration: 0.3, delay: 0.2 }}
               >
                 <Link
                   href="/dashboard"
@@ -348,49 +230,12 @@ export function Navbar() {
               >
                 <Link
                   href="/features"
-                  // onClick={(e) => handleNavClick(e, "features")}
                   className="block py-2 text-body font-normal text-gray-900 hover:text-gray-600"
                 >
                   Features
                 </Link>
               </motion.div>
               <div className="pt-4 flex flex-col space-y-2">
-                {/* Mobile Wallet Button */}
-                {!connected ? (
-                  <motion.div
-                    initial={{ opacity: 0, y: 20 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    transition={{ duration: 0.3, delay: 0.3 }}
-                  >
-                    <button
-                      onClick={handleConnect}
-                      className="inline-flex items-center justify-center bg-midnight text-white px-5 py-2 text-body font-semibold border border-midnight rounded-full transition-colors hover:bg-midnight/90 w-full"
-                    >
-                      <Wallet className="w-4 h-4 mr-2" />
-                      Connect Wallet
-                    </button>
-                  </motion.div>
-                ) : (
-                  <motion.div
-                    initial={{ opacity: 0, y: 20 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    transition={{ duration: 0.3, delay: 0.3 }}
-                    className="space-y-2"
-                  >
-                    <div className="bg-green-50 border border-green-200 rounded-full px-4 py-2 flex items-center justify-center space-x-2">
-                      <div className="w-2 h-2 bg-green-500 rounded-full"></div>
-                      <span className="text-sm font-medium text-green-700">
-                        {publicKey?.toString().substring(0, 4)}...{publicKey?.toString().slice(-4)}
-                      </span>
-                    </div>
-                    <button
-                      onClick={handleDisconnect}
-                      className="inline-flex items-center justify-center bg-white/70 text-gray-800 px-5 py-2 text-body font-normal border border-gray-200 rounded-full transition-colors hover:bg-white w-full"
-                    >
-                      Disconnect
-                    </button>
-                  </motion.div>
-                )}
                 <motion.div
                   initial={{ opacity: 0, y: 20 }}
                   animate={{ opacity: 1, y: 0 }}

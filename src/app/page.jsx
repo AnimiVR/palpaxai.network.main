@@ -15,12 +15,12 @@ export default function Page() {
       <AnimatedBackground />
       <div className="relative z-10">
         <Navbar />
-      <Header />
-      <X402Protocol />
-      <Features />
-      <AgentMarketplace />
-      <CallToAction />
-      <Footer />
+        <Header />
+        <X402Protocol />
+        <Features />
+        <AgentMarketplace />
+        <CallToAction />
+        <Footer />
       </div>
     </div>
   );

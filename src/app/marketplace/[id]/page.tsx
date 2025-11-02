@@ -29,10 +29,6 @@ import {
   Tag,
   TrendingUp,
 } from "lucide-react";
-import { useWallet } from "@solana/wallet-adapter-react";
-import { useFaremeterPayment } from "@/hooks/useFaremeterPayment";
-import { useState } from "react";
-import { Loader2 } from "lucide-react";
 
 // Generate random prices below 0.1 SOL (0.01 to 0.099)
 const randomPrices = [
@@ -276,53 +272,20 @@ const mockServices = [
 export default function ServiceDetailPage() {
   const params = useParams();
   const router = useRouter();
-  const { connected } = useWallet();
   const serviceId = params?.id as string;
-  const { processPayment, isProcessing, error } = useFaremeterPayment();
-  const [paymentSuccess, setPaymentSuccess] = useState(false);
-  const [transactionSignature, setTransactionSignature] = useState<string | null>(null);
 
   const service = mockServices.find((s) => s.id === serviceId);
 
   const handleHireAgent = async () => {
-    if (!connected) {
-      alert("⚠️ Please connect your Phantom wallet first!");
-      return;
-    }
-
     if (!service) return;
 
     const confirmHire = confirm(
-      `Hire ${service.title}?\n\nPrice: ${service.price}\nSeller: ${service.seller}\n\nContinue?`
+      `View ${service.title}?\n\nPrice: ${service.price}\nSeller: ${service.seller}\n\nContinue?`
     );
 
     if (!confirmHire) return;
-
-    try {
-      const result = await processPayment(
-        service.id,
-        service.title,
-        service.price,
-        service.seller
-      );
-
-      if (result.success && result.signature) {
-        setPaymentSuccess(true);
-        setTransactionSignature(result.signature);
-        alert(
-          `✅ Payment successful!\n\n` +
-          `Agent: ${service.title}\n` +
-          `Price: ${service.price}\n` +
-          `Transaction: ${result.signature.substring(0, 8)}...${result.signature.substring(result.signature.length - 8)}\n\n` +
-          `View on Solana Explorer: https://solscan.io/tx/${result.signature}`
-        );
-      } else {
-        alert(`❌ Payment failed: ${result.error || "Unknown error"}`);
-      }
-    } catch (err: unknown) {
-      const errorMessage = err instanceof Error ? err.message : "Unknown error";
-      alert(`❌ Payment error: ${errorMessage}`);
-    }
+    
+    alert(`Feature temporarily disabled. Service details will be shown here.`);
   };
 
   if (!service) {
@@ -415,21 +378,11 @@ export default function ServiceDetailPage() {
                   <p className="text-blue-200 text-sm mb-6">One-time payment</p>
                   <Button
                     size="lg"
-                    className="bg-white text-midnight hover:bg-gray-100 w-full md:w-auto px-8 py-6 text-lg font-semibold disabled:opacity-50 disabled:cursor-not-allowed"
+                    className="bg-white text-midnight hover:bg-gray-100 w-full md:w-auto px-8 py-6 text-lg font-semibold"
                     onClick={handleHireAgent}
-                    disabled={isProcessing || !connected}
                   >
-                    {isProcessing ? (
-                      <>
-                        <Loader2 className="mr-2 h-5 w-5 animate-spin" />
-                        Processing...
-                      </>
-                    ) : (
-                      <>
-                        <Wallet className="mr-2 h-5 w-5" />
-                        Hire Now
-                      </>
-                    )}
+                    <Wallet className="mr-2 h-5 w-5" />
+                    View Details
                   </Button>
                 </div>
               </div>
@@ -592,38 +545,12 @@ export default function ServiceDetailPage() {
                     </div>
                     <Button
                       size="lg"
-                      className="w-full bg-midnight hover:bg-midnight/90 text-white font-semibold disabled:opacity-50 disabled:cursor-not-allowed"
+                      className="w-full bg-midnight hover:bg-midnight/90 text-white font-semibold"
                       onClick={handleHireAgent}
-                      disabled={isProcessing || !connected}
                     >
-                      {isProcessing ? (
-                        <>
-                          <Loader2 className="mr-2 h-5 w-5 animate-spin" />
-                          Processing...
-                        </>
-                      ) : (
-                        <>
-                          <Wallet className="mr-2 h-5 w-5" />
-                          Hire Agent
-                        </>
-                      )}
+                      <Wallet className="mr-2 h-5 w-5" />
+                      View Details
                     </Button>
-                    {error && (
-                      <p className="text-sm text-red-500 mt-2 text-center">{error}</p>
-                    )}
-                    {paymentSuccess && transactionSignature && (
-                      <div className="mt-4 p-3 bg-green-50 border border-green-200 rounded-lg">
-                        <p className="text-sm text-green-800 font-semibold mb-1">✅ Payment Successful!</p>
-                        <a
-                          href={`https://solscan.io/tx/${transactionSignature}`}
-                          target="_blank"
-                          rel="noopener noreferrer"
-                          className="text-xs text-green-600 hover:underline break-all"
-                        >
-                          View Transaction: {transactionSignature.substring(0, 16)}...
-                        </a>
-                      </div>
-                    )}
                   </div>
                 </CardContent>
               </Card>

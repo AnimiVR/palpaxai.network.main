@@ -6,16 +6,40 @@ import { Card, CardContent } from "@/components/ui/card";
 import { motion } from "framer-motion";
 import React from "react";
 import { useWallet } from "@solana/wallet-adapter-react";
+import { useWalletModal } from "@solana/wallet-adapter-react-ui";
 import { Wallet, CheckCircle, ArrowRight, Zap, Shield, Globe, Download } from "lucide-react";
 
 export function ConnectWallet() {
-  const { wallet, connect, disconnect, connected, publicKey } = useWallet();
+  const { wallet, select, wallets, connect, disconnect, connected, publicKey } = useWallet();
+  const { setVisible } = useWalletModal();
 
-  const handleConnect = () => {
+  const handleConnect = async () => {
     if (!connected) {
-      connect().catch((err) => {
-        console.error("Failed to connect wallet:", err);
-      });
+      try {
+        // Show wallet selection modal
+        if (setVisible) {
+          setVisible(true);
+        } else {
+          // Fallback: try to connect directly if wallet is available
+          if (wallets && wallets.length > 0) {
+            // Try Phantom first if available
+            const phantomWallet = wallets.find(w => w.adapter.name === 'Phantom');
+            if (phantomWallet) {
+              select(phantomWallet.adapter.name);
+              await connect();
+            } else if (wallet && wallet.adapter) {
+              await connect();
+            } else {
+              alert("Please install a Solana wallet extension (Phantom, Solflare, etc.) to connect.");
+            }
+          } else {
+            alert("Please install a Solana wallet extension (Phantom, Solflare, etc.) to connect.");
+          }
+        }
+      } catch (err) {
+        console.error("Failed to open wallet modal:", err);
+        alert("Please install a Solana wallet extension (Phantom, Solflare, etc.) to connect.");
+      }
     }
   };
 
@@ -110,7 +134,12 @@ export function ConnectWallet() {
                         Connect Wallet
                       </Button>
 
-                      <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
+                      <a
+                        href="https://phantom.app/"
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="block bg-blue-50 border border-blue-200 rounded-lg p-4 hover:bg-blue-100 transition-colors"
+                      >
                         <div className="flex items-start gap-3">
                           <Download className="w-5 h-5 text-blue-600 flex-shrink-0 mt-0.5" />
                           <div>
@@ -122,7 +151,7 @@ export function ConnectWallet() {
                             </p>
                           </div>
                         </div>
-                      </div>
+                      </a>
                     </div>
                   </>
                 ) : (

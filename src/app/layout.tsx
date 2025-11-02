@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import "./globals.css";
-import { SolanaWalletProvider } from "@/components/WalletProvider";
 import { Chatbot } from "@/components/shared/Chatbot";
+import { ThemeProvider } from "@/contexts/theme-context";
 
 export const metadata: Metadata = {
   title: "PalPaxAI - Payments for the AI Age",
@@ -44,10 +44,10 @@ export default function RootLayout({
         <meta name="color-scheme" content="light" />
       </head>
       <body className="">
-        <SolanaWalletProvider>
+        <ThemeProvider>
           {children}
           <Chatbot />
-        </SolanaWalletProvider>
+        </ThemeProvider>
       </body>
     </html>
   );

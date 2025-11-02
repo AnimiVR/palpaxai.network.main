@@ -27,9 +27,6 @@ import {
 } from "lucide-react";
 import { Navbar } from "@/components/layout/Navbar";
 import { Footer } from "@/components/layout/Footer";
-import { useWallet } from "@solana/wallet-adapter-react";
-import { useFaremeterPayment } from "@/hooks/useFaremeterPayment";
-import { Loader2 } from "lucide-react";
 
 // Generate random prices below 0.1 SOL (0.01 to 0.099)
 const randomPrices = [
@@ -247,17 +244,9 @@ export default function MarketplacePage() {
   const [filteredServices, setFilteredServices] = useState(mockServices);
   const [favorites, setFavorites] = useState<string[]>([]);
   
-  const { connected } = useWallet();
-  const { processPayment, isProcessing } = useFaremeterPayment();
-
   const handleHireFromMarketplace = async (service: typeof mockServices[0]) => {
-    if (!connected) {
-      alert("⚠️ Please connect your Phantom wallet first!\n\nClick the 'Connect Wallet' button in the navigation bar.");
-      return;
-    }
-
     const confirmHire = confirm(
-      `Hire ${service.title}?\n\n` +
+      `View ${service.title}?\n\n` +
       `Price: ${service.price}\n` +
       `Seller: ${service.seller}\n` +
       `Delivery: ${service.timeToComplete}\n\n` +
@@ -265,30 +254,8 @@ export default function MarketplacePage() {
     );
 
     if (!confirmHire) return;
-
-    try {
-      const result = await processPayment(
-        service.id,
-        service.title,
-        service.price,
-        service.seller
-      );
-
-      if (result.success && result.signature) {
-        alert(
-          `✅ Payment successful!\n\n` +
-          `Agent: ${service.title}\n` +
-          `Price: ${service.price}\n` +
-          `Transaction: ${result.signature.substring(0, 8)}...${result.signature.substring(result.signature.length - 8)}\n\n` +
-          `View on Solana Explorer: https://solscan.io/tx/${result.signature}`
-        );
-      } else {
-        alert(`❌ Payment failed: ${result.error || "Unknown error"}`);
-      }
-    } catch (err: unknown) {
-      const errorMessage = err instanceof Error ? err.message : "Unknown error";
-      alert(`❌ Payment error: ${errorMessage}`);
-    }
+    
+    alert(`Feature temporarily disabled. Service details will be shown here.`);
   };
 
   // Toggle favorite
@@ -729,24 +696,14 @@ export default function MarketplacePage() {
                         Details
                       </Button>
                       <Button
-                        className="flex-1 bg-midnight hover:bg-midnight/90 transition-all duration-200 font-semibold text-white text-sm h-9 shadow-sm disabled:opacity-50 disabled:cursor-not-allowed"
+                        className="flex-1 bg-midnight hover:bg-midnight/90 transition-all duration-200 font-semibold text-white text-sm h-9 shadow-sm"
                         onClick={(e) => {
                           e.stopPropagation();
                           handleHireFromMarketplace(service);
                         }}
-                        disabled={isProcessing || !connected}
                       >
-                        {isProcessing ? (
-                          <>
-                            <Loader2 className="mr-1.5 h-3.5 w-3.5 animate-spin" />
-                            Processing...
-                          </>
-                        ) : (
-                          <>
-                            <Wallet className="mr-1.5 h-3.5 w-3.5" />
-                            Hire
-                          </>
-                        )}
+                        <Wallet className="mr-1.5 h-3.5 w-3.5" />
+                        View Details
                       </Button>
                     </CardFooter>
                   </Card>
