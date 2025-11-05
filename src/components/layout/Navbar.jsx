@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect } from "react";
 import Link from "next/link";
-import { Menu, X, Github } from "lucide-react";
+import { Menu, X, Github, LayoutDashboard } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import Image from "next/image";
 
@@ -99,18 +99,6 @@ export function Navbar() {
               transition={{ duration: 0.4, delay: 0.25 }}
             >
               <Link
-                href="/dashboard"
-                className="text-body font-normal text-gray-700 hover:text-gray-900 transition-colors"
-              >
-                Dashboard
-              </Link>
-            </motion.div>
-            <motion.div
-              initial={{ opacity: 0, y: -10 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.4, delay: 0.35 }}
-            >
-              <Link
                 href="/features"
                 className="text-body font-normal text-gray-700 hover:text-gray-900 transition-colors"
               >
@@ -134,6 +122,21 @@ export function Navbar() {
 
           {/* CTA Buttons */}
           <div className="hidden md:flex items-center space-x-3">
+            <motion.div
+              initial={{ opacity: 0, x: 20 }}
+              animate={{ opacity: 1, x: 0 }}
+              transition={{ duration: 0.4, delay: 0.4 }}
+              whileHover={{ scale: 1.05 }}
+              whileTap={{ scale: 0.95 }}
+            >
+              <Link
+                href="/dashboard"
+                className="inline-flex items-center justify-center bg-gradient-to-r from-purple-600 via-blue-600 to-indigo-600 text-white px-5 py-2 text-body font-normal rounded-full transition-all duration-300 hover:from-purple-700 hover:via-blue-700 hover:to-indigo-700 hover:shadow-lg shadow-purple-500/50"
+              >
+                <LayoutDashboard className="w-4 h-4 mr-2" />
+                Launch App
+              </Link>
+            </motion.div>
             <motion.div
               initial={{ opacity: 0, x: 20 }}
               animate={{ opacity: 1, x: 0 }}
@@ -214,19 +217,7 @@ export function Navbar() {
               <motion.div
                 initial={{ opacity: 0, x: -20 }}
                 animate={{ opacity: 1, x: 0 }}
-                transition={{ duration: 0.3, delay: 0.15 }}
-              >
-                <Link
-                  href="/dashboard"
-                  className="block py-2 text-body font-normal text-gray-900 hover:text-gray-600"
-                >
-                  Dashboard
-                </Link>
-              </motion.div>
-              <motion.div
-                initial={{ opacity: 0, x: -20 }}
-                animate={{ opacity: 1, x: 0 }}
-                transition={{ duration: 0.3, delay: 0.25 }}
+                transition={{ duration: 0.3, delay: 0.2 }}
               >
                 <Link
                   href="/features"
@@ -236,6 +227,19 @@ export function Navbar() {
                 </Link>
               </motion.div>
               <div className="pt-4 flex flex-col space-y-2">
+                <motion.div
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ duration: 0.3, delay: 0.3 }}
+                >
+                  <Link
+                    href="/dashboard"
+                    className="inline-flex items-center justify-center bg-gradient-to-r from-purple-600 via-blue-600 to-indigo-600 text-white px-5 py-2 text-body font-normal rounded-full transition-all duration-300 hover:from-purple-700 hover:via-blue-700 hover:to-indigo-700 hover:shadow-lg shadow-purple-500/50 w-full"
+                  >
+                    <LayoutDashboard className="w-4 h-4 mr-2" />
+                    Launch App
+                  </Link>
+                </motion.div>
                 <motion.div
                   initial={{ opacity: 0, y: 20 }}
                   animate={{ opacity: 1, y: 0 }}

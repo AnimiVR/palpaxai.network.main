@@ -1,6 +1,7 @@
 "use client"
 
 import { useState } from "react"
+import Link from "next/link"
 import {
   ChevronDown,
   Download,
@@ -11,6 +12,7 @@ import {
   Trash2,
   UserPlus,
   Users,
+  Wallet,
 } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
@@ -27,80 +29,29 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
+import { usePhantomWallet } from "@/hooks/usePhantomWallet"
 
-// Sample client data
-const clients = [
-  {
-    id: 1,
-    name: "Olivia Martin",
-    email: "olivia.martin@email.com",
-    image: "/diverse-group-city.png",
-    status: "active",
-    spent: 19.99,
-    orders: 12,
-    lastOrder: "2025-01-15",
-    location: "New York, USA",
-  },
-  {
-    id: 2,
-    name: "Jackson Lee",
-    email: "jackson.lee@email.com",
-    image: "/thoughtful-portrait.png",
-    status: "active",
-    spent: 45.99,
-    orders: 24,
-    lastOrder: "2025-01-10",
-    location: "San Francisco, USA",
-  },
-  {
-    id: 3,
-    name: "Isabella Nguyen",
-    email: "isabella.nguyen@email.com",
-    image: "/diverse-group-chatting.png",
-    status: "inactive",
-    spent: 6.99,
-    orders: 4,
-    lastOrder: "2024-12-05",
-    location: "Chicago, USA",
-  },
-  {
-    id: 4,
-    name: "William Chen",
-    email: "william.chen@email.com",
-    image: "/team-brainstorm.png",
-    status: "active",
-    spent: 27.99,
-    orders: 18,
-    lastOrder: "2025-01-12",
-    location: "Toronto, Canada",
-  },
-  {
-    id: 5,
-    name: "Sofia Rodriguez",
-    email: "sofia.rodriguez@email.com",
-    image: "/diverse-group-city.png",
-    status: "active",
-    spent: 12.49,
-    orders: 9,
-    lastOrder: "2025-01-08",
-    location: "Miami, USA",
-  },
-  {
-    id: 6,
-    name: "Ethan Johnson",
-    email: "ethan.johnson@email.com",
-    image: "/thoughtful-portrait.png",
-    status: "inactive",
-    spent: 4.99,
-    orders: 3,
-    lastOrder: "2024-11-22",
-    location: "London, UK",
-  },
-]
+// Empty client data - only show data when wallet is connected
+const clients: Array<{
+  id: number
+  name: string
+  email: string
+  image: string
+  status: "active" | "inactive"
+  spent: number
+  orders: number
+  lastOrder: string
+  location: string
+}> = []
 
 export default function ClientsContent() {
   const [selectedTab, setSelectedTab] = useState("all")
   const [searchQuery, setSearchQuery] = useState("")
+  const { connected, connect, isConnecting } = usePhantomWallet()
+
+  const handleConnectWallet = () => {
+    connect()
+  }
 
   // Filter clients based on tab and search query
   const filteredClients = clients.filter((client) => {
@@ -121,6 +72,41 @@ export default function ClientsContent() {
     return true
   })
 
+  // If not connected, show connect wallet screen
+  if (!connected) {
+    return (
+      <>
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between mb-4 sm:mb-6 gap-2 sm:gap-0">
+          <div>
+            <h1 className="text-xl sm:text-2xl font-bold">Clients</h1>
+            <p className="text-gray-500 text-sm sm:text-base">Connect your wallet to manage your clients</p>
+          </div>
+        </div>
+
+        <Card className="border-2 border-dashed">
+          <CardContent className="flex flex-col items-center justify-center py-16">
+            <div className="rounded-full bg-blue-100 dark:bg-blue-900 p-4 mb-4">
+              <Wallet className="h-12 w-12 text-blue-600 dark:text-blue-400" />
+            </div>
+            <h2 className="text-2xl font-semibold mb-2">Connect Your Wallet</h2>
+            <p className="text-gray-500 dark:text-gray-400 text-center mb-6 max-w-md">
+              Connect your wallet to view and manage your clients on PalPaxAI
+            </p>
+            <Button
+              onClick={handleConnectWallet}
+              size="lg"
+              className="bg-blue-600 hover:bg-blue-700"
+              disabled={isConnecting}
+            >
+              <Wallet className="mr-2 h-5 w-5" />
+              {isConnecting ? "Connecting..." : "Connect Wallet"}
+            </Button>
+          </CardContent>
+        </Card>
+      </>
+    )
+  }
+
   return (
     <>
       <div className="flex flex-col sm:flex-row sm:items-center justify-between mb-4 sm:mb-6 gap-2 sm:gap-0">
@@ -129,9 +115,11 @@ export default function ClientsContent() {
           <p className="text-gray-500 text-sm sm:text-base">Manage your client relationships</p>
         </div>
         <div className="flex gap-2">
-          <Button variant="outline" className="gap-2 text-xs sm:text-sm h-8 sm:h-10">
-            <Download size={14} className="sm:size-16" />
-            Export
+          <Button variant="outline" className="gap-2 text-xs sm:text-sm h-8 sm:h-10" asChild>
+            <Link href="/">
+              <Download size={14} className="sm:size-16" />
+              Export
+            </Link>
           </Button>
           <Button className="gap-2 bg-gray-900 hover:bg-black text-white text-xs sm:text-sm h-8 sm:h-10">
             <UserPlus size={14} className="sm:size-16" />

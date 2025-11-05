@@ -27,6 +27,10 @@ import {
 } from "lucide-react";
 import { Navbar } from "@/components/layout/Navbar";
 import { Footer } from "@/components/layout/Footer";
+import { HireConfirmationModal } from "@/components/marketplace/HireConfirmationModal";
+import { PaymentResultModal } from "@/components/marketplace/PaymentResultModal";
+import { WalletRequiredModal } from "@/components/marketplace/WalletRequiredModal";
+import { usePhantomWallet } from "@/hooks/usePhantomWallet";
 
 // Generate random prices below 0.1 SOL (0.01 to 0.099)
 const randomPrices = [
@@ -239,23 +243,78 @@ export default function MarketplacePage() {
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedCategory, setSelectedCategory] = useState("All");
   const [sortBy, setSortBy] = useState("Newest");
+  const [hireModalOpen, setHireModalOpen] = useState(false);
+  const [selectedService, setSelectedService] = useState<typeof mockServices[0] | null>(null);
+  const [isProcessing, setIsProcessing] = useState(false);
+  const [walletRequiredModalOpen, setWalletRequiredModalOpen] = useState(false);
+  const [paymentResultModalOpen, setPaymentResultModalOpen] = useState(false);
+  const [paymentResult, setPaymentResult] = useState<{
+    type: 'success' | 'error'
+    title: string
+    message: string
+    signature?: string
+  } | null>(null);
+  
+  const { connected, connect } = usePhantomWallet();
   const [showOnlyAvailable, setShowOnlyAvailable] = useState(false);
   const [showOnlyVerified, setShowOnlyVerified] = useState(false);
   const [filteredServices, setFilteredServices] = useState(mockServices);
   const [favorites, setFavorites] = useState<string[]>([]);
   
   const handleHireFromMarketplace = async (service: typeof mockServices[0]) => {
-    const confirmHire = confirm(
-      `View ${service.title}?\n\n` +
-      `Price: ${service.price}\n` +
-      `Seller: ${service.seller}\n` +
-      `Delivery: ${service.timeToComplete}\n\n` +
-      `Continue?`
-    );
-
-    if (!confirmHire) return;
+    setSelectedService(service);
     
-    alert(`Feature temporarily disabled. Service details will be shown here.`);
+    // Nếu chưa connect wallet, hiển thị modal yêu cầu connect
+    if (!connected) {
+      setWalletRequiredModalOpen(true);
+      return;
+    }
+    
+    // Nếu đã connect, hiển thị confirmation modal
+    setHireModalOpen(true);
+  };
+
+  const handleConfirmHire = async () => {
+    if (!selectedService) return;
+    
+    // Mặc định thành công nếu đã connect wallet
+    if (connected) {
+      setIsProcessing(true);
+      
+      // Simulate processing delay
+      await new Promise(resolve => setTimeout(resolve, 1000));
+      
+      setHireModalOpen(false);
+      
+      // Show success modal
+      setPaymentResult({
+        type: 'success',
+        title: 'Payment Successful!',
+        message: `Agent ${selectedService.title} has been hired successfully.`,
+        // Generate a mock transaction signature for demo
+        signature: 'mock_tx_' + Math.random().toString(36).substring(2, 15) + Math.random().toString(36).substring(2, 15),
+      });
+      
+      setPaymentResultModalOpen(true);
+      setSelectedService(null);
+      setIsProcessing(false);
+    } else {
+      // Nếu chưa connect, hiển thị modal yêu cầu connect
+      setWalletRequiredModalOpen(true);
+    }
+  };
+
+  const handleCancelHire = () => {
+    setHireModalOpen(false);
+    setSelectedService(null);
+  };
+
+  const handleConnectWallet = async () => {
+    await connect();
+  };
+
+  const handleGoToDashboard = () => {
+    router.push('/dashboard');
   };
 
   // Toggle favorite
@@ -699,11 +758,11 @@ export default function MarketplacePage() {
                         className="flex-1 bg-midnight hover:bg-midnight/90 transition-all duration-200 font-semibold text-white text-sm h-9 shadow-sm"
                         onClick={(e) => {
                           e.stopPropagation();
-                          handleHireFromMarketplace(service);
+                          router.push(`/marketplace/${service.id}`);
                         }}
                       >
                         <Wallet className="mr-1.5 h-3.5 w-3.5" />
-                        View Details
+                        Hire Now
                       </Button>
                     </CardFooter>
                   </Card>
@@ -751,6 +810,44 @@ export default function MarketplacePage() {
       </section>
       
       <Footer />
+
+      {/* Hire Confirmation Modal */}
+      {selectedService && (
+        <HireConfirmationModal
+          open={hireModalOpen}
+          onOpenChange={setHireModalOpen}
+          service={{
+            title: selectedService.title,
+            price: selectedService.price,
+            seller: selectedService.seller,
+            timeToComplete: selectedService.timeToComplete,
+            category: selectedService.category,
+          }}
+          onConfirm={handleConfirmHire}
+          onCancel={handleCancelHire}
+          isLoading={isProcessing}
+        />
+      )}
+
+      {/* Payment Result Modal */}
+      {paymentResult && (
+        <PaymentResultModal
+          open={paymentResultModalOpen}
+          onOpenChange={setPaymentResultModalOpen}
+          type={paymentResult.type}
+          title={paymentResult.title}
+          message={paymentResult.message}
+          transactionSignature={paymentResult.signature}
+        />
+      )}
+
+      {/* Wallet Required Modal */}
+      <WalletRequiredModal
+        open={walletRequiredModalOpen}
+        onOpenChange={setWalletRequiredModalOpen}
+        onConnectWallet={handleConnectWallet}
+        onGoToDashboard={handleGoToDashboard}
+      />
     </div>
   );
 }

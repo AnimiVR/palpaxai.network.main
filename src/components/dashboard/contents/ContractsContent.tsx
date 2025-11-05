@@ -2,7 +2,6 @@
 
 import { useState } from "react"
 import {
-  Calendar,
   CheckCircle2,
   Circle,
   Clock,
@@ -33,6 +32,11 @@ import {
 } from "@/components/ui/dialog"
 import { Textarea } from "@/components/ui/textarea"
 
+// Generate random price below 1 SOL (0.01 to 0.99)
+const generateRandomPrice = () => {
+  return Math.random() * 0.98 + 0.01 // Random between 0.01 and 0.99
+}
+
 // Sample data for contracts
 const initialContracts = [
   {
@@ -41,9 +45,8 @@ const initialContracts = [
     description: "Develop and deploy an AI chatbot service for customer support",
     status: "in-progress",
     priority: "high",
-    dueDate: "2025-01-15",
     client: "Tech Corp",
-    amount: "50 SOL",
+    amount: generateRandomPrice(),
     tags: ["AI", "Development"],
   },
   {
@@ -52,9 +55,8 @@ const initialContracts = [
     description: "Integration of payment API with existing system",
     status: "todo",
     priority: "critical",
-    dueDate: "2025-01-10",
     client: "Finance Inc",
-    amount: "25 SOL",
+    amount: generateRandomPrice(),
     tags: ["API", "Integration"],
   },
   {
@@ -63,9 +65,8 @@ const initialContracts = [
     description: "Create analytics dashboard with real-time data visualization",
     status: "completed",
     priority: "medium",
-    dueDate: "2024-12-05",
     client: "Data Solutions",
-    amount: "75 SOL",
+    amount: generateRandomPrice(),
     tags: ["Analytics", "Dashboard"],
   },
   {
@@ -74,9 +75,8 @@ const initialContracts = [
     description: "Build API service for automated content generation",
     status: "todo",
     priority: "low",
-    dueDate: "2025-01-20",
     client: "Media Group",
-    amount: "40 SOL",
+    amount: generateRandomPrice(),
     tags: ["API", "Content"],
   },
 ]
@@ -85,14 +85,21 @@ export default function ContractsContent() {
   const [contracts, setContracts] = useState(initialContracts)
   const [selectedTab, setSelectedTab] = useState("all")
   const [isAddContractOpen, setIsAddContractOpen] = useState(false)
-  const [newContract, setNewContract] = useState({
+  const [newContract, setNewContract] = useState<{
+    title: string
+    description: string
+    status: string
+    priority: string
+    client: string
+    amount: number
+    tags: string[]
+  }>({
     title: "",
     description: "",
     status: "todo",
     priority: "medium",
-    dueDate: "",
     client: "",
-    amount: "",
+    amount: 0,
     tags: [],
   })
   const [tagInput, setTagInput] = useState("")
@@ -115,9 +122,8 @@ export default function ContractsContent() {
       description: "",
       status: "todo",
       priority: "medium",
-      dueDate: "",
       client: "",
-      amount: "",
+      amount: 0,
       tags: [],
     })
   }
@@ -255,29 +261,16 @@ export default function ContractsContent() {
                     </Select>
                   </div>
                 </div>
-                <div className="grid grid-cols-2 gap-4">
-                  <div className="grid gap-2">
-                    <label htmlFor="dueDate" className="text-sm font-medium">
-                      Due Date
-                    </label>
-                    <Input
-                      id="dueDate"
-                      type="date"
-                      value={newContract.dueDate}
-                      onChange={(e) => setNewContract({ ...newContract, dueDate: e.target.value })}
-                    />
-                  </div>
-                  <div className="grid gap-2">
-                    <label htmlFor="client" className="text-sm font-medium">
-                      Client
-                    </label>
-                    <Input
-                      id="client"
-                      value={newContract.client}
-                      onChange={(e) => setNewContract({ ...newContract, client: e.target.value })}
-                      placeholder="Client name"
-                    />
-                  </div>
+                <div className="grid gap-2">
+                  <label htmlFor="client" className="text-sm font-medium">
+                    Client
+                  </label>
+                  <Input
+                    id="client"
+                    value={newContract.client}
+                    onChange={(e) => setNewContract({ ...newContract, client: e.target.value })}
+                    placeholder="Client name"
+                  />
                 </div>
                 <div className="grid gap-2">
                   <label htmlFor="amount" className="text-sm font-medium">
@@ -285,8 +278,12 @@ export default function ContractsContent() {
                   </label>
                   <Input
                     id="amount"
+                    type="number"
+                    step="0.01"
+                    min="0.01"
+                    max="0.99"
                     value={newContract.amount}
-                    onChange={(e) => setNewContract({ ...newContract, amount: e.target.value })}
+                    onChange={(e) => setNewContract({ ...newContract, amount: parseFloat(e.target.value) || 0 })}
                     placeholder="0.00"
                   />
                 </div>
@@ -391,11 +388,7 @@ export default function ContractsContent() {
                         </div>
                         <div className="flex items-center gap-1">
                           <DollarSign size={14} />
-                          Amount: {contract.amount}
-                        </div>
-                        <div className="flex items-center gap-1">
-                          <Calendar size={14} />
-                          Due: {new Date(contract.dueDate).toLocaleDateString()}
+                          Amount: {typeof contract.amount === 'number' ? contract.amount.toFixed(2) : contract.amount} SOL
                         </div>
                       </div>
                     </div>

@@ -26,8 +26,12 @@ import {
   CardTitle,
 } from "@/components/ui/card"
 import { Input } from "@/components/ui/input"
-import { useWallet } from "@solana/wallet-adapter-react"
+import { usePhantomWallet } from "@/hooks/usePhantomWallet"
 import { useFaremeterPayment } from "@/hooks/useFaremeterPayment"
+import { HireConfirmationModal } from "@/components/marketplace/HireConfirmationModal"
+import { PaymentResultModal } from "@/components/marketplace/PaymentResultModal"
+import { WalletRequiredModal } from "@/components/marketplace/WalletRequiredModal"
+import { useToast } from "@/hooks/use-toast"
 
 // Generate random prices below 0.1 SOL (0.01 to 0.099)
 const randomPrices = [
@@ -253,44 +257,76 @@ export default function MarketplaceContent() {
   const [showOnlyVerified, setShowOnlyVerified] = useState(false)
   const [filteredServices, setFilteredServices] = useState(mockServices)
   const [favorites, setFavorites] = useState<string[]>([])
+  const [hireModalOpen, setHireModalOpen] = useState(false)
+  const [selectedService, setSelectedService] = useState<(typeof mockServices)[0] | null>(null)
+  const [paymentResultModalOpen, setPaymentResultModalOpen] = useState(false)
+  const [paymentResult, setPaymentResult] = useState<{
+    type: 'success' | 'error'
+    title: string
+    message: string
+    signature?: string
+  } | null>(null)
+  const [walletRequiredModalOpen, setWalletRequiredModalOpen] = useState(false)
+  const [isProcessing, setIsProcessing] = useState(false)
 
-  const { connected } = useWallet()
-  const { processPayment, isProcessing } = useFaremeterPayment()
+  const { connected, connect } = usePhantomWallet()
+  const { processPayment } = useFaremeterPayment()
+  const { toast } = useToast()
 
   const handleHireFromMarketplace = async (service: (typeof mockServices)[0]) => {
+    setSelectedService(service)
+    
+    // Nếu chưa connect wallet, hiển thị modal yêu cầu connect
     if (!connected) {
-      alert("⚠️ Please connect your wallet first!\n\nClick the 'Connect Wallet' button.")
+      setWalletRequiredModalOpen(true)
       return
     }
+    
+    // Nếu đã connect, hiển thị confirmation modal
+    setHireModalOpen(true)
+  }
 
-    const confirmHire = confirm(
-      `Hire ${service.title}?\n\n` +
-        `Price: ${service.price}\n` +
-        `Seller: ${service.seller}\n` +
-        `Delivery: ${service.timeToComplete}\n\n` +
-        `Continue?`,
-    )
+  const handleConfirmHire = async () => {
+    if (!selectedService) return
 
-    if (!confirmHire) return
-
-    try {
-      const result = await processPayment(service.id, service.title, service.price, service.seller)
-
-      if (result.success && result.signature) {
-        alert(
-          `✅ Payment successful!\n\n` +
-            `Agent: ${service.title}\n` +
-            `Price: ${service.price}\n` +
-            `Transaction: ${result.signature.substring(0, 8)}...${result.signature.substring(result.signature.length - 8)}\n\n` +
-            `View on Solana Explorer: https://solscan.io/tx/${result.signature}`,
-        )
-      } else {
-        alert(`❌ Payment failed: ${result.error || "Unknown error"}`)
-      }
-    } catch (err: unknown) {
-      const errorMessage = err instanceof Error ? err.message : "Unknown error"
-      alert(`❌ Payment error: ${errorMessage}`)
+    // Mặc định thành công nếu đã connect wallet
+    if (connected) {
+      setIsProcessing(true)
+      
+      // Simulate processing delay
+      await new Promise(resolve => setTimeout(resolve, 1000))
+      
+      setHireModalOpen(false)
+      
+      // Show success modal
+      setPaymentResult({
+        type: 'success',
+        title: 'Payment Successful!',
+        message: `Agent ${selectedService.title} has been hired successfully.`,
+        // Generate a mock transaction signature for demo
+        signature: 'mock_tx_' + Math.random().toString(36).substring(2, 15) + Math.random().toString(36).substring(2, 15),
+      })
+      
+      setPaymentResultModalOpen(true)
+      setSelectedService(null)
+      setIsProcessing(false)
+    } else {
+      // Nếu chưa connect, hiển thị modal yêu cầu connect
+      setWalletRequiredModalOpen(true)
     }
+  }
+
+  const handleConnectWallet = async () => {
+    await connect()
+  }
+
+  const handleGoToDashboard = () => {
+    router.push('/dashboard')
+  }
+
+  const handleCancelHire = () => {
+    setHireModalOpen(false)
+    setSelectedService(null)
   }
 
   // Toggle favorite
@@ -650,6 +686,44 @@ export default function MarketplaceContent() {
           ))}
         </div>
       )}
+
+      {/* Hire Confirmation Modal */}
+      {selectedService && (
+        <HireConfirmationModal
+          open={hireModalOpen}
+          onOpenChange={setHireModalOpen}
+          service={{
+            title: selectedService.title,
+            price: selectedService.price,
+            seller: selectedService.seller,
+            timeToComplete: selectedService.timeToComplete,
+            category: selectedService.category,
+          }}
+          onConfirm={handleConfirmHire}
+          onCancel={handleCancelHire}
+          isLoading={isProcessing}
+        />
+      )}
+
+      {/* Payment Result Modal */}
+      {paymentResult && (
+        <PaymentResultModal
+          open={paymentResultModalOpen}
+          onOpenChange={setPaymentResultModalOpen}
+          type={paymentResult.type}
+          title={paymentResult.title}
+          message={paymentResult.message}
+          transactionSignature={paymentResult.signature}
+        />
+      )}
+
+      {/* Wallet Required Modal */}
+      <WalletRequiredModal
+        open={walletRequiredModalOpen}
+        onOpenChange={setWalletRequiredModalOpen}
+        onConnectWallet={handleConnectWallet}
+        onGoToDashboard={handleGoToDashboard}
+      />
     </>
   )
 }

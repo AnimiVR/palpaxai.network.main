@@ -12,6 +12,7 @@
   ],
   "host_permissions": [
     "https://*.PalPaxAI.xyz/*",
+    "https://*.palpaxai.network/*",
     "https://*.solana.com/*",
     "https://api.coingecko.com/*",
     "http://localhost/*",

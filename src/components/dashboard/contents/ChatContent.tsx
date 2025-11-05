@@ -34,72 +34,65 @@ const initialChatHistory = [
   },
 ]
 
-// Sample conversation data
-const initialConversation = [
-  {
+// Initial greeting message
+const getInitialGreeting = () => {
+  const hour = new Date().getHours()
+  let greeting = "Hello"
+  
+  if (hour < 12) {
+    greeting = "Good morning"
+  } else if (hour < 18) {
+    greeting = "Good afternoon"
+  } else {
+    greeting = "Good evening"
+  }
+  
+  return {
     id: 1,
-    role: "user",
-    content: "How can I create a new AI agent service on PalPaxAI?",
-    timestamp: new Date(Date.now() - 1000 * 60 * 10),
-  },
-  {
-    id: 2,
-    role: "assistant",
-    content: `To create a new AI agent service on PalPaxAI:
+    role: "assistant" as const,
+    content: `${greeting}! 👋 I'm PalPaxAI Assistant. I can help you with:\n\n• AI services on PalPaxAI\n• Solana payments\n• Creating and managing AI agents\n• Payment gateway integration\n• Dashboard usage guide\n\nWhat would you like to know more about?`,
+    timestamp: new Date(),
+  }
+}
 
-1. Navigate to **My Services** from the dashboard
-2. Click **Add Service** button
-3. Fill in the service details:
-   - Service name and description
-   - Select service type (AI Agent or API Service)
-   - Set pricing in SOL
-   - Configure capabilities and parameters
-
-4. Publish your service to make it available in the marketplace
-
-Would you like help with any specific step?`,
-    timestamp: new Date(Date.now() - 1000 * 60 * 9),
-  },
-]
+// Conversation will start with greeting message in component
 
 // Available AI models
 const aiModels = [
   {
-    id: "gpt-4o",
-    name: "GPT-4o",
-    provider: "OpenAI",
-    icon: "✨",
+    id: "huggingface",
+    name: "AI Assistant",
+    provider: "Hugging Face",
+    icon: "🤖",
     apiKey: "",
-    baseUrl: "https://api.openai.com/v1",
+    baseUrl: "",
     temperature: 0.7,
-    maxTokens: 4096,
-    configured: false,
-  },
-  {
-    id: "claude-3",
-    name: "Claude 3",
-    provider: "Anthropic",
-    icon: "🧠",
-    apiKey: "",
-    baseUrl: "https://api.anthropic.com/v1",
-    temperature: 0.5,
-    maxTokens: 4000,
-    configured: false,
+    maxTokens: 512,
+    configured: true,
   },
 ]
 
 export default function ChatContent() {
   const [chatHistory] = useState(initialChatHistory)
-  const [conversation, setConversation] = useState(initialConversation)
+  const [conversation, setConversation] = useState<Array<{
+    id: number
+    role: "user" | "assistant"
+    content: string
+    timestamp: Date
+  }>>(() => [getInitialGreeting()])
   const [message, setMessage] = useState("")
   const [models] = useState(aiModels)
-  const [selectedModelId, setSelectedModelId] = useState(aiModels[0].id)
+  const [selectedModelId, setSelectedModelId] = useState("huggingface")
   const [isGenerating, setIsGenerating] = useState(false)
   const [showHistory, setShowHistory] = useState(true)
   const messagesEndRef = useRef<HTMLDivElement>(null)
   const textareaRef = useRef<HTMLTextAreaElement>(null)
 
-  const selectedModel = models.find((model) => model.id === selectedModelId) || models[0]
+  const selectedModel = models.find((model) => model.id === selectedModelId) || {
+    id: "huggingface",
+    name: "AI Assistant",
+    icon: "🤖",
+  }
 
   useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" })
@@ -112,29 +105,72 @@ export default function ChatContent() {
     }
   }, [message])
 
-  const handleSendMessage = () => {
-    if (!message.trim()) return
+  const handleSendMessage = async () => {
+    if (!message.trim() || isGenerating) return
 
+    const userMessage = message.trim()
     const newUserMessage = {
       id: conversation.length + 1,
-      role: "user",
-      content: message,
+      role: "user" as const,
+      content: userMessage,
       timestamp: new Date(),
     }
-    setConversation([...conversation, newUserMessage])
+    
+    setConversation((prev) => [...prev, newUserMessage])
     setMessage("")
-
     setIsGenerating(true)
-    setTimeout(() => {
+
+    try {
+      // Prepare messages for API (last 10 messages for context)
+      const recentMessages = [...conversation, newUserMessage]
+        .slice(-10)
+        .map((msg) => ({
+          role: msg.role,
+          content: msg.content,
+        }))
+
+      // Call AI API
+      const response = await fetch('/api/chat', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          messages: recentMessages,
+          model: selectedModelId,
+        }),
+      })
+
+      if (!response.ok) {
+        throw new Error('Failed to get AI response')
+      }
+
+      const data = await response.json()
+      const aiContent = data.content || "Sorry, I'm unable to answer this question right now. Please try again later."
+
       const newAiMessage = {
         id: conversation.length + 2,
-        role: "assistant",
-        content: `This is a simulated response from ${selectedModel.name}. In a real application, this would connect to your AI service.`,
+        role: "assistant" as const,
+        content: aiContent,
         timestamp: new Date(),
       }
+
       setConversation((prev) => [...prev, newAiMessage])
+    } catch (error) {
+      console.error('Error calling AI API:', error)
+      
+      // Fallback response
+      const newAiMessage = {
+        id: conversation.length + 2,
+        role: "assistant" as const,
+        content: "Sorry, there was an error connecting to the AI. Please try again later or ask a different question. I can help you with PalPaxAI services, Solana payments, or creating AI agents.",
+        timestamp: new Date(),
+      }
+      
+      setConversation((prev) => [...prev, newAiMessage])
+    } finally {
       setIsGenerating(false)
-    }, 1500)
+    }
   }
 
   const handleKeyDown = (e: React.KeyboardEvent<HTMLTextAreaElement>) => {

@@ -1,35 +1,58 @@
 // Content script - runs on all web pages
 
 // Inject a bridge script to allow page scripts to communicate with extension
+// Use chrome.scripting.executeScript from background script to avoid CSP issues
 function injectBridge() {
-  // Check if already injected
-  if (document.getElementById('__PalPaxAI_extension_bridge')) return;
+  // Check if already injected (check in page context via postMessage)
+  // Request background script to inject if needed
+  chrome.runtime.sendMessage({
+    action: 'injectPageScript',
+    tabId: null // Will be determined by background script
+  }).catch(() => {
+    // Background script may not be ready, try direct injection as fallback
+    // Only inject on PalPaxAI domains where we control the CSP
+    if (window.location.hostname.includes('palpaxai.network') || 
+        window.location.hostname.includes('PalPaxAI.xyz') ||
+        window.location.hostname.includes('localhost')) {
+      tryDirectInjection();
+    }
+  });
+}
+
+// Direct injection fallback (only for trusted domains)
+function tryDirectInjection() {
+  if (window.__PalPaxAIExtensionBridge) return;
   
-  // Inject script into page context (not content script context)
-  const script = document.createElement('script');
-  script.id = '__PalPaxAI_extension_bridge';
-  script.textContent = `
-    (function() {
-      if (window.__PalPaxAIExtensionBridge) {
-        console.log('PalPaxAI Extension: Bridge already exists');
-        return;
-      }
-      
-      window.__PalPaxAIExtensionBridge = {
-        syncWalletState: function(connected, address) {
-          console.log('PalPaxAI Extension Bridge: syncWalletState called', { connected, address });
-          window.postMessage({
-            type: '__PalPaxAI_EXTENSION_SYNC_WALLET',
-            connected: connected,
-            address: address
-          }, '*');
-        }
-      };
-      console.log('PalPaxAI Extension: Bridge injected successfully');
-    })();
-  `;
-  (document.head || document.documentElement).appendChild(script);
-  script.remove();
+  try {
+    const script = document.createElement('script');
+    script.id = '__PalPaxAI_extension_bridge';
+    
+    const bridgeCode = `
+      (function() {
+        if (window.__PalPaxAIExtensionBridge) return;
+        window.__PalPaxAIExtensionBridge = {
+          syncWalletState: function(connected, address) {
+            window.postMessage({
+              type: '__PalPaxAI_EXTENSION_SYNC_WALLET',
+              connected: connected,
+              address: address
+            }, '*');
+          }
+        };
+      })();
+    `;
+    
+    // Use data URI to avoid inline script CSP issues
+    const dataUri = 'data:text/javascript;charset=utf-8,' + encodeURIComponent(bridgeCode);
+    script.src = dataUri;
+    
+    const container = document.head || document.documentElement;
+    container.insertBefore(script, container.firstChild);
+    script.remove();
+  } catch (error) {
+    // Silently fail - bridge injection is optional
+    console.debug('PalPaxAI Extension: Bridge injection failed (non-critical)');
+  }
 }
 
 // Inject immediately if DOM is ready
@@ -62,7 +85,7 @@ window.addEventListener('message', (event) => {
 });
 
 // Inject PalPaxAI quick access button on non-PalPaxAI pages
-if (!window.location.hostname.includes('PalPaxAI.xyz')) {
+if (!window.location.hostname.includes('palpaxai.network') && !window.location.hostname.includes('PalPaxAI.xyz')) {
   // Could add a floating button or notification here
   // For now, just console log for debugging
   console.log('PalPaxAI Extension: Content script loaded');

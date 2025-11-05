@@ -19,6 +19,14 @@ import { Label } from "@/components/ui/label"
 const integrations = [
   {
     id: 1,
+    name: "PalPaxAI x402",
+    description: "Internet-native payment protocol for instant micro-transactions on Solana",
+    status: "connected",
+    icon: "⚡",
+    category: "Payment",
+  },
+  {
+    id: 2,
     name: "Solana Wallet",
     description: "Connect your Solana wallet for seamless transactions",
     status: "connected",
@@ -26,7 +34,7 @@ const integrations = [
     category: "Payment",
   },
   {
-    id: 2,
+    id: 3,
     name: "Stripe API",
     description: "Accept payments via Stripe",
     status: "available",
@@ -34,7 +42,7 @@ const integrations = [
     category: "Payment",
   },
   {
-    id: 3,
+    id: 4,
     name: "Webhook Integration",
     description: "Set up webhooks for real-time notifications",
     status: "available",
@@ -42,7 +50,7 @@ const integrations = [
     category: "Notifications",
   },
   {
-    id: 4,
+    id: 5,
     name: "Analytics API",
     description: "Integrate with analytics platforms",
     status: "available",
@@ -120,20 +128,53 @@ export default function IntegrationContent() {
 
       {/* Integration Configuration Dialog */}
       <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
-        <DialogContent>
+        <DialogContent className="sm:max-w-[500px]">
           <DialogHeader>
             <DialogTitle>Configure {selectedIntegration?.name}</DialogTitle>
             <DialogDescription>Set up your {selectedIntegration?.name} integration settings</DialogDescription>
           </DialogHeader>
           <div className="space-y-4 py-4">
-            <div className="space-y-2">
-              <Label htmlFor="api-key">API Key</Label>
-              <Input id="api-key" placeholder="Enter your API key" />
-            </div>
-            <div className="space-y-2">
-              <Label htmlFor="api-secret">API Secret</Label>
-              <Input id="api-secret" type="password" placeholder="Enter your API secret" />
-            </div>
+            {selectedIntegration?.name === "PalPaxAI x402" ? (
+              <>
+                <div className="space-y-2">
+                  <Label htmlFor="facilitator-url">Facilitator URL</Label>
+                  <Input 
+                    id="facilitator-url" 
+                    placeholder="https://facilitator.payai.network" 
+                    defaultValue="https://facilitator.payai.network"
+                  />
+                  <p className="text-xs text-gray-500">x402 facilitator service endpoint</p>
+                </div>
+                <div className="space-y-2">
+                  <Label htmlFor="network">Network</Label>
+                  <Input 
+                    id="network" 
+                    placeholder="solana" 
+                    defaultValue="solana"
+                  />
+                  <p className="text-xs text-gray-500">Blockchain network (solana, base, etc.)</p>
+                </div>
+                <div className="space-y-2">
+                  <Label htmlFor="receive-address">Receive Payments Address</Label>
+                  <Input 
+                    id="receive-address" 
+                    placeholder="Enter your Solana address" 
+                  />
+                  <p className="text-xs text-gray-500">Address to receive payments</p>
+                </div>
+              </>
+            ) : (
+              <>
+                <div className="space-y-2">
+                  <Label htmlFor="api-key">API Key</Label>
+                  <Input id="api-key" placeholder="Enter your API key" />
+                </div>
+                <div className="space-y-2">
+                  <Label htmlFor="api-secret">API Secret</Label>
+                  <Input id="api-secret" type="password" placeholder="Enter your API secret" />
+                </div>
+              </>
+            )}
           </div>
           <DialogFooter>
             <Button variant="outline" onClick={() => setIsDialogOpen(false)}>

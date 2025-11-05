@@ -6,56 +6,56 @@ import { Badge } from "@/components/ui/badge"
 
 const performanceMetrics = [
   {
-    name: "Response Time",
-    value: "120ms",
-    target: "100ms",
-    progress: 85,
-    status: "good",
-  },
-  {
-    name: "Uptime",
-    value: "99.9%",
-    target: "99.95%",
+    name: "Payment Success Rate",
+    value: "99.8%",
+    target: "99.5%",
     progress: 99,
     status: "excellent",
   },
   {
-    name: "Success Rate",
-    value: "98.5%",
-    target: "99%",
-    progress: 97,
+    name: "Avg Payment Time",
+    value: "0.8s",
+    target: "1.0s",
+    progress: 95,
+    status: "excellent",
+  },
+  {
+    name: "Total Payments (24h)",
+    value: "12,842",
+    target: "15,000",
+    progress: 86,
     status: "good",
   },
   {
-    name: "Throughput",
-    value: "1,234 req/s",
-    target: "1,500 req/s",
-    progress: 82,
-    status: "good",
+    name: "Network Uptime",
+    value: "99.99%",
+    target: "99.95%",
+    progress: 99,
+    status: "excellent",
   },
 ]
 
 const servicePerformance = [
   {
-    name: "AI Chatbot Service",
-    requests: 12543,
-    successRate: 99.2,
-    avgResponseTime: "145ms",
+    name: "PalPaxAI x402 Protocol",
+    requests: 12842,
+    successRate: 99.8,
+    avgResponseTime: "0.8s",
     status: "excellent",
   },
   {
-    name: "Content Generation API",
+    name: "Solana Network",
     requests: 8934,
-    successRate: 98.1,
-    avgResponseTime: "234ms",
-    status: "good",
+    successRate: 99.5,
+    avgResponseTime: "0.6s",
+    status: "excellent",
   },
   {
-    name: "Data Analysis Service",
+    name: "Facilitator Service",
     requests: 5672,
-    successRate: 97.5,
-    avgResponseTime: "1.2s",
-    status: "warning",
+    successRate: 98.9,
+    avgResponseTime: "0.9s",
+    status: "good",
   },
 ]
 
@@ -64,8 +64,8 @@ export default function PerformanceContent() {
     <>
       <div className="flex flex-col sm:flex-row sm:items-center justify-between mb-4 sm:mb-6 gap-2 sm:gap-0">
         <div>
-          <h1 className="text-xl sm:text-2xl font-bold">Performance</h1>
-          <p className="text-gray-500 text-sm sm:text-base">Monitor and optimize your service performance</p>
+          <h1 className="text-xl sm:text-2xl font-bold">PalPaxAI x402 Performance</h1>
+          <p className="text-gray-500 text-sm sm:text-base">Monitor x402 protocol performance and payment metrics</p>
         </div>
       </div>
 
@@ -98,11 +98,11 @@ export default function PerformanceContent() {
         ))}
       </div>
 
-      {/* Service Performance Table */}
+      {/* x402 Protocol Performance */}
       <Card>
         <CardHeader>
-          <CardTitle>Service Performance</CardTitle>
-          <CardDescription>Real-time performance metrics for your services</CardDescription>
+          <CardTitle>x402 Protocol Performance</CardTitle>
+          <CardDescription>Real-time metrics for PalPaxAI x402 payment protocol</CardDescription>
         </CardHeader>
         <CardContent>
           <div className="space-y-4">

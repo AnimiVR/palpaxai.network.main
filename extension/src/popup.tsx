@@ -115,6 +115,103 @@ const History = () => (
   </svg>
 );
 
+const LayoutDashboard = () => (
+  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+    <rect x="3" y="3" width="7" height="7" rx="1" />
+    <rect x="14" y="3" width="7" height="7" rx="1" />
+    <rect x="14" y="14" width="7" height="7" rx="1" />
+    <rect x="3" y="14" width="7" height="7" rx="1" />
+  </svg>
+);
+
+const Briefcase = () => (
+  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+    <rect x="2" y="7" width="20" height="14" rx="2" ry="2" />
+    <path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16" />
+  </svg>
+);
+
+const FileText = () => (
+  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+    <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" />
+    <polyline points="14 2 14 8 20 8" />
+    <line x1="16" y1="13" x2="8" y2="13" />
+    <line x1="16" y1="17" x2="8" y2="17" />
+    <polyline points="10 9 9 9 8 9" />
+  </svg>
+);
+
+const MessageSquare = () => (
+  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+    <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z" />
+  </svg>
+);
+
+const Wallet = () => (
+  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+    <path d="M21 12V7H5a2 2 0 0 1 0-4h14v4" />
+    <path d="M3 5v14a2 2 0 0 0 2 2h16v-5" />
+    <path d="M18 12a2 2 0 0 0 0 4h4v-4Z" />
+  </svg>
+);
+
+const Activity = () => (
+  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+    <polyline points="22 12 18 12 15 21 9 3 6 12 2 12" />
+  </svg>
+);
+
+const Plug = () => (
+  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+    <path d="M12 22v-5" />
+    <path d="M9 7V2" />
+    <path d="M15 7V2" />
+    <path d="M6 13V8a4 4 0 0 1 4-4h4a4 4 0 0 1 4 4v5" />
+    <rect x="2" y="13" width="20" height="5" rx="2" />
+  </svg>
+);
+
+const Settings = () => (
+  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+    <circle cx="12" cy="12" r="3" />
+    <path d="M12 1v6m0 6v6m9-9h-6m-6 0H3m15.364 6.364l-4.243-4.243m-4.242 0L5.636 17.364M18.364 6.636l-4.243 4.243m-4.242 0L5.636 6.636" />
+  </svg>
+);
+
+const Twitter = () => (
+  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+    <path d="M22 4s-.7 2.1-2 3.4c1.6 10-9.4 17.3-18 11.6 2.2.1 4.4-.6 6-2C3 15.5.5 9.6 3 5c2.2 2.6 5.6 4.1 9 4-.9-4.2 4-6.6 7-3.8 1.1 0 3-1.2 3-1.2z" />
+  </svg>
+);
+
+const Send = () => (
+  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+    <line x1="22" y1="2" x2="11" y2="13" />
+    <polygon points="22 2 15 22 11 13 2 9 22 2" />
+  </svg>
+);
+
+const ArrowDown = () => (
+  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+    <line x1="12" y1="5" x2="12" y2="19" />
+    <polyline points="19 12 12 19 5 12" />
+  </svg>
+);
+
+const Copy = () => (
+  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+    <rect x="9" y="9" width="13" height="13" rx="2" ry="2" />
+    <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1" />
+  </svg>
+);
+
+const CheckCircle = () => (
+  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+    <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14" />
+    <polyline points="22 4 12 14.01 9 11.01" />
+  </svg>
+);
+
 // Interfaces
 interface Stats {
   totalAgents: number;
@@ -175,11 +272,18 @@ const recentTransactions: Transaction[] = [
   { id: 'tx3', agent: 'Content Writing Agent', amount: '0.2 SOL', status: 'pending', time: '1 day ago' },
 ];
 
+type TabType = 'home' | 'marketplace' | 'dashboard' | 'services' | 'analytics' | 'contracts' | 'clients' | 'chat' | 'wallet' | 'performance' | 'integrations' | 'settings';
+
 function Popup() {
-  const [activeTab, setActiveTab] = useState<'home' | 'marketplace'>('home');
+  const [activeTab, setActiveTab] = useState<TabType>('home');
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
-  const [baseUrl, setBaseUrl] = useState<string>('https://PalPaxAI.xyz');
+  const [baseUrl, setBaseUrl] = useState<string>('https://palpaxai.network');
+  const dashboardUrl = 'https://palpaxai.network/dashboard';
+  const [walletConnected, setWalletConnected] = useState(false);
+  const [walletAddress, setWalletAddress] = useState<string>('');
+  const [walletBalance, setWalletBalance] = useState<string>('0.0000');
+  const [copied, setCopied] = useState(false);
   const [stats, setStats] = useState<Stats>({
     totalAgents: 234,
     totalTransactions: 1247,
@@ -201,6 +305,7 @@ function Popup() {
   useEffect(() => {
     loadStats();
     fetchSolPrice();
+    loadWalletStatus();
     
     const priceInterval = setInterval(fetchSolPrice, 30000);
     const timeInterval = setInterval(() => {
@@ -215,17 +320,19 @@ function Popup() {
           const url = new URL(tabs[0].url);
           const host = url.host.toLowerCase();
           // If user is already on PalPaxAI domain, use it; if on localhost dev, map to that; otherwise default to production
-          if (host.includes('PalPaxAI.xyz')) {
-            setBaseUrl('https://PalPaxAI.xyz');
+          if (host.includes('palpaxai.network')) {
+            setBaseUrl('https://palpaxai.network');
+          } else if (host.includes('PalPaxAI.xyz')) {
+            setBaseUrl('https://palpaxai.network');
           } else if (host.includes('localhost:3000') || host.includes('127.0.0.1:3000')) {
             setBaseUrl('http://localhost:3000');
           } else if (host.includes('localhost:3001') || host.includes('127.0.0.1:3001')) {
             setBaseUrl('http://localhost:3001');
           } else {
-            setBaseUrl('https://PalPaxAI.xyz');
+            setBaseUrl('https://palpaxai.network');
           }
         } catch {
-          setBaseUrl('https://PalPaxAI.xyz');
+          setBaseUrl('https://palpaxai.network');
         }
       }
     });
@@ -235,6 +342,61 @@ function Popup() {
       clearInterval(timeInterval);
     };
   }, []);
+
+  const loadWalletStatus = () => {
+    chrome.runtime.sendMessage({ action: 'getWalletStatus' }, (response) => {
+      if (response) {
+        setWalletConnected(response.connected || false);
+        setWalletAddress(response.address || '');
+      }
+    });
+  };
+
+  const handleConnectWallet = async () => {
+    chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {
+      if (tabs[0] && tabs[0].id) {
+        chrome.tabs.sendMessage(tabs[0].id, { action: 'connectWallet' }, (response) => {
+          if (response?.success) {
+            setWalletConnected(true);
+            setWalletAddress(response.publicKey || '');
+            chrome.runtime.sendMessage({
+              action: 'updateWalletStatus',
+              connected: true,
+              address: response.publicKey || ''
+            });
+          } else if (response?.error) {
+            // If error, try to open wallet installation
+            chrome.runtime.sendMessage({ action: 'openPhantomInstall' });
+          }
+        });
+      }
+    });
+  };
+
+  const handleDisconnectWallet = () => {
+    chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {
+      if (tabs[0] && tabs[0].id) {
+        chrome.tabs.sendMessage(tabs[0].id, { action: 'disconnectWallet' }, () => {
+          setWalletConnected(false);
+          setWalletAddress('');
+          chrome.runtime.sendMessage({ action: 'clearWalletStatus' });
+        });
+      } else {
+        // If no active tab, just clear storage
+        setWalletConnected(false);
+        setWalletAddress('');
+        chrome.runtime.sendMessage({ action: 'clearWalletStatus' });
+      }
+    });
+  };
+
+  const handleCopyAddress = () => {
+    if (walletAddress) {
+      navigator.clipboard.writeText(walletAddress);
+      setCopied(true);
+      setTimeout(() => setCopied(false), 2000);
+    }
+  };
 
   useEffect(() => {
     if (solPrice.lastUpdate) {
@@ -356,7 +518,7 @@ function Popup() {
           </div>
           <button
             className="external-link-btn"
-            onClick={() => handleQuickAction('https://PalPaxAI.xyz')}
+            onClick={() => handleQuickAction('https://palpaxai.network')}
             title="Open PalPaxAI Website"
           >
             <ExternalLink />
@@ -365,17 +527,35 @@ function Popup() {
         <div className="header-accent"></div>
       </div>
 
-      <div className="tabs-container">
-        {(['home', 'marketplace'] as const).map((tab) => (
-          <button
-            key={tab}
-            className={`tab-button ${activeTab === tab ? 'active' : ''}`}
-            onClick={() => setActiveTab(tab)}
-          >
-            <span>{tab}</span>
-            {activeTab === tab && <div className="tab-indicator"></div>}
-          </button>
-        ))}
+      <div className="tabs-container scrollable-tabs">
+        {([
+          { id: 'home', label: 'Home', icon: LayoutDashboard },
+          { id: 'dashboard', label: 'Dashboard', icon: LayoutDashboard },
+          { id: 'marketplace', label: 'Marketplace', icon: Search },
+          { id: 'services', label: 'Services', icon: Briefcase },
+          { id: 'analytics', label: 'Analytics', icon: BarChart3 },
+          { id: 'contracts', label: 'Contracts', icon: FileText },
+          { id: 'clients', label: 'Clients', icon: Users },
+          { id: 'chat', label: 'Chat', icon: MessageSquare },
+          { id: 'wallet', label: 'Wallet', icon: Wallet },
+          { id: 'performance', label: 'Performance', icon: Activity },
+          { id: 'integrations', label: 'Integrations', icon: Plug },
+          { id: 'settings', label: 'Settings', icon: Settings },
+        ] as const).map((tab) => {
+          const Icon = tab.icon;
+          return (
+            <button
+              key={tab.id}
+              className={`tab-button ${activeTab === tab.id ? 'active' : ''}`}
+              onClick={() => setActiveTab(tab.id as TabType)}
+              title={tab.label}
+            >
+              <Icon />
+              <span className="tab-label">{tab.label}</span>
+              {activeTab === tab.id && <div className="tab-indicator"></div>}
+            </button>
+          );
+        })}
       </div>
 
       <div className="content-area">
@@ -513,7 +693,7 @@ function Popup() {
               </div>
               <button 
                 className="view-transactions-btn"
-                onClick={() => handleQuickAction(`${baseUrl}/dashboard`)}
+                onClick={() => handleQuickAction(dashboardUrl)}
               >
                 View All Transactions
                 <ExternalLink />
@@ -528,10 +708,10 @@ function Popup() {
               </div>
               <div className="actions-list">
                 {[
-                  { icon: TrendingUp, title: 'Dashboard', desc: 'View your activity', path: '/dashboard', gradient: 'linear-gradient(135deg, #3b82f6 0%, #2563eb 100%)' },
+                  { icon: TrendingUp, title: 'Dashboard', desc: 'View your activity', path: dashboardUrl, gradient: 'linear-gradient(135deg, #3b82f6 0%, #2563eb 100%)' },
                   { icon: Search, title: 'Browse Marketplace', desc: 'Find AI agents', path: '/marketplace', gradient: 'linear-gradient(135deg, #6366f1 0%, #4f46e5 100%)' },
                 ].map((action, idx) => {
-                  const url = `${baseUrl}${action.path}`;
+                  const url = action.path.startsWith('http') ? action.path : `${baseUrl}${action.path}`;
                   return (
                     <button
                       key={idx}
@@ -689,6 +869,331 @@ function Popup() {
                 ))}
               </div>
             </div>
+          </div>
+        )}
+
+        {/* Dashboard Tab */}
+        {activeTab === 'dashboard' && (
+          <div className="tab-content">
+            <div className="stats-grid compact">
+              <div className="stat-card">
+                <div className="stat-icon-wrapper" style={{ background: 'linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%)' }}>
+                  <TrendingUp />
+                </div>
+                <div className="stat-value">$12,345</div>
+                <div className="stat-label">Revenue</div>
+              </div>
+              <div className="stat-card">
+                <div className="stat-icon-wrapper" style={{ background: 'linear-gradient(135deg, #3b82f6 0%, #06b6d4 100%)' }}>
+                  <Briefcase />
+                </div>
+                <div className="stat-value">24</div>
+                <div className="stat-label">Services</div>
+              </div>
+              <div className="stat-card">
+                <div className="stat-icon-wrapper" style={{ background: 'linear-gradient(135deg, #10b981 0%, #059669 100%)' }}>
+                  <Users />
+                </div>
+                <div className="stat-value">156</div>
+                <div className="stat-label">Clients</div>
+              </div>
+            </div>
+            <button className="full-width-btn" onClick={() => handleQuickAction(dashboardUrl)}>
+              Open Full Dashboard <ExternalLink />
+            </button>
+          </div>
+        )}
+
+        {/* Services Tab */}
+        {activeTab === 'services' && (
+          <div className="tab-content">
+            <div className="section-header">
+              <Briefcase />
+              <h3>My Services</h3>
+            </div>
+            <div className="compact-list">
+              {[
+                { id: 1, title: 'Service 1', price: '0.05 SOL', status: 'Active' },
+                { id: 2, title: 'Service 2', price: '0.03 SOL', status: 'Active' },
+                { id: 3, title: 'Service 3', price: '0.07 SOL', status: 'Active' },
+              ].map((service) => (
+                <div key={service.id} className="compact-item">
+                  <div className="item-info">
+                    <span className="item-title">{service.title}</span>
+                    <span className="item-meta">{service.price} • {service.status}</span>
+                  </div>
+                </div>
+              ))}
+            </div>
+            <button className="full-width-btn" onClick={() => handleQuickAction(`${dashboardUrl}/services`)}>
+              Manage All Services <ExternalLink />
+            </button>
+          </div>
+        )}
+
+        {/* Analytics Tab */}
+        {activeTab === 'analytics' && (
+          <div className="tab-content">
+            {!walletConnected ? (
+              <div className="connect-prompt">
+                <Wallet />
+                <h3>Connect Your Wallet</h3>
+                <p>Connect your wallet to view analytics</p>
+                <button className="primary-btn" onClick={handleConnectWallet}>
+                  Connect Wallet
+                </button>
+              </div>
+            ) : (
+              <>
+                <div className="stats-grid compact">
+                  <div className="stat-card">
+                    <div className="stat-value">$0</div>
+                    <div className="stat-label">Revenue</div>
+                  </div>
+                  <div className="stat-card">
+                    <div className="stat-value">0</div>
+                    <div className="stat-label">Transactions</div>
+                  </div>
+                  <div className="stat-card">
+                    <div className="stat-value">0</div>
+                    <div className="stat-label">Users</div>
+                  </div>
+                  <div className="stat-card">
+                    <div className="stat-value">0%</div>
+                    <div className="stat-label">Growth</div>
+                  </div>
+                </div>
+                <button className="full-width-btn" onClick={() => handleQuickAction(`${dashboardUrl}/analytics`)}>
+                  View Full Analytics <ExternalLink />
+                </button>
+              </>
+            )}
+          </div>
+        )}
+
+        {/* Contracts Tab */}
+        {activeTab === 'contracts' && (
+          <div className="tab-content">
+            <div className="section-header">
+              <FileText />
+              <h3>Contracts</h3>
+            </div>
+            <div className="compact-list">
+              {[
+                { id: 1, title: 'Contract 1', amount: '0.05 SOL', status: 'Active' },
+                { id: 2, title: 'Contract 2', amount: '0.03 SOL', status: 'Active' },
+              ].map((contract) => (
+                <div key={contract.id} className="compact-item">
+                  <div className="item-info">
+                    <span className="item-title">{contract.title}</span>
+                    <span className="item-meta">{contract.amount} • {contract.status}</span>
+                  </div>
+                </div>
+              ))}
+            </div>
+            <button className="full-width-btn" onClick={() => handleQuickAction(`${dashboardUrl}/contracts`)}>
+              Manage All Contracts <ExternalLink />
+            </button>
+          </div>
+        )}
+
+        {/* Clients Tab */}
+        {activeTab === 'clients' && (
+          <div className="tab-content">
+            {!walletConnected ? (
+              <div className="connect-prompt">
+                <Wallet />
+                <h3>Connect Your Wallet</h3>
+                <p>Connect your wallet to manage clients</p>
+                <button className="primary-btn" onClick={handleConnectWallet}>
+                  Connect Wallet
+                </button>
+              </div>
+            ) : (
+              <>
+                <div className="section-header">
+                  <Users />
+                  <h3>Clients</h3>
+                </div>
+                <div className="empty-state">
+                  <p>No clients found. Connect your wallet to get started.</p>
+                </div>
+                <button className="full-width-btn" onClick={() => handleQuickAction(`${dashboardUrl}/clients`)}>
+                  Manage All Clients <ExternalLink />
+                </button>
+              </>
+            )}
+          </div>
+        )}
+
+        {/* Chat Tab */}
+        {activeTab === 'chat' && (
+          <div className="tab-content">
+            <div className="section-header">
+              <MessageSquare />
+              <h3>AI Assistant</h3>
+            </div>
+            <div className="chat-placeholder">
+              <MessageSquare />
+              <p>Start a conversation</p>
+            </div>
+            <button className="primary-btn full-width-btn" onClick={() => handleQuickAction(`${dashboardUrl}/chat`)}>
+              Open Full Chat <ExternalLink />
+            </button>
+          </div>
+        )}
+
+        {/* Wallet Tab */}
+        {activeTab === 'wallet' && (
+          <div className="tab-content">
+            {!walletConnected || !walletAddress ? (
+              <div className="connect-prompt">
+                <Wallet />
+                <h3>Connect Your Wallet</h3>
+                <p>Connect your Solana wallet to get started</p>
+                <button className="primary-btn" onClick={handleConnectWallet}>
+                  Connect Wallet
+                </button>
+              </div>
+            ) : (
+              <>
+                <div className="wallet-info-card">
+                  <div className="wallet-balance">
+                    <span className="balance-value">{walletBalance}</span>
+                    <span className="balance-label">SOL</span>
+                  </div>
+                </div>
+                <div className="wallet-actions">
+                  <button className="wallet-action-btn" onClick={() => handleQuickAction(`${dashboardUrl}/wallet`)}>
+                    <Send />
+                    <span>Send</span>
+                  </button>
+                  <button className="wallet-action-btn" onClick={() => handleQuickAction(`${dashboardUrl}/wallet`)}>
+                    <ArrowDown />
+                    <span>Receive</span>
+                  </button>
+                </div>
+                <div className="wallet-address-card">
+                  <div className="section-header">
+                    <span>Wallet Address</span>
+                  </div>
+                  <div className="address-row">
+                    <code className="wallet-address">
+                      {walletAddress.slice(0, 8)}...{walletAddress.slice(-8)}
+                    </code>
+                    <button className="icon-btn" onClick={handleCopyAddress} title="Copy address">
+                      {copied ? <CheckCircle /> : <Copy />}
+                    </button>
+                  </div>
+                </div>
+                <button className="secondary-btn full-width-btn" onClick={handleDisconnectWallet}>
+                  Disconnect
+                </button>
+                <button className="full-width-btn" onClick={() => handleQuickAction(`${dashboardUrl}/wallet`)}>
+                  Open Full Wallet <ExternalLink />
+                </button>
+              </>
+            )}
+          </div>
+        )}
+
+        {/* Performance Tab */}
+        {activeTab === 'performance' && (
+          <div className="tab-content">
+            <div className="section-header">
+              <Activity />
+              <h3>PayAI x402 Performance</h3>
+            </div>
+            <div className="stats-grid compact">
+              <div className="stat-card">
+                <div className="stat-value">99.8%</div>
+                <div className="stat-label">Success Rate</div>
+              </div>
+              <div className="stat-card">
+                <div className="stat-value">0.8s</div>
+                <div className="stat-label">Avg Time</div>
+              </div>
+              <div className="stat-card">
+                <div className="stat-value">12,842</div>
+                <div className="stat-label">Payments (24h)</div>
+              </div>
+              <div className="stat-card">
+                <div className="stat-value">99.99%</div>
+                <div className="stat-label">Uptime</div>
+              </div>
+            </div>
+            <button className="full-width-btn" onClick={() => handleQuickAction(`${dashboardUrl}/performance`)}>
+              View Full Performance <ExternalLink />
+            </button>
+          </div>
+        )}
+
+        {/* Integrations Tab */}
+        {activeTab === 'integrations' && (
+          <div className="tab-content">
+            <div className="section-header">
+              <Plug />
+              <h3>Integrations</h3>
+            </div>
+            <div className="compact-list">
+              {[
+                { name: 'PayAI x402', status: 'connected', icon: '⚡' },
+                { name: 'Solana Wallet', status: 'connected', icon: '💰' },
+                { name: 'Stripe API', status: 'available', icon: '💳' },
+              ].map((integration, idx) => (
+                <div key={idx} className="compact-item">
+                  <span className="integration-icon">{integration.icon}</span>
+                  <div className="item-info">
+                    <span className="item-title">{integration.name}</span>
+                    <span className={`item-status ${integration.status}`}>{integration.status}</span>
+                  </div>
+                </div>
+              ))}
+            </div>
+            <button className="full-width-btn" onClick={() => handleQuickAction(`${dashboardUrl}/integrations`)}>
+              Manage All Integrations <ExternalLink />
+            </button>
+          </div>
+        )}
+
+        {/* Settings Tab */}
+        {activeTab === 'settings' && (
+          <div className="tab-content">
+            <div className="section-header">
+              <Settings />
+              <h3>Settings</h3>
+            </div>
+            <div className="compact-list">
+              {[
+                { title: 'Profile Settings', desc: 'Manage your profile' },
+                { title: 'Account Settings', desc: 'Account preferences' },
+                { title: 'Notifications', desc: 'Manage notifications' },
+              ].map((setting, idx) => (
+                <div key={idx} className="compact-item clickable" onClick={() => handleQuickAction(`${dashboardUrl}/settings`)}>
+                  <div className="item-info">
+                    <span className="item-title">{setting.title}</span>
+                    <span className="item-meta">{setting.desc}</span>
+                  </div>
+                  <ExternalLink />
+                </div>
+              ))}
+              <div 
+                className="compact-item clickable" 
+                onClick={() => handleQuickAction('https://twitter.com')}
+              >
+                <div className="item-info">
+                  <span className="item-title" style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                    <Twitter />
+                    Twitter
+                  </span>
+                  <span className="item-meta">Follow us on Twitter</span>
+                </div>
+                <ExternalLink />
+              </div>
+            </div>
+            <button className="full-width-btn" onClick={() => handleQuickAction(`${dashboardUrl}/settings`)}>
+              Open Full Settings <ExternalLink />
+            </button>
           </div>
         )}
       </div>

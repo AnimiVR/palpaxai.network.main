@@ -52,18 +52,50 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
   }
 
   if (request.action === 'openPalPaxAI') {
-    chrome.tabs.create({ url: 'https://PalPaxAI.xyz' });
+    chrome.tabs.create({ url: 'https://palpaxai.network' });
     sendResponse({ success: true });
   }
 
   if (request.action === 'openMarketplace') {
-    chrome.tabs.create({ url: 'https://PalPaxAI.xyz/marketplace' });
+    chrome.tabs.create({ url: 'https://palpaxai.network/marketplace' });
     sendResponse({ success: true });
   }
 
   if (request.action === 'openPhantomInstall') {
     chrome.tabs.create({ url: 'https://phantom.app/' });
     sendResponse({ success: true });
+  }
+
+  if (request.action === 'injectPageScript') {
+    // Inject bridge script into page context using chrome.scripting.executeScript
+    // This bypasses CSP restrictions
+    const tabId = request.tabId || sender.tab?.id;
+    
+    if (tabId) {
+      chrome.scripting.executeScript({
+        target: { tabId: tabId },
+        world: 'MAIN', // Inject into page context, not content script context
+        func: () => {
+          // This code runs in page context
+          if ((window as any).__PalPaxAIExtensionBridge) return;
+          
+          (window as any).__PalPaxAIExtensionBridge = {
+            syncWalletState: function(connected: boolean, address: string) {
+              window.postMessage({
+                type: '__PalPaxAI_EXTENSION_SYNC_WALLET',
+                connected: connected,
+                address: address
+              }, '*');
+            }
+          };
+        }
+      }).catch((error) => {
+        // Silently fail - injection is optional
+        console.debug('PalPaxAI Extension: Failed to inject page script:', error);
+      });
+    }
+    sendResponse({ success: true });
+    return true;
   }
 
   return true;

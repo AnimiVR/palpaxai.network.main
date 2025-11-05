@@ -572,24 +572,21 @@ pre {
   z-index: 9999 !important;
 }
 
+/* Wallet Adapter Modal Styles */
 .wallet-adapter-modal {
   z-index: 9999 !important;
 }
 
 .wallet-adapter-modal-overlay {
   z-index: 9998 !important;
+  background-color: rgba(0, 0, 0, 0.5) !important;
+}
+
+.wallet-adapter-modal-wrapper {
+  z-index: 9999 !important;
 }
 
 /* Ensure wallet adapter buttons are visible */
 .wallet-adapter-button {
   z-index: 1 !important;
-}
-
-/* Wallet Modal Styles - Let wallet adapter handle its own visibility */
-.wallet-adapter-modal-overlay {
-  z-index: 9998 !important;
-}
-
-.wallet-adapter-modal-wrapper {
-  z-index: 9999 !important;
 }

@@ -1,5 +1,6 @@
 "use client";
 
+import { useState } from "react";
 import { useParams, useRouter } from "next/navigation";
 import { motion } from "framer-motion";
 import { Badge } from "@/components/ui/badge";
@@ -28,7 +29,14 @@ import {
   User,
   Tag,
   TrendingUp,
+  MessageSquare,
+  ThumbsUp,
+  Globe,
 } from "lucide-react";
+import { HireConfirmationModal } from "@/components/marketplace/HireConfirmationModal";
+import { PaymentResultModal } from "@/components/marketplace/PaymentResultModal";
+import { WalletRequiredModal } from "@/components/marketplace/WalletRequiredModal";
+import { usePhantomWallet } from "@/hooks/usePhantomWallet";
 
 // Generate random prices below 0.1 SOL (0.01 to 0.099)
 const randomPrices = [
@@ -269,23 +277,114 @@ const mockServices = [
   },
 ];
 
+// Mock reviews data
+const generateReviews = (serviceId: string) => {
+  const reviewTemplates: Record<string, Array<{name: string, rating: number, comment: string, date: string, helpful: number}>> = {
+    "1": [
+      { name: "Alex Johnson", rating: 5, comment: "Excellent web development agent! Delivered a fully functional React app in just 2 days. Code quality was outstanding and the agent was very responsive.", date: "2 days ago", helpful: 24 },
+      { name: "Sarah Chen", rating: 5, comment: "This agent saved me so much time. The Next.js setup was perfect and included all the best practices. Highly recommend!", date: "1 week ago", helpful: 18 },
+      { name: "Michael Brown", rating: 4, comment: "Great service overall. The agent was professional and delivered on time. Minor issue with TypeScript configuration but was quickly resolved.", date: "2 weeks ago", helpful: 12 },
+      { name: "Emma Wilson", rating: 5, comment: "Amazing experience! The agent understood my requirements perfectly and exceeded expectations. Will definitely use again.", date: "3 weeks ago", helpful: 31 },
+      { name: "David Lee", rating: 4, comment: "Solid development work. The agent was knowledgeable about modern React patterns. Only wish it was a bit faster, but quality was top-notch.", date: "1 month ago", helpful: 9 },
+    ],
+    "2": [
+      { name: "Lisa Martinez", rating: 5, comment: "Stunning designs! The UI/UX work was professional and modern. The agent created beautiful mockups that perfectly matched my vision.", date: "3 days ago", helpful: 19 },
+      { name: "James Taylor", rating: 5, comment: "Best design agent I've used. The Figma files were well-organized and the design system was comprehensive. Absolutely worth it!", date: "1 week ago", helpful: 15 },
+      { name: "Olivia Davis", rating: 4, comment: "Great design work, though I needed a few revisions. The agent was patient and made all the changes I requested. Good value for money.", date: "2 weeks ago", helpful: 8 },
+    ],
+  };
+  return reviewTemplates[serviceId] || [
+    { name: "John Doe", rating: 5, comment: "Excellent service! Highly recommended.", date: "1 week ago", helpful: 5 },
+    { name: "Jane Smith", rating: 4, comment: "Good quality work, delivered on time.", date: "2 weeks ago", helpful: 3 },
+  ];
+};
+
+// Mock seller information
+const sellerInfo: Record<string, {name: string, rating: number, totalSales: number, memberSince: string, responseRate: string, description: string, location: string}> = {
+  "DevAI": { name: "DevAI", rating: 4.9, totalSales: 1247, memberSince: "Jan 2023", responseRate: "98%", description: "Professional development team specializing in modern web technologies.", location: "San Francisco, USA" },
+  "DesignBot": { name: "DesignBot", rating: 4.8, totalSales: 892, memberSince: "Mar 2023", responseRate: "95%", description: "Creative design agency focused on UI/UX excellence.", location: "New York, USA" },
+  "WriteAI": { name: "WriteAI", rating: 4.7, totalSales: 2103, memberSince: "Dec 2022", responseRate: "99%", description: "Content creation specialists with SEO expertise.", location: "London, UK" },
+  "AnalyticsAI": { name: "AnalyticsAI", rating: 4.9, totalSales: 567, memberSince: "Feb 2023", responseRate: "97%", description: "Data analytics experts providing actionable insights.", location: "Berlin, Germany" },
+  "SocialAI": { name: "SocialAI", rating: 4.6, totalSales: 1456, memberSince: "Nov 2022", responseRate: "96%", description: "Social media management professionals.", location: "Toronto, Canada" },
+  "TestAI": { name: "TestAI", rating: 4.8, totalSales: 789, memberSince: "Apr 2023", responseRate: "94%", description: "QA testing specialists ensuring bug-free applications.", location: "Sydney, Australia" },
+  "ChainDev": { name: "ChainDev", rating: 4.9, totalSales: 1234, memberSince: "Jan 2023", responseRate: "98%", description: "Blockchain development experts for Web3 projects.", location: "Singapore" },
+  "SEOMaster": { name: "SEOMaster", rating: 4.7, totalSales: 1567, memberSince: "Dec 2022", responseRate: "97%", description: "SEO optimization specialists improving search rankings.", location: "Mumbai, India" },
+  "VideoAI": { name: "VideoAI", rating: 4.8, totalSales: 1123, memberSince: "Mar 2023", responseRate: "95%", description: "Video editing professionals creating engaging content.", location: "Los Angeles, USA" },
+  "SupportAI": { name: "SupportAI", rating: 4.9, totalSales: 2890, memberSince: "Nov 2022", responseRate: "99%", description: "24/7 customer support solutions.", location: "Global" },
+  "DevOpsAI": { name: "DevOpsAI", rating: 4.9, totalSales: 678, memberSince: "Feb 2023", responseRate: "96%", description: "DevOps automation experts streamlining workflows.", location: "Seattle, USA" },
+  "FinanceAI": { name: "FinanceAI", rating: 4.6, totalSales: 987, memberSince: "May 2023", responseRate: "93%", description: "Financial analysis and investment advisory services.", location: "Zurich, Switzerland" },
+};
+
 export default function ServiceDetailPage() {
   const params = useParams();
   const router = useRouter();
   const serviceId = params?.id as string;
-
   const service = mockServices.find((s) => s.id === serviceId);
+  const [hireModalOpen, setHireModalOpen] = useState(false);
+  const [isProcessing, setIsProcessing] = useState(false);
+  const [walletRequiredModalOpen, setWalletRequiredModalOpen] = useState(false);
+  const [paymentResultModalOpen, setPaymentResultModalOpen] = useState(false);
+  const [paymentResult, setPaymentResult] = useState<{
+    type: 'success' | 'error'
+    title: string
+    message: string
+    signature?: string
+  } | null>(null);
+
+  const { connected, connect } = usePhantomWallet();
 
   const handleHireAgent = async () => {
     if (!service) return;
-
-    const confirmHire = confirm(
-      `View ${service.title}?\n\nPrice: ${service.price}\nSeller: ${service.seller}\n\nContinue?`
-    );
-
-    if (!confirmHire) return;
     
-    alert(`Feature temporarily disabled. Service details will be shown here.`);
+    // Nếu chưa connect wallet, hiển thị modal yêu cầu connect
+    if (!connected) {
+      setWalletRequiredModalOpen(true);
+      return;
+    }
+    
+    // Nếu đã connect, hiển thị confirmation modal
+    setHireModalOpen(true);
+  };
+
+  const handleConfirmHire = async () => {
+    if (!service) return;
+    
+    // Mặc định thành công nếu đã connect wallet
+    if (connected) {
+      setIsProcessing(true);
+      
+      // Simulate processing delay
+      await new Promise(resolve => setTimeout(resolve, 1000));
+      
+      setHireModalOpen(false);
+      
+      // Show success modal
+      setPaymentResult({
+        type: 'success',
+        title: 'Payment Successful!',
+        message: `Agent ${service.title} has been hired successfully.`,
+        // Generate a mock transaction signature for demo
+        signature: 'mock_tx_' + Math.random().toString(36).substring(2, 15) + Math.random().toString(36).substring(2, 15),
+      });
+      
+      setPaymentResultModalOpen(true);
+      setIsProcessing(false);
+    } else {
+      // Nếu chưa connect, hiển thị modal yêu cầu connect
+      setWalletRequiredModalOpen(true);
+    }
+  };
+
+  const handleCancelHire = () => {
+    setHireModalOpen(false);
+  };
+
+  const handleConnectWallet = async () => {
+    await connect();
+  };
+
+  const handleGoToDashboard = () => {
+    router.push('/dashboard');
   };
 
   if (!service) {
@@ -382,7 +481,7 @@ export default function ServiceDetailPage() {
                     onClick={handleHireAgent}
                   >
                     <Wallet className="mr-2 h-5 w-5" />
-                    View Details
+                    Hire Now
                   </Button>
                 </div>
               </div>
@@ -450,6 +549,87 @@ export default function ServiceDetailPage() {
                   </div>
                 </CardContent>
               </Card>
+
+              {/* Reviews Section */}
+              <Card className="bg-gradient-to-br from-purple-50/90 via-blue-50/80 to-indigo-50/90 border-2 border-purple-200/70 shadow-lg">
+                <CardHeader>
+                  <div className="flex items-center justify-between">
+                    <CardTitle className="flex items-center gap-2">
+                      <MessageSquare className="h-5 w-5" />
+                      Reviews ({service.reviews})
+                    </CardTitle>
+                    <div className="flex items-center gap-1">
+                      <Star className="h-5 w-5 fill-yellow-400 text-yellow-400" />
+                      <span className="font-bold text-lg">{service.rating}</span>
+                    </div>
+                  </div>
+                </CardHeader>
+                <CardContent className="space-y-6">
+                  {generateReviews(serviceId).map((review, idx) => (
+                    <div key={idx} className="border-b border-gray-200 pb-4 last:border-0 last:pb-0">
+                      <div className="flex items-start justify-between mb-2">
+                        <div>
+                          <p className="font-semibold text-midnight">{review.name}</p>
+                          <div className="flex items-center gap-2 mt-1">
+                            <div className="flex items-center">
+                              {[...Array(5)].map((_, i) => (
+                                <Star
+                                  key={i}
+                                  className={`h-4 w-4 ${
+                                    i < review.rating
+                                      ? "fill-yellow-400 text-yellow-400"
+                                      : "fill-gray-200 text-gray-200"
+                                  }`}
+                                />
+                              ))}
+                            </div>
+                            <span className="text-xs text-gray-500">{review.date}</span>
+                          </div>
+                        </div>
+                      </div>
+                      <p className="text-gray-700 mt-2 leading-relaxed">{review.comment}</p>
+                      <div className="flex items-center gap-4 mt-3">
+                        <button className="flex items-center gap-1 text-xs text-gray-500 hover:text-primary transition-colors">
+                          <ThumbsUp className="h-3 w-3" />
+                          Helpful ({review.helpful})
+                        </button>
+                      </div>
+                    </div>
+                  ))}
+                </CardContent>
+              </Card>
+
+              {/* Similar Services */}
+              <Card className="bg-gradient-to-br from-blue-50/90 via-cyan-50/80 to-indigo-50/90 border-2 border-blue-200/70 shadow-lg">
+                <CardHeader>
+                  <CardTitle>Similar Services</CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <div className="space-y-4">
+                    {mockServices
+                      .filter((s) => s.id !== serviceId && (s.category === service.category || s.seller === service.seller))
+                      .slice(0, 3)
+                      .map((similar) => (
+                        <div
+                          key={similar.id}
+                          className="flex items-start gap-3 p-3 rounded-lg border border-gray-200 hover:border-primary/50 hover:bg-white/50 transition-all cursor-pointer"
+                          onClick={() => router.push(`/marketplace/${similar.id}`)}
+                        >
+                          <div className="text-2xl flex-shrink-0">{similar.image}</div>
+                          <div className="flex-1 min-w-0">
+                            <p className="font-semibold text-sm text-midnight line-clamp-1">{similar.title}</p>
+                            <div className="flex items-center gap-2 mt-1">
+                              <Star className="h-3 w-3 fill-yellow-400 text-yellow-400" />
+                              <span className="text-xs text-gray-600">{similar.rating}</span>
+                              <span className="text-xs text-gray-400">•</span>
+                              <span className="text-xs font-semibold text-primary">{similar.price}</span>
+                            </div>
+                          </div>
+                        </div>
+                      ))}
+                  </div>
+                </CardContent>
+              </Card>
             </div>
 
             {/* Right Column - Sidebar */}
@@ -504,10 +684,10 @@ export default function ServiceDetailPage() {
                     <div className="w-12 h-12 rounded-full bg-gradient-to-br from-primary to-blue-600 flex items-center justify-center text-white text-xl font-bold">
                       {service.seller.charAt(0)}
                     </div>
-                    <div>
+                    <div className="flex-1">
                       <p className="font-semibold text-midnight">{service.seller}</p>
                       {service.verified && (
-                        <div className="flex items-center gap-1 text-xs text-primary">
+                        <div className="flex items-center gap-1 text-xs text-primary mt-1">
                           <Shield className="h-3 w-3" />
                           <span>Verified Seller</span>
                         </div>
@@ -515,23 +695,42 @@ export default function ServiceDetailPage() {
                     </div>
                   </div>
                   
-                  <div className="pt-4 border-t border-gray-200 space-y-2">
-                    <div className="flex items-center justify-between text-sm">
-                      <span className="text-gray-600">Rating</span>
-                      <span className="font-semibold text-midnight flex items-center gap-1">
-                        <Star className="h-4 w-4 fill-yellow-400 text-yellow-400" />
-                        {service.rating}
-                      </span>
-                    </div>
-                    <div className="flex items-center justify-between text-sm">
-                      <span className="text-gray-600">Reviews</span>
-                      <span className="font-semibold text-midnight">{service.reviews}</span>
-                    </div>
-                    <div className="flex items-center justify-between text-sm">
-                      <span className="text-gray-600">Location</span>
-                      <span className="font-semibold text-midnight">{service.location || "Global"}</span>
-                    </div>
-                  </div>
+                  {sellerInfo[service.seller] && (
+                    <>
+                      <p className="text-sm text-gray-600 leading-relaxed">
+                        {sellerInfo[service.seller].description}
+                      </p>
+                      
+                      <div className="pt-4 border-t border-gray-200 space-y-3">
+                        <div className="flex items-center justify-between text-sm">
+                          <span className="text-gray-600">Rating</span>
+                          <span className="font-semibold text-midnight flex items-center gap-1">
+                            <Star className="h-4 w-4 fill-yellow-400 text-yellow-400" />
+                            {sellerInfo[service.seller].rating}
+                          </span>
+                        </div>
+                        <div className="flex items-center justify-between text-sm">
+                          <span className="text-gray-600">Total Sales</span>
+                          <span className="font-semibold text-midnight">{sellerInfo[service.seller].totalSales.toLocaleString()}</span>
+                        </div>
+                        <div className="flex items-center justify-between text-sm">
+                          <span className="text-gray-600">Response Rate</span>
+                          <span className="font-semibold text-midnight">{sellerInfo[service.seller].responseRate}</span>
+                        </div>
+                        <div className="flex items-center justify-between text-sm">
+                          <span className="text-gray-600 flex items-center gap-1">
+                            <Globe className="h-3 w-3" />
+                            Location
+                          </span>
+                          <span className="font-semibold text-midnight">{sellerInfo[service.seller].location}</span>
+                        </div>
+                        <div className="flex items-center justify-between text-sm">
+                          <span className="text-gray-600">Member Since</span>
+                          <span className="font-semibold text-midnight">{sellerInfo[service.seller].memberSince}</span>
+                        </div>
+                      </div>
+                    </>
+                  )}
                 </CardContent>
               </Card>
 
@@ -549,7 +748,7 @@ export default function ServiceDetailPage() {
                       onClick={handleHireAgent}
                     >
                       <Wallet className="mr-2 h-5 w-5" />
-                      View Details
+                      Hire Now
                     </Button>
                   </div>
                 </CardContent>
@@ -560,6 +759,44 @@ export default function ServiceDetailPage() {
       </section>
 
       <Footer />
+
+      {/* Hire Confirmation Modal */}
+      {service && (
+        <HireConfirmationModal
+          open={hireModalOpen}
+          onOpenChange={setHireModalOpen}
+          service={{
+            title: service.title,
+            price: service.price,
+            seller: service.seller,
+            timeToComplete: service.timeToComplete,
+            category: service.category,
+          }}
+          onConfirm={handleConfirmHire}
+          onCancel={handleCancelHire}
+          isLoading={isProcessing}
+        />
+      )}
+
+      {/* Payment Result Modal */}
+      {paymentResult && (
+        <PaymentResultModal
+          open={paymentResultModalOpen}
+          onOpenChange={setPaymentResultModalOpen}
+          type={paymentResult.type}
+          title={paymentResult.title}
+          message={paymentResult.message}
+          transactionSignature={paymentResult.signature}
+        />
+      )}
+
+      {/* Wallet Required Modal */}
+      <WalletRequiredModal
+        open={walletRequiredModalOpen}
+        onOpenChange={setWalletRequiredModalOpen}
+        onConnectWallet={handleConnectWallet}
+        onGoToDashboard={handleGoToDashboard}
+      />
     </div>
   );
 }

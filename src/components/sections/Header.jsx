@@ -3,8 +3,9 @@
 import React from "react";
 import Image from "next/image";
 import Link from "next/link";
-import { Pointer, Book } from "lucide-react";
+import { Wallet, Loader2, Download } from "lucide-react";
 import { motion } from "framer-motion";
+import { usePhantomWallet } from "@/hooks/usePhantomWallet";
 
 // Infinite scrolling partner logos component
 function InfinitePartnerScroll() {
@@ -112,6 +113,24 @@ function InfinitePartnerScroll() {
 }
 
 export function Header() {
+  const { connected, publicKeyString, isConnecting, isPhantomInstalled, connect } = usePhantomWallet()
+
+  const handleConnectWallet = async () => {
+    console.log('🟢 Header: handleConnectWallet called')
+    console.log('🟢 Header: isPhantomInstalled', isPhantomInstalled)
+    console.log('🟢 Header: isConnecting', isConnecting)
+    console.log('🟢 Header: connected', connected)
+    
+    if (!isPhantomInstalled) {
+      console.log('🟢 Header: Phantom not installed, opening phantom.app')
+      window.open('https://phantom.app/', '_blank')
+      return
+    }
+    console.log('🟢 Header: Calling connect()...')
+    await connect()
+    console.log('🟢 Header: connect() completed')
+  }
+
   return (
     <section
       id="home"
@@ -140,7 +159,8 @@ export function Header() {
                 transition={{ duration: 0.4, delay: 0.2 }}
                 className="block text-gradient-animated"
               >
-                Solana-first, multi-network x402 facilitator.
+                Solana-x402 is an open payment protocol that brings stablecoin payments to plain HTTP.
+
               </motion.span>
             </motion.h1>
           </div>
@@ -157,7 +177,7 @@ export function Header() {
               }}
               className="mt-4 md:mt-6 text-lg md:text-body-lg text-gray-600 leading-relaxed md:leading-relaxed font-medium"
             >
-              Try x402 payments against a live merchant today. Get 100% of your payment refunded.
+              Try x402 payments against. Get 100% of your payment refunded.
             </motion.p>
 
             <motion.div
@@ -165,48 +185,30 @@ export function Header() {
               animate={{ opacity: 1, y: 0 }}
               transition={{
                 duration: 0.4,
-                delay: 0.2,
+                delay: 0.3,
                 ease: [0.25, 0.25, 0, 1],
               }}
-              className="mt-10 md:mt-12 flex flex-row flex-wrap gap-3 md:gap-4"
+              className="mt-10 md:mt-12"
             >
-
               <motion.div
                 whileHover={{ scale: 1.05, y: -2 }}
                 whileTap={{ scale: 0.95 }}
                 transition={{ duration: 0.2 }}
               >
                 <Link
-                  className="inline-flex items-center justify-center  bg-[#FFFFFF]/70 text-gray-800 px-6 py-3 text-body font-normal border border-gray-200 rounded-full transition-colors hover:bg-[#FFFFFF] min-h-[44px]"
-                  href={process.env.NEXT_PUBLIC_WEBSITE_URL_X402_ECHO || "#"}
-                  target="_blank"
+                  className="inline-flex items-center justify-center bg-primary hover:bg-primary-700 text-white px-6 py-3 text-body font-normal rounded-full transition-colors min-h-[44px] shadow-lg"
+                  href="#"
                 >
-                  <Pointer className="w-4 h-4 sm:w-5 sm:h-5 mr-2" />
-                  Try x402
+                  <Download className="w-4 h-4 sm:w-5 sm:h-5 mr-2" />
+                  Download Extension
                 </Link>
               </motion.div>
-
-              <motion.div
-                whileHover={{ scale: 1.05, y: -2 }}
-                whileTap={{ scale: 0.95 }}
-                transition={{ duration: 0.2 }}
-              >
-                <Link
-                  className="inline-flex items-center justify-center bg-primary hover:bg-primary-700 text-white px-6 py-3 text-body font-normal rounded-full transition-colors min-h-[44px]"
-                  href={process.env.NEXT_PUBLIC_WEBSITE_URL_X402_FACILITATOR || "#"}
-                  target="_blank"
-                >
-                  <Book className="w-4 h-4 sm:w-5 sm:h-5 mr-2" />
-                  Facilitator
-                </Link>
-              </motion.div>
-
             </motion.div>
           </div>
         </div>
 
-        {/* Partner logos - Infinite horizontal scroll */}
-        <motion.div
+        {/* Partner logos - Infinite horizontal scroll - Hidden */}
+        {/* <motion.div
           initial={{ opacity: 0, y: 30 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.5, delay: 0.2, ease: [0.25, 0.25, 0, 1] }}
@@ -235,7 +237,7 @@ export function Header() {
               <InfinitePartnerScroll />
             </motion.div>
           </motion.div>
-        </motion.div>
+        </motion.div> */}
       </div>
     </section>
   );

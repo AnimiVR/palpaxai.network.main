@@ -8,7 +8,7 @@ import {
 import { WalletAdapterNetwork } from "@solana/wallet-adapter-base";
 import { clusterApiUrl } from "@solana/web3.js";
 import { WalletModalProvider } from "@solana/wallet-adapter-react-ui";
-// Import individual adapters instead of from wallet-adapter-wallets to avoid Ledger dependency
+// Import wallet adapters
 import { PhantomWalletAdapter } from "@solana/wallet-adapter-phantom";
 import { SolflareWalletAdapter } from "@solana/wallet-adapter-solflare";
 import { TorusWalletAdapter } from "@solana/wallet-adapter-torus";
@@ -27,19 +27,34 @@ export function SolanaWalletProvider({ children }: { children: React.ReactNode }
     return clusterApiUrl(network);
   }, [network]);
   
+  // Include all wallet adapters
+  // Note: Phantom may register as Standard Wallet, but we include it explicitly for compatibility
   const wallets = useMemo(
-    () => [
-      new PhantomWalletAdapter(),
-      new SolflareWalletAdapter(),
-      new TorusWalletAdapter(),
-      // new LedgerWalletAdapter(), // Temporarily disabled due to module resolution issues
-    ],
+    () => {
+      const walletList = [
+        new PhantomWalletAdapter(),
+        new SolflareWalletAdapter(),
+        new TorusWalletAdapter(),
+      ];
+      
+      
+      return walletList;
+    },
     []
   );
 
+  // Error handler for wallet connection
+  const onError = (error: Error) => {
+    console.error("Wallet error:", error);
+  };
+
   return (
     <ConnectionProvider endpoint={endpoint}>
-      <WalletProvider wallets={wallets} autoConnect={false}>
+      <WalletProvider 
+        wallets={wallets} 
+        autoConnect={false}
+        onError={onError}
+      >
         <WalletModalProvider>
           {children}
         </WalletModalProvider>

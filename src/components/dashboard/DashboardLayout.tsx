@@ -31,6 +31,9 @@ import {
   Wallet,
   Briefcase,
   Bot,
+  Pointer,
+  Book,
+  Twitter,
 } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
@@ -48,6 +51,8 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
 import { useTheme } from "@/contexts/theme-context"
+import { usePhantomWallet } from "@/hooks/usePhantomWallet"
+import { Loader2 } from "lucide-react"
 
 // Custom scrollbar styles
 const scrollbarStyles = `
@@ -91,6 +96,32 @@ export default function DashboardLayout({ content }: DashboardLayoutProps) {
   const [currentPath, setCurrentPath] = useState("")
   const [unreadNotifications, setUnreadNotifications] = useState(3)
   const { theme, toggleTheme } = useTheme()
+  const { connected, publicKeyString, isConnecting, isPhantomInstalled, connect, disconnect } = usePhantomWallet()
+
+  const handleConnectWallet = async () => {
+    console.log('🟢 Dashboard: handleConnectWallet called')
+    console.log('🟢 Dashboard: isPhantomInstalled', isPhantomInstalled)
+    console.log('🟢 Dashboard: isConnecting', isConnecting)
+    console.log('🟢 Dashboard: connected', connected)
+    
+    if (!isPhantomInstalled) {
+      console.log('🟢 Dashboard: Phantom not installed, opening phantom.app')
+      window.open('https://phantom.app/', '_blank')
+      return
+    }
+    console.log('🟢 Dashboard: Calling connect()...')
+    await connect()
+    console.log('🟢 Dashboard: connect() completed')
+  }
+
+  const handleDisconnect = async () => {
+    await disconnect()
+  }
+
+  const formatAddress = (address: string) => {
+    if (!address) return ""
+    return `${address.slice(0, 4)}...${address.slice(-4)}`
+  }
 
   // Add state variables for mobile sidebar at the top of the component
   const [isMobileView, setIsMobileView] = useState(false)
@@ -135,14 +166,14 @@ export default function DashboardLayout({ content }: DashboardLayoutProps) {
         } ${isMobileView && !showMobileSidebar ? "-translate-x-full" : ""}`}
       >
         <div className="p-4 border-b dark:border-gray-700 flex items-center justify-between">
-          <div className="flex items-center gap-3">
+          <Link href="/" className="flex items-center gap-3 hover:opacity-80 transition-opacity cursor-pointer">
             {!sidebarCollapsed && (
               <>
                 <div className="bg-black text-white dark:bg-white dark:text-black p-2 rounded">
                   <Bot size={16} />
                 </div>
                 <div>
-                  <div className="font-semibold dark:text-white">Payai</div>
+                  <div className="font-semibold dark:text-white">PalPaxAI</div>
                 </div>
               </>
             )}
@@ -151,7 +182,7 @@ export default function DashboardLayout({ content }: DashboardLayoutProps) {
                 <Bot size={16} />
               </div>
             )}
-          </div>
+          </Link>
           <Button
             variant="ghost"
             size="icon"
@@ -282,6 +313,20 @@ export default function DashboardLayout({ content }: DashboardLayoutProps) {
               <Users size={18} className={`${!sidebarCollapsed ? "mr-2" : "mx-auto"}`} />
               {!sidebarCollapsed && <span>Account</span>}
             </Button>
+            <Button 
+              variant="ghost" 
+              className={`w-full justify-start ${!sidebarCollapsed ? "" : "px-2"}`}
+              asChild
+            >
+              <Link 
+                href={process.env.NEXT_PUBLIC_TWITTER_URL || "https://twitter.com"} 
+                target="_blank"
+                rel="noopener noreferrer"
+              >
+                <Twitter size={18} className={`${!sidebarCollapsed ? "mr-2" : "mx-auto"}`} />
+                {!sidebarCollapsed && <span>Twitter</span>}
+              </Link>
+            </Button>
           </div>
         </div>
 
@@ -303,8 +348,14 @@ export default function DashboardLayout({ content }: DashboardLayoutProps) {
                 <AvatarImage src="/placeholder-user.jpg" />
                 <AvatarFallback>PA</AvatarFallback>
               </Avatar>
-              <div className="flex-1">
-                <div className="font-medium text-sm dark:text-white">PayAI User</div>
+              <div className="flex-1 min-w-0">
+                {connected && publicKeyString ? (
+                  <div className="font-medium text-sm dark:text-white truncate" title={publicKeyString}>
+                    {formatAddress(publicKeyString)}
+                  </div>
+                ) : (
+                  <div className="font-medium text-sm dark:text-white">PalPaxAI User</div>
+                )}
               </div>
             </div>
           )}
@@ -332,6 +383,25 @@ export default function DashboardLayout({ content }: DashboardLayoutProps) {
             </div>
           </div>
           <div className="flex items-center gap-2 sm:gap-4">
+            {/* Try x402 and Facilitator buttons */}
+            <Link
+              className="hidden sm:inline-flex items-center justify-center bg-[#FFFFFF] dark:bg-gray-700 text-gray-800 dark:text-gray-200 px-4 py-2 text-sm font-normal border border-gray-200 dark:border-gray-600 rounded-full transition-colors hover:bg-gray-50 dark:hover:bg-gray-600 min-h-[36px]"
+              href={process.env.NEXT_PUBLIC_WEBSITE_URL_X402_ECHO || "#"}
+              target="_blank"
+            >
+              <Pointer className="w-4 h-4 mr-2" />
+              Try x402
+            </Link>
+
+            <Link
+              className="hidden sm:inline-flex items-center justify-center bg-primary hover:bg-primary-700 text-white px-4 py-2 text-sm font-normal rounded-full transition-colors min-h-[36px]"
+              href={process.env.NEXT_PUBLIC_WEBSITE_URL_X402_FACILITATOR || "#"}
+              target="_blank"
+            >
+              <Book className="w-4 h-4 mr-2" />
+              Facilitator
+            </Link>
+
             {/* Theme Toggle Button */}
             <Button
               variant="ghost"
@@ -419,10 +489,49 @@ export default function DashboardLayout({ content }: DashboardLayoutProps) {
                 </DropdownMenuItem>
               </DropdownMenuContent>
             </DropdownMenu>
-            <Button className="bg-blue-500 hover:bg-blue-600 text-white text-xs sm:text-sm px-2 sm:px-4">
-              Export
-              <LogOut size={16} className="ml-1 sm:ml-2" />
-            </Button>
+            {connected && publicKeyString ? (
+              <>
+                <Link href="/dashboard/wallet">
+                  <Button variant="outline" className="border-purple-500 text-purple-600 hover:bg-purple-50 dark:border-purple-400 dark:text-purple-400 dark:hover:bg-purple-950 text-xs sm:text-sm px-2 sm:px-4">
+                    <Wallet size={16} className="mr-1 sm:mr-2" />
+                    Wallet
+                  </Button>
+                </Link>
+                <Button 
+                  onClick={handleDisconnect}
+                  className="bg-red-500 hover:bg-red-600 text-white text-xs sm:text-sm px-2 sm:px-4"
+                >
+                  Disconnect
+                  <LogOut size={16} className="ml-1 sm:ml-2" />
+                </Button>
+              </>
+            ) : (
+              <>
+                <Button 
+                  onClick={handleConnectWallet}
+                  disabled={isConnecting}
+                  className="bg-gradient-to-r from-purple-500 to-pink-500 hover:from-purple-600 hover:to-pink-600 disabled:opacity-50 disabled:cursor-not-allowed text-white text-xs sm:text-sm px-2 sm:px-4"
+                >
+                  {isConnecting ? (
+                    <>
+                      <Loader2 size={16} className="mr-1 sm:mr-2 animate-spin" />
+                      Connecting...
+                    </>
+                  ) : (
+                    <>
+                      <Wallet size={16} className="mr-1 sm:mr-2" />
+                      Connect Wallet
+                    </>
+                  )}
+                </Button>
+                <Button asChild className="bg-blue-500 hover:bg-blue-600 text-white text-xs sm:text-sm px-2 sm:px-4">
+                  <Link href="/">
+                    Export
+                    <LogOut size={16} className="ml-1 sm:ml-2" />
+                  </Link>
+                </Button>
+              </>
+            )}
           </div>
         </header>
 

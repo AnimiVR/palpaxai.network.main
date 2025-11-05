@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useCallback } from "react";
-import { useWallet, useConnection } from "@solana/wallet-adapter-react";
+import { usePhantomWallet } from "@/hooks/usePhantomWallet";
 import { 
   PublicKey, 
   Transaction, 
@@ -51,8 +51,12 @@ interface PaymentResult {
 export function useFaremeterPayment() {
   const [isProcessing, setIsProcessing] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const { publicKey, sendTransaction, signTransaction } = useWallet();
-  const { connection } = useConnection();
+  const { 
+    publicKey, 
+    connection, 
+    signTransaction, 
+    sendTransaction: sendTransactionHook 
+  } = usePhantomWallet();
 
   const processPayment = useCallback(async (
     serviceId: string,
@@ -115,10 +119,9 @@ export function useFaremeterPayment() {
           });
 
           // If Faremeter returns a transaction, sign and send it
-          if (paymentResult.transaction && signTransaction) {
+          if (paymentResult.transaction && signTransaction && sendTransactionHook) {
             const signedTx = await signTransaction(paymentResult.transaction);
-            const signature = await connection.sendRawTransaction(signedTx.serialize());
-            await connection.confirmTransaction(signature, "confirmed");
+            const signature = await sendTransactionHook(signedTx);
 
             setIsProcessing(false);
             return {
@@ -153,35 +156,13 @@ export function useFaremeterPayment() {
       transaction.recentBlockhash = blockhash;
       transaction.feePayer = publicKey;
 
-      // Send transaction
-      let signature: string;
-      
-      if (sendTransaction) {
-        // Use wallet adapter's sendTransaction (recommended)
-        signature = await sendTransaction(transaction, connection, {
-          skipPreflight: false,
-        });
-
-        // Wait for confirmation
-        await connection.confirmTransaction(
-          {
-            signature,
-            blockhash,
-            lastValidBlockHeight,
-          },
-          "confirmed"
-        );
-      } else if (signTransaction) {
-        // Fallback to sign and send manually
-        const signed = await signTransaction(transaction);
-        signature = await connection.sendRawTransaction(signed.serialize(), {
-          skipPreflight: false,
-        });
-
-        await connection.confirmTransaction(signature, "confirmed");
-      } else {
+      // Sign and send transaction
+      if (!signTransaction || !sendTransactionHook) {
         throw new Error("Wallet does not support sending transactions");
       }
+
+      const signed = await signTransaction(transaction);
+      const signature = await sendTransactionHook(signed);
 
       setIsProcessing(false);
       return {
@@ -215,7 +196,7 @@ export function useFaremeterPayment() {
         error: errorMessage,
       };
     }
-  }, [publicKey, connection, sendTransaction, signTransaction]);
+  }, [publicKey, connection, sendTransactionHook, signTransaction]);
 
   return {
     processPayment,
