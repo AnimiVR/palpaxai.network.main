@@ -1,11 +1,12 @@
 "use client";
 
-import { useState, useCallback } from "react";
+import { useState, useCallback, useMemo } from "react";
 import { usePhantomWallet } from "@/hooks/usePhantomWallet";
 import { 
   PublicKey, 
   Transaction, 
-  SystemProgram
+  SystemProgram,
+  Connection
 } from "@solana/web3.js";
 import { parseSolPrice, getSellerWalletAddress } from "@/lib/payment";
 
@@ -52,11 +53,20 @@ export function useFaremeterPayment() {
   const [isProcessing, setIsProcessing] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const { 
-    publicKey, 
-    connection, 
-    signTransaction, 
-    sendTransaction: sendTransactionHook 
+    publicKey
   } = usePhantomWallet();
+
+  // Create Solana connection
+  const connection = useMemo(() => {
+    // Use multiple RPC endpoints as fallback
+    const rpcEndpoints = [
+      'https://api.mainnet-beta.solana.com',
+      'https://solana-api.projectserum.com',
+      'https://rpc.ankr.com/solana',
+      'https://solana.public-rpc.com',
+    ];
+    return new Connection(rpcEndpoints[0], 'confirmed');
+  }, []);
 
   const processPayment = useCallback(async (
     serviceId: string,
@@ -119,9 +129,13 @@ export function useFaremeterPayment() {
           });
 
           // If Faremeter returns a transaction, sign and send it
-          if (paymentResult.transaction && signTransaction && sendTransactionHook) {
-            const signedTx = await signTransaction(paymentResult.transaction);
-            const signature = await sendTransactionHook(signedTx);
+          if (paymentResult.transaction) {
+            const solana = (window as any).solana;
+            if (!solana || !solana.signTransaction || !solana.sendTransaction) {
+              throw new Error("Wallet does not support sending transactions");
+            }
+            const signedTx = await solana.signTransaction(paymentResult.transaction);
+            const signature = await solana.sendTransaction(signedTx, connection);
 
             setIsProcessing(false);
             return {
@@ -143,6 +157,10 @@ export function useFaremeterPayment() {
       }
 
       // Option 2: Fallback to direct Solana transaction
+      if (!publicKey) {
+        throw new Error("Public key not available");
+      }
+
       const transaction = new Transaction().add(
         SystemProgram.transfer({
           fromPubkey: publicKey,
@@ -156,13 +174,14 @@ export function useFaremeterPayment() {
       transaction.recentBlockhash = blockhash;
       transaction.feePayer = publicKey;
 
-      // Sign and send transaction
-      if (!signTransaction || !sendTransactionHook) {
+      // Sign and send transaction using window.solana API
+      const solana = (window as any).solana;
+      if (!solana || !solana.signTransaction || !solana.sendTransaction) {
         throw new Error("Wallet does not support sending transactions");
       }
 
-      const signed = await signTransaction(transaction);
-      const signature = await sendTransactionHook(signed);
+      const signed = await solana.signTransaction(transaction);
+      const signature = await solana.sendTransaction(signed, connection);
 
       setIsProcessing(false);
       return {
@@ -196,7 +215,7 @@ export function useFaremeterPayment() {
         error: errorMessage,
       };
     }
-  }, [publicKey, connection, sendTransactionHook, signTransaction]);
+  }, [publicKey, connection]);
 
   return {
     processPayment,
