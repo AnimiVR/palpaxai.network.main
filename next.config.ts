@@ -10,13 +10,14 @@ const nextConfig: NextConfig = {
       ignored: ['**/node_modules/**', '**/extension/**'],
     };
     
-    // Exclude extension from compilation
-    config.module = config.module || {};
-    config.module.rules = config.module.rules || [];
-    config.module.rules.push({
-      test: /extension\/.*/,
-      use: 'ignore-loader',
-    });
+    // Exclude extension from compilation using IgnorePlugin
+    config.plugins = config.plugins || [];
+    config.plugins.push(
+      new webpack.IgnorePlugin({
+        resourceRegExp: /^\.\/extension/,
+        contextRegExp: /extension/,
+      })
+    );
     // Fix for pino-pretty missing module error
     if (!isServer) {
       config.resolve.fallback = {
