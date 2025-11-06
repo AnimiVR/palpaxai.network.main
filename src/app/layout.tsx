@@ -2,7 +2,6 @@ import type { Metadata } from "next";
 import "./globals.css";
 // import { Chatbot } from "@/components/shared/Chatbot";
 import { ThemeProvider } from "@/contexts/theme-context";
-import { PhantomProviderWrapper } from "@/components/providers/PhantomProviderWrapper";
 
 export const metadata: Metadata = {
   title: "PalPaxAI - Payments for the AI Age",
@@ -46,10 +45,8 @@ export default function RootLayout({
       </head>
       <body className="">
         <ThemeProvider>
-          <PhantomProviderWrapper>
-            {children}
-            {/* <Chatbot /> */}
-          </PhantomProviderWrapper>
+          {children}
+          {/* <Chatbot /> */}
         </ThemeProvider>
       </body>
     </html>
