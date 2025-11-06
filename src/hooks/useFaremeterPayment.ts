@@ -10,6 +10,18 @@ import {
 } from "@solana/web3.js";
 import { parseSolPrice, getSellerWalletAddress } from "@/lib/payment";
 
+// Type for Phantom wallet provider
+interface SolanaProvider {
+  signTransaction?: (transaction: Transaction) => Promise<Transaction>;
+  sendTransaction?: (transaction: Transaction, connection: Connection) => Promise<string>;
+}
+
+declare global {
+  interface Window {
+    solana?: SolanaProvider;
+  }
+}
+
 // Dynamic imports for Faremeter packages (in case they're ESM only)
 // Note: Faremeter packages are temporarily disabled
 type FaremeterModule = {
@@ -130,7 +142,7 @@ export function useFaremeterPayment() {
 
           // If Faremeter returns a transaction, sign and send it
           if (paymentResult.transaction) {
-            const solana = (window as any).solana;
+            const solana = window.solana;
             if (!solana || !solana.signTransaction || !solana.sendTransaction) {
               throw new Error("Wallet does not support sending transactions");
             }
@@ -175,7 +187,7 @@ export function useFaremeterPayment() {
       transaction.feePayer = publicKey;
 
       // Sign and send transaction using window.solana API
-      const solana = (window as any).solana;
+      const solana = window.solana;
       if (!solana || !solana.signTransaction || !solana.sendTransaction) {
         throw new Error("Wallet does not support sending transactions");
       }
