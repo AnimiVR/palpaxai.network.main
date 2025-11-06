@@ -208,7 +208,6 @@ export function usePhantomWallet() {
 
     setIsConnecting(true)
     setError(null)
-    setConnectionInitiated(true) // Mark that user initiated connection
 
     try {
       console.log('🔵 Starting connection process...')
@@ -218,10 +217,10 @@ export function usePhantomWallet() {
       // Điều này đảm bảo rằng khi connect(), Phantom sẽ kiểm tra trạng thái wallet
       // Nếu wallet locked → show popup nhập password
       // Nếu wallet unlocked → show popup approve connection
-      if (window.solana!.isConnected) {
+      if (window.solana?.isConnected && window.solana.disconnect) {
         console.log('🔵 Disconnecting first...')
         try {
-          await window.solana!.disconnect()
+          await window.solana.disconnect()
           // Wait a bit after disconnect để Phantom extension reset state
           await new Promise(resolve => setTimeout(resolve, 200))
           console.log('🔵 Disconnected successfully')
@@ -236,8 +235,11 @@ export function usePhantomWallet() {
       // - Nếu wallet LOCKED → Phantom sẽ show popup nhập password
       // - Nếu wallet UNLOCKED nhưng chưa approve → show popup approve
       // - Nếu wallet UNLOCKED và đã approve → vẫn show popup approve (không auto-connect)
+      if (!window.solana?.connect) {
+        throw new Error('Phantom wallet connect method not available')
+      }
       console.log('🔵 Calling window.solana.connect()...')
-      const result = await window.solana!.connect({ onlyIfTrusted: false })
+      const result = await window.solana.connect({ onlyIfTrusted: false })
       console.log('🔵 Connect result:', result)
       
       // Chỉ set connected SAU KHI user nhập password và approve
@@ -345,7 +347,6 @@ export function usePhantomWallet() {
       
       // Always reset Zustand state
       reset()
-      setConnectionInitiated(false)
       toast({
         title: 'Wallet Disconnected',
         description: 'Wallet has been disconnected',
