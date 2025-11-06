@@ -4,6 +4,19 @@ import path from "path";
 const nextConfig: NextConfig = {
   /* config options here */
   webpack: (config, { isServer, webpack }) => {
+    // Ignore extension folder (it's a separate Chrome extension project)
+    config.watchOptions = {
+      ...config.watchOptions,
+      ignored: ['**/node_modules/**', '**/extension/**'],
+    };
+    
+    // Exclude extension from compilation
+    config.module = config.module || {};
+    config.module.rules = config.module.rules || [];
+    config.module.rules.push({
+      test: /extension\/.*/,
+      use: 'ignore-loader',
+    });
     // Fix for pino-pretty missing module error
     if (!isServer) {
       config.resolve.fallback = {
