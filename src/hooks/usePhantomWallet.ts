@@ -96,7 +96,8 @@ export function usePhantomWallet() {
       reset()
     }
 
-    const handleAccountChange = (publicKey: PublicKey | null) => {
+    const handleAccountChange = (...args: unknown[]) => {
+      const publicKey = args[0] as PublicKey | null | undefined
       if (publicKey) {
         setPublicKey(publicKey.toString())
       } else {
