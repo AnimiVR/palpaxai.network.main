@@ -43,7 +43,7 @@ export async function saveWalletToSupabase(walletData: WalletData): Promise<{ su
 
     if (existingWallet) {
       // Update existing wallet
-      const updateData: any = {
+      const updateData: Record<string, unknown> = {
         wallet_type: walletData.wallet_type || 'phantom',
         network: walletData.network || 'solana',
         is_connected: walletData.is_connected ?? true,
@@ -96,7 +96,7 @@ export async function saveWalletToSupabase(walletData: WalletData): Promise<{ su
       return { success: true, walletId: data.id }
     } else {
       // Insert new wallet
-      const insertData: any = {
+      const insertData: Record<string, unknown> = {
         wallet_address: walletData.wallet_address,
         wallet_type: walletData.wallet_type || 'phantom',
         network: walletData.network || 'solana',
@@ -129,9 +129,10 @@ export async function saveWalletToSupabase(walletData: WalletData): Promise<{ su
 
       return { success: true, walletId: data.id }
     }
-  } catch (error: any) {
-    console.error('Error saving wallet to Supabase:', error)
-    return { success: false, error: error.message || 'Unknown error' }
+  } catch (err: unknown) {
+    const errorMessage = err instanceof Error ? err.message : 'Unknown error'
+    console.error('Error saving wallet to Supabase:', err)
+    return { success: false, error: errorMessage }
   }
 }
 
@@ -143,7 +144,7 @@ export async function updateWalletConnectionStatus(
   isConnected: boolean
 ): Promise<{ success: boolean; error?: string }> {
   try {
-    const updateData: any = {
+    const updateData: Record<string, unknown> = {
       is_connected: isConnected,
       last_used_at: new Date().toISOString(),
     }
@@ -163,9 +164,10 @@ export async function updateWalletConnectionStatus(
     }
 
     return { success: true }
-  } catch (error: any) {
-    console.error('Error updating wallet connection status:', error)
-    return { success: false, error: error.message || 'Unknown error' }
+  } catch (err: unknown) {
+    const errorMessage = err instanceof Error ? err.message : 'Unknown error'
+    console.error('Error updating wallet connection status:', err)
+    return { success: false, error: errorMessage }
   }
 }
 
@@ -194,9 +196,10 @@ export async function getUserWallets(userId?: string) {
     }
 
     return { success: true, data: data || [] }
-  } catch (error: any) {
-    console.error('Error fetching user wallets:', error)
-    return { success: false, data: [], error: error.message || 'Unknown error' }
+  } catch (err: unknown) {
+    const errorMessage = err instanceof Error ? err.message : 'Unknown error'
+    console.error('Error fetching user wallets:', err)
+    return { success: false, data: [], error: errorMessage }
   }
 }
 
@@ -242,9 +245,10 @@ export async function createWalletSession(
     }
 
     return { success: true, sessionId: data.id }
-  } catch (error: any) {
-    console.error('Error creating wallet session:', error)
-    return { success: false, error: error.message || 'Unknown error' }
+  } catch (err: unknown) {
+    const errorMessage = err instanceof Error ? err.message : 'Unknown error'
+    console.error('Error creating wallet session:', err)
+    return { success: false, error: errorMessage }
   }
 }
 

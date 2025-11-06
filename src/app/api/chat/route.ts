@@ -6,7 +6,7 @@ const HUGGINGFACE_API_URL = 'https://api-inference.huggingface.co/models/mistral
 
 export async function POST(request: NextRequest) {
   try {
-    const { messages, model = 'huggingface' } = await request.json()
+    const { messages } = await request.json()
 
     if (!messages || !Array.isArray(messages) || messages.length === 0) {
       return NextResponse.json(

@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import "./globals.css";
-import { Chatbot } from "@/components/shared/Chatbot";
+// import { Chatbot } from "@/components/shared/Chatbot";
 import { ThemeProvider } from "@/contexts/theme-context";
 import { PhantomProviderWrapper } from "@/components/providers/PhantomProviderWrapper";
 
@@ -48,7 +48,7 @@ export default function RootLayout({
         <ThemeProvider>
           <PhantomProviderWrapper>
             {children}
-            <Chatbot />
+            {/* <Chatbot /> */}
           </PhantomProviderWrapper>
         </ThemeProvider>
       </body>

@@ -29,9 +29,10 @@ export async function getCurrentUser() {
       return null
     }
     return user
-  } catch (error: any) {
+  } catch (err: unknown) {
     // Handle any unexpected errors
-    console.debug('Unexpected error getting user:', error.message)
+    const errorMessage = err instanceof Error ? err.message : 'Unknown error'
+    console.debug('Unexpected error getting user:', errorMessage)
     return null
   }
 }

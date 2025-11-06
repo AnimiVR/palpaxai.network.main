@@ -147,10 +147,11 @@ export default function WalletContent() {
       
       // Reset claimable SOL after successful claim
       setClaimableSol("0.00")
-    } catch (error: any) {
+    } catch (err: unknown) {
+      const errorMessage = err instanceof Error ? err.message : "Failed to claim SOL. Please try again."
       toast({
         title: "Claim Failed",
-        description: error.message || "Failed to claim SOL. Please try again.",
+        description: errorMessage,
         variant: "destructive",
       })
     } finally {
@@ -280,9 +281,27 @@ export default function WalletContent() {
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold">{claimableSol} SOL</div>
-            <p className="text-xs text-muted-foreground mt-1">
+            <p className="text-xs text-muted-foreground mt-1 mb-3">
               Available to claim
             </p>
+            <Button
+              onClick={handleClaimSol}
+              disabled={isClaiming || parseFloat(claimableSol) <= 0}
+              size="sm"
+              className="w-full bg-green-600 hover:bg-green-700 text-white disabled:opacity-50 disabled:cursor-not-allowed"
+            >
+              {isClaiming ? (
+                <>
+                  <Loader2 className="mr-2 h-3 w-3 animate-spin" />
+                  Claiming...
+                </>
+              ) : (
+                <>
+                  <Download className="mr-2 h-3 w-3" />
+                  Claim SOL
+                </>
+              )}
+            </Button>
           </CardContent>
         </Card>
       </div>
@@ -379,25 +398,6 @@ export default function WalletContent() {
               <Copy className="mr-2 h-4 w-4" />
               Copy Address
             </Button>
-            {parseFloat(claimableSol) > 0 && (
-              <Button
-                onClick={handleClaimSol}
-                disabled={isClaiming}
-                className="w-full justify-start bg-green-600 hover:bg-green-700 text-white"
-              >
-                {isClaiming ? (
-                  <>
-                    <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                    Claiming...
-                  </>
-                ) : (
-                  <>
-                    <Download className="mr-2 h-4 w-4" />
-                    Claim {claimableSol} SOL
-                  </>
-                )}
-              </Button>
-            )}
           </div>
         </CardContent>
       </Card>

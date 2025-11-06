@@ -27,11 +27,9 @@ import {
 } from "@/components/ui/card"
 import { Input } from "@/components/ui/input"
 import { usePhantomWallet } from "@/hooks/usePhantomWallet"
-import { useFaremeterPayment } from "@/hooks/useFaremeterPayment"
 import { HireConfirmationModal } from "@/components/marketplace/HireConfirmationModal"
 import { PaymentResultModal } from "@/components/marketplace/PaymentResultModal"
 import { WalletRequiredModal } from "@/components/marketplace/WalletRequiredModal"
-import { useToast } from "@/hooks/use-toast"
 
 // Generate random prices below 0.1 SOL (0.01 to 0.099)
 const randomPrices = [
@@ -270,8 +268,6 @@ export default function MarketplaceContent() {
   const [isProcessing, setIsProcessing] = useState(false)
 
   const { connected, connect } = usePhantomWallet()
-  const { processPayment } = useFaremeterPayment()
-  const { toast } = useToast()
 
   const handleHireFromMarketplace = async (service: (typeof mockServices)[0]) => {
     setSelectedService(service)

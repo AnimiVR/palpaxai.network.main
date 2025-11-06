@@ -260,19 +260,6 @@ export default function MarketplacePage() {
   const [showOnlyVerified, setShowOnlyVerified] = useState(false);
   const [filteredServices, setFilteredServices] = useState(mockServices);
   const [favorites, setFavorites] = useState<string[]>([]);
-  
-  const handleHireFromMarketplace = async (service: typeof mockServices[0]) => {
-    setSelectedService(service);
-    
-    // Nếu chưa connect wallet, hiển thị modal yêu cầu connect
-    if (!connected) {
-      setWalletRequiredModalOpen(true);
-      return;
-    }
-    
-    // Nếu đã connect, hiển thị confirmation modal
-    setHireModalOpen(true);
-  };
 
   const handleConfirmHire = async () => {
     if (!selectedService) return;

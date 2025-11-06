@@ -9,6 +9,7 @@
     "lint": "next lint"
   },
   "dependencies": {
+    "@emotion/is-prop-valid": "^1.4.0",
     "@hookform/resolvers": "^3.9.1",
     "@phantom/openapi-wallet-service": "^0.1.11",
     "@phantom/react-sdk": "^0.3.9",

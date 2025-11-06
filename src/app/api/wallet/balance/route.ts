@@ -24,7 +24,7 @@ export async function GET(request: NextRequest) {
   let publicKey: PublicKey
   try {
     publicKey = new PublicKey(address)
-  } catch (error) {
+  } catch {
     return NextResponse.json(
       { error: 'Invalid wallet address' },
       { status: 400 }
@@ -43,8 +43,9 @@ export async function GET(request: NextRequest) {
         balance: solBalance,
         endpoint,
       })
-    } catch (error: any) {
-      console.warn(`Failed to fetch balance from ${endpoint}:`, error.message)
+    } catch (err: unknown) {
+      const errorMessage = err instanceof Error ? err.message : 'Unknown error'
+      console.warn(`Failed to fetch balance from ${endpoint}:`, errorMessage)
       // Continue to next endpoint
       continue
     }

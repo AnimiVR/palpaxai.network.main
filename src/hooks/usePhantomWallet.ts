@@ -15,8 +15,8 @@ declare global {
       publicKey?: PublicKey | null
       connect?: (options?: { onlyIfTrusted?: boolean }) => Promise<{ publicKey: PublicKey }>
       disconnect?: () => Promise<void>
-      on?: (event: string, callback: (...args: any[]) => void) => void
-      removeListener?: (event: string, callback: (...args: any[]) => void) => void
+      on?: (event: string, callback: (...args: unknown[]) => void) => void
+      removeListener?: (event: string, callback: (...args: unknown[]) => void) => void
     }
   }
 }
@@ -42,8 +42,6 @@ export function usePhantomWallet() {
   const [isPhantomInstalled, setIsPhantomInstalled] = useState(false)
   const [isCheckingExtension, setIsCheckingExtension] = useState(true)
 
-  // Track if we initiated the connection (to prevent auto-sync from stale state)
-  const [connectionInitiated, setConnectionInitiated] = useState(false)
   // Track if we've attempted auto-reconnect to prevent multiple attempts
   const [autoReconnectAttempted, setAutoReconnectAttempted] = useState(false)
 
@@ -275,22 +273,24 @@ export function usePhantomWallet() {
       }
       
       setIsConnecting(false)
-    } catch (err: any) {
-      console.error('🔴 Connect error:', err)
-      console.error('🔴 Error code:', err.code)
-      console.error('🔴 Error name:', err.name)
-      console.error('🔴 Error message:', err.message)
+    } catch (err: unknown) {
+      const error = err instanceof Error ? err : new Error('Unknown error')
+      const errorMessage = error.message
+      console.error('🔴 Connect error:', errorMessage)
+      if (err && typeof err === 'object' && 'code' in err) {
+        console.error('🔴 Error code:', err.code)
+      }
+      console.error('🔴 Error name:', error.name)
+      console.error('🔴 Error message:', errorMessage)
       
-      // If user cancels or error, reset connection initiated flag
-      setConnectionInitiated(false)
       setIsConnecting(false)
       
-      const errorMsg = err.message || ''
+      const errorMsg = errorMessage
       
       // Check if it's a user rejection (don't show error for that)
       const isUserRejection = 
-        err.code === 4001 || 
-        err.name === 'UserRejectedRequestError' ||
+        (err && typeof err === 'object' && 'code' in err && err.code === 4001) ||
+        error.name === 'UserRejectedRequestError' ||
         errorMsg.toLowerCase().includes('rejected') ||
         errorMsg.toLowerCase().includes('denied') ||
         errorMsg.toLowerCase().includes('cancelled') ||
@@ -315,7 +315,7 @@ export function usePhantomWallet() {
         variant: 'destructive',
       })
     }
-  }, [isPhantomInstalled, isCheckingExtension, setIsConnecting, setError, setConnected, setPublicKey, setWalletName, toast, setConnectionInitiated])
+  }, [isPhantomInstalled, isCheckingExtension, setIsConnecting, setError, setConnected, setPublicKey, setWalletName, toast])
 
   // Disconnect wallet directly using window.solana
   const disconnect = useCallback(async () => {
