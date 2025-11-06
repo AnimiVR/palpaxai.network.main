@@ -7,6 +7,8 @@ import { useToast } from '@/hooks/use-toast'
 import { saveWalletToSupabase, updateWalletConnectionStatus, createWalletSession } from '@/lib/walletService'
 
 // Extend Window interface for TypeScript
+import { Transaction, Connection } from '@solana/web3.js'
+
 declare global {
   interface Window {
     solana?: {
@@ -17,6 +19,8 @@ declare global {
       disconnect?: () => Promise<void>
       on?: (event: string, callback: (...args: unknown[]) => void) => void
       removeListener?: (event: string, callback: (...args: unknown[]) => void) => void
+      signTransaction?: (transaction: Transaction) => Promise<Transaction>
+      sendTransaction?: (transaction: Transaction, connection: Connection) => Promise<string>
     }
   }
 }

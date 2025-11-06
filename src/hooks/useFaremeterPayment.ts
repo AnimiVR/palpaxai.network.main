@@ -10,18 +10,6 @@ import {
 } from "@solana/web3.js";
 import { parseSolPrice, getSellerWalletAddress } from "@/lib/payment";
 
-// Type for Phantom wallet provider
-interface SolanaProvider {
-  signTransaction?: (transaction: Transaction) => Promise<Transaction>;
-  sendTransaction?: (transaction: Transaction, connection: Connection) => Promise<string>;
-}
-
-declare global {
-  interface Window {
-    solana?: SolanaProvider;
-  }
-}
-
 // Dynamic imports for Faremeter packages (in case they're ESM only)
 // Note: Faremeter packages are temporarily disabled
 type FaremeterModule = {
