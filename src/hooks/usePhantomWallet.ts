@@ -1,13 +1,12 @@
 "use client"
 
 import { useCallback, useEffect, useMemo, useState } from 'react'
-import { PublicKey } from '@solana/web3.js'
+import { PublicKey, Transaction, Connection } from '@solana/web3.js'
 import { useWalletStore } from '@/stores/walletStore'
 import { useToast } from '@/hooks/use-toast'
 import { saveWalletToSupabase, updateWalletConnectionStatus, createWalletSession } from '@/lib/walletService'
 
 // Extend Window interface for TypeScript
-import { Transaction, Connection } from '@solana/web3.js'
 
 declare global {
   interface Window {
