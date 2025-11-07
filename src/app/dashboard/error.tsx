@@ -45,7 +45,7 @@ export default function DashboardError({
               Try again
             </Button>
             <Button variant="outline" asChild className="flex-1">
-              <Link href="/dashboard">
+              <Link href="https://app.palpaxai.network">
                 Go to dashboard
               </Link>
             </Button>

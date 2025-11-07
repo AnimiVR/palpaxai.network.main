@@ -336,7 +336,7 @@ export default function FeaturesPage() {
                     variant="outline"
                     className="border-white/30 text-white hover:bg-white/10 px-8 py-6 text-lg font-semibold"
                   >
-                    <Link href="/dashboard">
+                    <Link href="https://app.palpaxai.network">
                       Go to Dashboard
                       <ArrowRight className="ml-2 h-5 w-5" />
                     </Link>

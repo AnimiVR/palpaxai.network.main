@@ -384,7 +384,7 @@ export default function ServiceDetailPage() {
   };
 
   const handleGoToDashboard = () => {
-    router.push('/dashboard');
+    window.location.href = 'https://app.palpaxai.network';
   };
 
   if (!service) {

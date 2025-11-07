@@ -53,6 +53,7 @@ import {
 import { useTheme } from "@/contexts/theme-context"
 import { usePhantomWallet } from "@/hooks/usePhantomWallet"
 import { Loader2 } from "lucide-react"
+import Image from "next/image"
 
 // Custom scrollbar styles
 const scrollbarStyles = `
@@ -166,11 +167,12 @@ export default function DashboardLayout({ content }: DashboardLayoutProps) {
         } ${isMobileView && !showMobileSidebar ? "-translate-x-full" : ""}`}
       >
         <div className="p-4 border-b dark:border-gray-700 flex items-center justify-between">
-          <Link href="/" className="flex items-center gap-3 hover:opacity-80 transition-opacity cursor-pointer">
+          <Link href="https://palpaxai.network" className="flex items-center gap-3 hover:opacity-80 transition-opacity cursor-pointer">
             {!sidebarCollapsed && (
               <>
                 <div className="bg-black text-white dark:bg-white dark:text-black p-2 rounded">
-                  <Bot size={16} />
+                  {/* <Bot size={16} /> */}
+                  <Image src="/logopalpaxai.png" alt="PalPaxAI" width={16} height={16} className="w-16 h-16" />
                 </div>
                 <div>
                   <div className="font-semibold dark:text-white">PalPaxAI</div>
@@ -179,7 +181,7 @@ export default function DashboardLayout({ content }: DashboardLayoutProps) {
             )}
             {sidebarCollapsed && (
               <div className="bg-black text-white dark:bg-white dark:text-black p-2 rounded mx-auto">
-                <Bot size={16} />
+                <Image src="/logopalpaxai.png" alt="PalPaxAI" width={16} height={16} className="w-16 h-16" />
               </div>
             )}
           </Link>

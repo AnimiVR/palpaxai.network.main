@@ -301,7 +301,7 @@ export default function MarketplacePage() {
   };
 
   const handleGoToDashboard = () => {
-    router.push('/dashboard');
+    window.location.href = 'https://app.palpaxai.network';
   };
 
   // Toggle favorite

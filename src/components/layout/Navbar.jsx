@@ -130,7 +130,7 @@ export function Navbar() {
               whileTap={{ scale: 0.95 }}
             >
               <Link
-                href="/dashboard"
+                href="https://app.palpaxai.network"
                 className="inline-flex items-center justify-center bg-gradient-to-r from-purple-600 via-blue-600 to-indigo-600 text-white px-5 py-2 text-body font-normal rounded-full transition-all duration-300 hover:from-purple-700 hover:via-blue-700 hover:to-indigo-700 hover:shadow-lg shadow-purple-500/50"
               >
                 <LayoutDashboard className="w-4 h-4 mr-2" />
@@ -233,7 +233,7 @@ export function Navbar() {
                   transition={{ duration: 0.3, delay: 0.3 }}
                 >
                   <Link
-                    href="/dashboard"
+                    href="https://app.palpaxai.network"
                     className="inline-flex items-center justify-center bg-gradient-to-r from-purple-600 via-blue-600 to-indigo-600 text-white px-5 py-2 text-body font-normal rounded-full transition-all duration-300 hover:from-purple-700 hover:via-blue-700 hover:to-indigo-700 hover:shadow-lg shadow-purple-500/50 w-full"
                   >
                     <LayoutDashboard className="w-4 h-4 mr-2" />

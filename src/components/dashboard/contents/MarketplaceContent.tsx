@@ -317,7 +317,12 @@ export default function MarketplaceContent() {
   }
 
   const handleGoToDashboard = () => {
-    router.push('/dashboard')
+    // If already on subdomain, use router, otherwise redirect to subdomain
+    if (typeof window !== 'undefined' && window.location.hostname.startsWith('app.')) {
+      router.push('/dashboard')
+    } else {
+      window.location.href = 'https://app.palpaxai.network'
+    }
   }
 
   const handleCancelHire = () => {
