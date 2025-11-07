@@ -1,6 +1,6 @@
 "use client"
 
-import { useState, useEffect, type ReactNode } from "react"
+import { useState, useEffect, useMemo, type ReactNode } from "react"
 import Link from "next/link"
 import {
   Bell,
@@ -40,7 +40,7 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { Badge } from "@/components/ui/badge"
 import { Input } from "@/components/ui/input"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
-import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip"
+import { Tooltip as UITooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip"
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -53,6 +53,8 @@ import { useTheme } from "@/contexts/theme-context"
 import { usePhantomWallet } from "@/hooks/usePhantomWallet"
 import { Loader2 } from "lucide-react"
 import Image from "next/image"
+import { LineChart, Line, BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, ComposedChart } from "recharts"
+import { format, subMonths, startOfMonth } from "date-fns"
 
 // Custom scrollbar styles
 const scrollbarStyles = `
@@ -156,6 +158,185 @@ export default function DashboardLayout({ content }: DashboardLayoutProps) {
       document.head.removeChild(styleElement)
     }
   }, [])
+
+  // Generate chart data for the last 8 months
+  // Using useMemo to keep data stable across re-renders
+  const chartData = useMemo(() => {
+    const today = new Date()
+    const months = []
+    
+    // Predefined sample data for demonstration - replace with actual API data
+    const sampleData = [0.2, 1.7, 1.5, 1.6, 2.9, 3.1, 4.0, 4.6]
+    
+    const currentYear = today.getFullYear()
+    
+    for (let i = 7; i >= 0; i--) {
+      const date = subMonths(startOfMonth(today), i)
+      const monthName = format(date, "MMM")
+      const monthFull = format(date, "MMM yyyy")
+      const year = date.getFullYear()
+      
+      // Use sample data or 0 if not available
+      const revenue = sampleData[7 - i] || 0
+      
+      // Show year in label if it's different from current year
+      const displayLabel = year !== currentYear 
+        ? `${monthName.toUpperCase()} ${year}`
+        : monthName.toUpperCase()
+      
+      months.push({
+        month: monthName,
+        monthFull: monthFull,
+        year: year,
+        revenue: Number(revenue.toFixed(2)),
+        displayLabel: displayLabel,
+      })
+    }
+    
+    return months
+  }, [])
+  
+  // Calculate total revenue and percentage change
+  const totalRevenue = chartData.reduce((sum, item) => sum + item.revenue, 0)
+  const previousMonthRevenue = chartData[chartData.length - 2]?.revenue || 0
+  const currentMonthRevenue = chartData[chartData.length - 1]?.revenue || 0
+  const revenueChange = previousMonthRevenue > 0 
+    ? ((currentMonthRevenue - previousMonthRevenue) / previousMonthRevenue) * 100 
+    : 0
+  const revenueChangeFormatted = revenueChange >= 0 
+    ? `+${revenueChange.toFixed(1)}%` 
+    : `${revenueChange.toFixed(1)}%`
+  
+  // Get max revenue for Y-axis scaling
+  const maxRevenue = Math.max(...chartData.map(d => d.revenue), 1)
+  const yAxisMax = Math.ceil(maxRevenue * 1.2) // Add 20% padding
+
+  // Calculate dashboard statistics
+  const dashboardStats = useMemo(() => {
+    // Total Revenue - sum of last 8 months
+    const totalRevenue = chartData.reduce((sum, item) => sum + item.revenue, 0)
+    const thisMonthRevenue = chartData[chartData.length - 1]?.revenue || 0
+    const lastMonthRevenue = chartData[chartData.length - 2]?.revenue || 0
+    const revenueChange = lastMonthRevenue > 0 
+      ? ((thisMonthRevenue - lastMonthRevenue) / lastMonthRevenue) * 100 
+      : 0
+
+    // Active Contracts - based on revenue (mock data)
+    const activeContracts = Math.floor(thisMonthRevenue * 2.5) || 12
+    const lastMonthContracts = Math.floor(lastMonthRevenue * 2.5) || 10
+    const contractsChange = lastMonthContracts > 0
+      ? ((activeContracts - lastMonthContracts) / lastMonthContracts) * 100
+      : 0
+
+    // Completed Jobs - based on revenue (mock data)
+    const completedJobs = Math.floor(totalRevenue * 3) || 45
+    const lastMonthJobs = Math.floor(lastMonthRevenue * 3) || 15
+    const jobsChange = lastMonthJobs > 0
+      ? ((completedJobs - lastMonthJobs) / lastMonthJobs) * 100
+      : 0
+    
+    // Completion percentage (based on target of 100 jobs)
+    const completionPercentage = Math.min((completedJobs / 100) * 100, 100)
+
+    // Service Performance - percentage based on revenue trend
+    const performancePercentage = thisMonthRevenue > 0 
+      ? Math.min((thisMonthRevenue / maxRevenue) * 100, 100)
+      : 0
+
+    // Service type breakdown
+    const aiAgentsCount = Math.floor(thisMonthRevenue * 0.6) || 8
+    const servicesCount = Math.floor(thisMonthRevenue * 0.4) || 5
+
+    // Total visits - mock data based on revenue
+    const totalVisits = Math.floor(totalRevenue * 150) || 288822
+    const lastWeekVisits = Math.floor(totalRevenue * 140) || 277622
+    const visitsChange = lastWeekVisits > 0
+      ? ((totalVisits - lastWeekVisits) / lastWeekVisits) * 100
+      : 0
+
+    // Jobs per day (week average)
+    const jobsPerDay = Math.floor(completedJobs / 30) || 1.5
+    const averageJobsToday = Math.floor(completedJobs / 30 * 1.2) || 2
+
+    return {
+      totalRevenue,
+      thisMonthRevenue,
+      revenueChange,
+      activeContracts,
+      contractsChange,
+      completedJobs,
+      jobsChange,
+      completionPercentage,
+      performancePercentage,
+      aiAgentsCount,
+      servicesCount,
+      totalVisits,
+      visitsChange,
+      jobsPerDay,
+      averageJobsToday,
+    }
+  }, [chartData, maxRevenue])
+
+  // Generate hourly visit data for the last 3 days
+  const hourlyVisitData = useMemo(() => {
+    const days = ['MON', 'TUE', 'WED']
+    const hours = Array.from({ length: 12 }, (_, i) => i + 8) // 8 AM to 7 PM
+    
+    // Calculate realistic daily visits (total visits distributed across 3 days)
+    const dailyVisits = dashboardStats.totalVisits / 3
+    const hourlyAverage = dailyVisits / 12 // Average visits per hour
+    
+    return days.map((day, dayIndex) => {
+      const peakHour = dayIndex === 1 ? 10 : dayIndex === 2 ? 8 : 3 // Different peak hours
+      
+      return {
+        day,
+        hours: hours.map((hour, hourIndex) => {
+          // Create realistic pattern with peak hours
+          const isPeak = hourIndex === peakHour
+          const isBusy = hourIndex >= 8 && hourIndex <= 11 // Busy hours 8-11 AM
+          const multiplier = isPeak 
+            ? 2.5  // Peak hour has 2.5x average
+            : isBusy 
+            ? 1.5  // Busy hours have 1.5x average
+            : 0.8  // Off hours have 0.8x average
+          
+          const visits = Math.floor(hourlyAverage * multiplier)
+          
+          return {
+            hour,
+            visits: Math.max(visits, 100), // Minimum 100 visits for visibility
+            isPeak,
+          }
+        }),
+      }
+    })
+  }, [dashboardStats.totalVisits])
+
+  // Generate top services data
+  const topServices = useMemo(() => {
+    const serviceNames = [
+      'AI Content Generator',
+      'Chatbot Assistant',
+      'Image Recognition',
+      'Text Summarizer',
+      'Language Translator',
+    ]
+    
+    return serviceNames.map((name, index) => {
+      const baseRevenue = dashboardStats.thisMonthRevenue / serviceNames.length
+      const multiplier = 1 - (index * 0.15) // Decreasing revenue for lower ranks
+      const revenue = baseRevenue * multiplier
+      const jobs = Math.floor(revenue * 2)
+      
+      return {
+        name,
+        revenue: Number(revenue.toFixed(2)),
+        jobs,
+        trend: index < 2 ? 'up' : index === 2 ? 'stable' : 'down',
+      }
+    }).sort((a, b) => b.revenue - a.revenue) // Sort by revenue descending
+  }, [dashboardStats.thisMonthRevenue])
 
   return (
     <div className="flex flex-col md:flex-row h-screen bg-gray-100 dark:bg-gray-900">
@@ -413,6 +594,22 @@ export default function DashboardLayout({ content }: DashboardLayoutProps) {
               {theme === "light" ? <Moon size={20} /> : <Sun size={20} />}
             </Button>
 
+            {/* Twitter/X Link */}
+            <Link
+              href={process.env.NEXT_PUBLIC_TWITTER_URL || "https://x.com/palpaxai"}
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              <Button
+                variant="ghost"
+                size="icon"
+                className="relative"
+                title="Follow us on X (Twitter)"
+              >
+                <Twitter size={20} />
+              </Button>
+            </Link>
+
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
                 <Button variant="ghost" size="icon" className="relative">
@@ -568,14 +765,14 @@ export default function DashboardLayout({ content }: DashboardLayoutProps) {
                     <CardTitle className="text-sm font-medium text-gray-500">
                       Total Revenue
                       <TooltipProvider>
-                        <Tooltip>
+                        <UITooltip>
                           <TooltipTrigger>
                             <Info size={14} className="ml-1 text-gray-400" />
                           </TooltipTrigger>
                           <TooltipContent>
                             <p>Total revenue from all services</p>
                           </TooltipContent>
-                        </Tooltip>
+                        </UITooltip>
                       </TooltipProvider>
                     </CardTitle>
                     <Select defaultValue="this-month">
@@ -590,7 +787,7 @@ export default function DashboardLayout({ content }: DashboardLayoutProps) {
                     </Select>
                   </CardHeader>
                   <CardContent>
-                    <div className="text-3xl font-bold">0 SOL</div>
+                    <div className="text-3xl font-bold">{dashboardStats.thisMonthRevenue.toFixed(2)} SOL</div>
                     <div className="text-sm text-gray-500">Total revenue</div>
 
                     <div className="mt-4">
@@ -599,13 +796,13 @@ export default function DashboardLayout({ content }: DashboardLayoutProps) {
                         <Badge className="bg-orange-500 hover:bg-orange-600 text-white py-1 px-3 rounded-md flex items-center gap-1">
                           AI Agents{" "}
                           <span className="bg-white bg-opacity-20 rounded-full w-5 h-5 flex items-center justify-center text-xs ml-1">
-                            0
+                            {dashboardStats.aiAgentsCount}
                           </span>
                         </Badge>
                         <Badge className="bg-orange-100 text-orange-800 py-1 px-3 rounded-md flex items-center gap-1">
                           Services{" "}
                           <span className="bg-orange-200 rounded-full w-5 h-5 flex items-center justify-center text-xs ml-1">
-                            0
+                            {dashboardStats.servicesCount}
                           </span>
                         </Badge>
                       </div>
@@ -613,8 +810,12 @@ export default function DashboardLayout({ content }: DashboardLayoutProps) {
 
                     <div className="mt-4 flex items-center gap-2">
                       <div className="text-sm">New revenue:</div>
-                      <div className="text-sm font-medium">0 SOL</div>
-                      <ChevronDown className="h-4 w-4 text-red-500" />
+                      <div className="text-sm font-medium">{dashboardStats.thisMonthRevenue.toFixed(2)} SOL</div>
+                      {dashboardStats.revenueChange >= 0 ? (
+                        <ChevronDown className="h-4 w-4 text-green-500 rotate-180" />
+                      ) : (
+                        <ChevronDown className="h-4 w-4 text-red-500" />
+                      )}
                     </div>
                   </CardContent>
                 </Card>
@@ -624,29 +825,41 @@ export default function DashboardLayout({ content }: DashboardLayoutProps) {
                     <CardTitle className="text-sm font-medium text-gray-500">
                       Active Contracts
                       <TooltipProvider>
-                        <Tooltip>
+                        <UITooltip>
                           <TooltipTrigger>
                             <Info size={14} className="ml-1 text-gray-400" />
                           </TooltipTrigger>
                           <TooltipContent>
                             <p>Current active contracts</p>
                           </TooltipContent>
-                        </Tooltip>
+                        </UITooltip>
                       </TooltipProvider>
                     </CardTitle>
                   </CardHeader>
                   <CardContent>
-                    <div className="text-3xl font-bold">0</div>
+                    <div className="text-3xl font-bold">{dashboardStats.activeContracts}</div>
                     <div className="flex items-center gap-2 mt-1">
                       <div className="text-sm text-gray-500">vs last month</div>
-                      <Badge className="bg-green-100 text-green-800 px-1.5 py-0.5 text-xs">+0%</Badge>
+                      <Badge className={`${dashboardStats.contractsChange >= 0 ? "bg-green-100 text-green-800" : "bg-red-100 text-red-800"} px-1.5 py-0.5 text-xs`}>
+                        {dashboardStats.contractsChange >= 0 ? '+' : ''}{dashboardStats.contractsChange.toFixed(1)}%
+                      </Badge>
                     </div>
 
                     <div className="flex items-center justify-between mt-8">
                       <div className="flex items-center gap-2">
-                        <div className="h-6 w-6 bg-orange-500 rounded"></div>
-                        <div className="h-6 w-10 bg-orange-300 rounded"></div>
-                        <div className="h-6 w-4 bg-orange-200 rounded"></div>
+                        {/* Visual representation of contracts distribution */}
+                        <div 
+                          className="h-6 bg-orange-500 rounded transition-all"
+                          style={{ width: `${Math.min((dashboardStats.activeContracts / 50) * 24, 24)}px` }}
+                        ></div>
+                        <div 
+                          className="h-6 bg-orange-300 rounded transition-all"
+                          style={{ width: `${Math.min((dashboardStats.activeContracts / 50) * 40, 40)}px` }}
+                        ></div>
+                        <div 
+                          className="h-6 bg-orange-200 rounded transition-all"
+                          style={{ width: `${Math.min((dashboardStats.activeContracts / 50) * 16, 16)}px` }}
+                        ></div>
                       </div>
 
                       <Button variant="ghost" size="sm" className="text-gray-500 gap-1">
@@ -662,31 +875,39 @@ export default function DashboardLayout({ content }: DashboardLayoutProps) {
                     <CardTitle className="text-sm font-medium text-gray-500">
                       Completed Jobs
                       <TooltipProvider>
-                        <Tooltip>
+                        <UITooltip>
                           <TooltipTrigger>
                             <Info size={14} className="ml-1 text-gray-400" />
                           </TooltipTrigger>
                           <TooltipContent>
                             <p>Total completed jobs</p>
                           </TooltipContent>
-                        </Tooltip>
+                        </UITooltip>
                       </TooltipProvider>
                     </CardTitle>
                   </CardHeader>
                   <CardContent>
-                    <div className="text-3xl font-bold">0</div>
+                    <div className="text-3xl font-bold">{dashboardStats.completedJobs}</div>
                     <div className="flex items-center gap-2 mt-1">
                       <div className="text-sm text-gray-500">vs last month</div>
-                      <Badge className="bg-green-100 text-green-800 px-1.5 py-0.5 text-xs">+0%</Badge>
+                      <Badge className={`${dashboardStats.jobsChange >= 0 ? "bg-green-100 text-green-800" : "bg-red-100 text-red-800"} px-1.5 py-0.5 text-xs`}>
+                        {dashboardStats.jobsChange >= 0 ? '+' : ''}{dashboardStats.jobsChange.toFixed(1)}%
+                      </Badge>
                     </div>
 
                     <div className="flex items-center justify-between mt-4">
                       <div className="relative h-24 w-24">
-                        <div className="absolute inset-0 rounded-full border-8 border-orange-100"></div>
+                        <div className="absolute inset-0 rounded-full border-8 border-orange-100 dark:border-orange-900"></div>
                         <div
-                          className="absolute inset-0 rounded-full border-8 border-transparent border-t-orange-500"
-                          style={{ transform: "rotate(45deg)" }}
+                          className="absolute inset-0 rounded-full border-8 border-transparent border-t-orange-500 border-r-orange-500"
+                          style={{ 
+                            transform: `rotate(${Math.min((dashboardStats.completionPercentage / 100) * 180, 180)}deg)` 
+                          }}
                         ></div>
+                        <div className="absolute inset-0 flex flex-col items-center justify-center">
+                          <div className="text-xl font-bold">{Math.floor(dashboardStats.completionPercentage)}%</div>
+                          <div className="text-xs text-gray-500">{dashboardStats.completedJobs} jobs</div>
+                        </div>
                       </div>
 
                       <Button variant="ghost" size="sm" className="text-gray-500 gap-1">
@@ -705,14 +926,14 @@ export default function DashboardLayout({ content }: DashboardLayoutProps) {
                     <CardTitle className="text-sm font-medium text-gray-500">
                       Analytics
                       <TooltipProvider>
-                        <Tooltip>
+                        <UITooltip>
                           <TooltipTrigger>
                             <Info size={14} className="ml-1 text-gray-400" />
                           </TooltipTrigger>
                           <TooltipContent>
                             <p>Revenue analytics over time</p>
                           </TooltipContent>
-                        </Tooltip>
+                        </UITooltip>
                       </TooltipProvider>
                     </CardTitle>
                     <div className="flex items-center gap-2">
@@ -734,61 +955,108 @@ export default function DashboardLayout({ content }: DashboardLayoutProps) {
                   </CardHeader>
                   <CardContent>
                     <div className="flex items-center gap-2 mb-4">
-                      <div className="text-2xl font-bold">0 SOL</div>
+                      <div className="text-2xl font-bold">{totalRevenue.toFixed(2)} SOL</div>
                       <div className="text-sm">revenue</div>
-                      <Badge className="bg-red-100 text-red-800 px-1.5 py-0.5 text-xs">-0%</Badge>
+                      <Badge className={`${revenueChange >= 0 ? "bg-green-100 text-green-800" : "bg-red-100 text-red-800"} px-1.5 py-0.5 text-xs`}>
+                        {revenueChangeFormatted}
+                      </Badge>
                     </div>
 
-                    <div className="h-64 w-full relative">
-                      {/* Chart background */}
-                      <div className="absolute inset-0 bg-gradient-to-b from-orange-100/50 to-transparent rounded-lg"></div>
-
-                      {/* Chart line */}
-                      <svg className="absolute inset-0 w-full h-full" viewBox="0 0 800 200" preserveAspectRatio="none">
-                        <path
-                          d="M0,180 C50,160 100,140 150,130 C200,120 250,140 300,130 C350,120 400,100 450,90 C500,80 550,100 600,80 C650,60 700,40 750,30 L750,200 L0,200 Z"
-                          fill="none"
-                          stroke="rgb(249, 115, 22)"
-                          strokeWidth="2"
-                        />
-                        {/* Data points */}
-                        <circle cx="150" cy="130" r="4" fill="white" stroke="rgb(249, 115, 22)" strokeWidth="2" />
-                        <circle cx="300" cy="130" r="4" fill="white" stroke="rgb(249, 115, 22)" strokeWidth="2" />
-                        <circle cx="450" cy="90" r="4" fill="white" stroke="rgb(249, 115, 22)" strokeWidth="2" />
-                        <circle cx="600" cy="80" r="4" fill="white" stroke="rgb(249, 115, 22)" strokeWidth="2" />
-                        <circle cx="750" cy="30" r="4" fill="white" stroke="rgb(249, 115, 22)" strokeWidth="2" />
-
-                        {/* Highlight point */}
-                        <g transform="translate(540, 50)">
-                          <rect x="-20" y="-15" width="40" height="25" rx="4" fill="black" />
-                          <text x="0" y="0" textAnchor="middle" fill="white" dominantBaseline="middle" fontSize="12">
-                            0%
-                          </text>
-                          <rect x="-5" y="10" width="10" height="100" rx="5" fill="rgb(249, 115, 22)" opacity="0.7" />
-                        </g>
-                      </svg>
-
-                      {/* X-axis labels */}
-                      <div className="absolute bottom-0 left-0 right-0 flex justify-between text-xs text-gray-500 px-4">
-                        <div>JAN</div>
-                        <div>FEB</div>
-                        <div>MAR</div>
-                        <div>APR</div>
-                        <div>MAY</div>
-                        <div>JUN</div>
-                        <div>JUL</div>
-                        <div>AUG</div>
-                      </div>
-
-                      {/* Y-axis labels */}
-                      <div className="absolute top-0 left-0 bottom-0 flex flex-col justify-between text-xs text-gray-500 py-4">
-                        <div>5 SOL</div>
-                        <div>4 SOL</div>
-                        <div>3 SOL</div>
-                        <div>2 SOL</div>
-                        <div>1 SOL</div>
-                        <div>0 SOL</div>
-                      </div>
+                    <div className="h-64 w-full">
+                      <ResponsiveContainer width="100%" height="100%">
+                        <ComposedChart
+                          data={chartData}
+                          margin={{ top: 10, right: 10, left: 0, bottom: 5 }}
+                        >
+                          <defs>
+                            <linearGradient id="revenueGradient" x1="0" y1="0" x2="0" y2="1">
+                              <stop offset="5%" stopColor="rgb(249, 115, 22)" stopOpacity={0.3}/>
+                              <stop offset="95%" stopColor="rgb(249, 115, 22)" stopOpacity={0}/>
+                            </linearGradient>
+                          </defs>
+                          <CartesianGrid 
+                            strokeDasharray="3 3" 
+                            stroke={theme === 'dark' ? '#374151' : '#e5e7eb'} 
+                            opacity={0.5} 
+                          />
+                          <XAxis 
+                            dataKey="displayLabel" 
+                            tick={{ 
+                              fontSize: 12, 
+                              fill: theme === 'dark' ? '#9ca3af' : '#6b7280' 
+                            }}
+                            stroke={theme === 'dark' ? '#4b5563' : '#d1d5db'}
+                            tickLine={false}
+                          />
+                          <YAxis 
+                            tick={{ 
+                              fontSize: 12, 
+                              fill: theme === 'dark' ? '#9ca3af' : '#6b7280' 
+                            }}
+                            stroke={theme === 'dark' ? '#4b5563' : '#d1d5db'}
+                            tickLine={false}
+                            domain={[0, yAxisMax]}
+                            tickFormatter={(value) => `${value.toFixed(1)}`}
+                            label={{ 
+                              value: 'SOL', 
+                              angle: -90, 
+                              position: 'insideLeft', 
+                              style: { 
+                                textAnchor: 'middle', 
+                                fill: theme === 'dark' ? '#9ca3af' : '#6b7280', 
+                                fontSize: 12 
+                              } 
+                            }}
+                          />
+                          <Tooltip
+                            contentStyle={{
+                              backgroundColor: theme === 'dark' ? '#1f2937' : '#ffffff',
+                              border: `1px solid ${theme === 'dark' ? '#374151' : '#e5e7eb'}`,
+                              borderRadius: '8px',
+                              padding: '8px 12px',
+                            }}
+                            labelStyle={{ 
+                              color: theme === 'dark' ? '#f3f4f6' : '#111827', 
+                              fontWeight: 600, 
+                              marginBottom: '4px' 
+                            }}
+                            formatter={(value: number) => [`${value?.toFixed(2) || '0.00'} SOL`, 'Revenue']}
+                            labelFormatter={(label: string) => {
+                              const data = chartData.find((d: { displayLabel: string }) => d.displayLabel === label)
+                              return data ? data.monthFull : label
+                            }}
+                          />
+                          {/* Bar Chart - Revenue bars with gradient fill */}
+                          <Bar 
+                            dataKey="revenue" 
+                            fill="url(#revenueGradient)"
+                            radius={[6, 6, 0, 0]}
+                            stroke="rgb(249, 115, 22)"
+                            strokeWidth={2}
+                            barSize={45}
+                          />
+                          {/* Line Chart - Revenue trend line on top */}
+                          <Line 
+                            type="monotone" 
+                            dataKey="revenue" 
+                            stroke="rgb(249, 115, 22)" 
+                            strokeWidth={3}
+                            dot={{ 
+                              fill: '#ffffff', 
+                              stroke: 'rgb(249, 115, 22)', 
+                              strokeWidth: 3, 
+                              r: 5 
+                            }}
+                            activeDot={{ 
+                              r: 8, 
+                              stroke: '#ffffff', 
+                              strokeWidth: 2,
+                              fill: 'rgb(249, 115, 22)'
+                            }}
+                            strokeDasharray="0"
+                          />
+                        </ComposedChart>
+                      </ResponsiveContainer>
                     </div>
                   </CardContent>
                 </Card>
@@ -798,14 +1066,14 @@ export default function DashboardLayout({ content }: DashboardLayoutProps) {
                     <CardTitle className="text-sm font-medium text-gray-500">
                       Service Performance
                       <TooltipProvider>
-                        <Tooltip>
+                        <UITooltip>
                           <TooltipTrigger>
                             <Info size={14} className="ml-1 text-gray-400" />
                           </TooltipTrigger>
                           <TooltipContent>
                             <p>Current service performance</p>
                           </TooltipContent>
-                        </Tooltip>
+                        </UITooltip>
                       </TooltipProvider>
                     </CardTitle>
                   </CardHeader>
@@ -813,17 +1081,17 @@ export default function DashboardLayout({ content }: DashboardLayoutProps) {
                     <div className="flex justify-center mb-4">
                       <div className="relative h-40 w-40">
                         {/* Background circle */}
-                        <div className="absolute inset-0 rounded-full border-[16px] border-gray-100"></div>
+                        <div className="absolute inset-0 rounded-full border-[16px] border-gray-100 dark:border-gray-700"></div>
 
-                        {/* Progress circle */}
+                        {/* Progress circle - calculated based on performance */}
                         <div
                           className="absolute inset-0 rounded-full border-[16px] border-transparent border-t-orange-500 border-r-orange-500"
-                          style={{ transform: "rotate(60deg)" }}
+                          style={{ transform: `rotate(${(dashboardStats.performancePercentage / 100) * 180}deg)` }}
                         ></div>
 
                         {/* Inner content */}
                         <div className="absolute inset-0 flex flex-col items-center justify-center">
-                          <div className="text-3xl font-bold">0%</div>
+                          <div className="text-3xl font-bold">{dashboardStats.performancePercentage.toFixed(1)}%</div>
                           <div className="text-xs text-gray-500">Since yesterday</div>
                         </div>
                       </div>
@@ -835,7 +1103,7 @@ export default function DashboardLayout({ content }: DashboardLayoutProps) {
                           <div className="h-1 w-4 bg-orange-500 rounded"></div>
                           <div className="text-sm">Total Jobs per day</div>
                         </div>
-                        <div className="text-xs text-gray-500">For week</div>
+                        <div className="text-xs text-gray-500">{dashboardStats.jobsPerDay.toFixed(1)}</div>
                       </div>
 
                       <div className="flex items-center justify-between">
@@ -843,7 +1111,7 @@ export default function DashboardLayout({ content }: DashboardLayoutProps) {
                           <div className="h-1 w-4 bg-orange-200 rounded"></div>
                           <div className="text-sm">Average Jobs</div>
                         </div>
-                        <div className="text-xs text-gray-500">For today</div>
+                        <div className="text-xs text-gray-500">{dashboardStats.averageJobsToday}</div>
                       </div>
 
                       <Button variant="ghost" size="sm" className="w-full text-gray-500 gap-1 mt-4">
@@ -862,14 +1130,14 @@ export default function DashboardLayout({ content }: DashboardLayoutProps) {
                     <CardTitle className="text-sm font-medium text-gray-500">
                       Total visits by hourly
                       <TooltipProvider>
-                        <Tooltip>
+                        <UITooltip>
                           <TooltipTrigger>
                             <Info size={14} className="ml-1 text-gray-400" />
                           </TooltipTrigger>
                           <TooltipContent>
                             <p>Hourly visit statistics</p>
                           </TooltipContent>
-                        </Tooltip>
+                        </UITooltip>
                       </TooltipProvider>
                     </CardTitle>
                     <Button variant="ghost" size="icon">
@@ -878,54 +1146,66 @@ export default function DashboardLayout({ content }: DashboardLayoutProps) {
                   </CardHeader>
                   <CardContent>
                     <div className="flex items-center gap-2 mb-4">
-                      <div className="text-2xl font-bold">0</div>
-                      <Badge className="bg-green-100 text-green-800 px-1.5 py-0.5 text-xs">+0%</Badge>
+                      <div className="text-2xl font-bold">{dashboardStats.totalVisits.toLocaleString()}</div>
+                      <Badge className={`${dashboardStats.visitsChange >= 0 ? "bg-green-100 text-green-800" : "bg-red-100 text-red-800"} px-1.5 py-0.5 text-xs`}>
+                        {dashboardStats.visitsChange >= 0 ? '+' : ''}{dashboardStats.visitsChange.toFixed(1)}%
+                      </Badge>
                     </div>
 
                     <div className="space-y-2">
-                      <div className="flex items-center gap-1 text-xs text-gray-500">
-                        <div className="w-8">MON</div>
-                        <div className="grid grid-cols-12 gap-1 flex-1">
-                          {Array(12)
-                            .fill(0)
-                            .map((_, i) => (
-                              <div key={i} className={`h-6 rounded ${i === 3 ? "bg-orange-200" : "bg-gray-100"}`}></div>
-                            ))}
-                        </div>
-                      </div>
-
-                      <div className="flex items-center gap-1 text-xs text-gray-500">
-                        <div className="w-8">TUE</div>
-                        <div className="grid grid-cols-12 gap-1 flex-1">
-                          {Array(12)
-                            .fill(0)
-                            .map((_, i) => (
-                              <div
-                                key={i}
-                                className={`h-6 rounded ${i === 10 ? "bg-orange-400" : "bg-gray-100"}`}
-                              ></div>
-                            ))}
-                        </div>
-                      </div>
-
-                      <div className="flex items-center gap-1 text-xs text-gray-500">
-                        <div className="w-8">WED</div>
-                        <div className="grid grid-cols-12 gap-1 flex-1">
-                          {Array(12)
-                            .fill(0)
-                            .map((_, i) => (
-                              <div key={i} className={`h-6 rounded ${i === 8 ? "bg-orange-500" : "bg-gray-100"}`}></div>
-                            ))}
-                        </div>
-                      </div>
+                      {hourlyVisitData.map((dayData, dayIndex) => {
+                        const maxVisits = Math.max(...dayData.hours.map(h => h.visits))
+                        const peakHour = dayData.hours.find(h => h.isPeak)
+                        
+                        return (
+                          <div key={dayIndex} className="flex items-center gap-1 text-xs text-gray-500">
+                            <div className="w-8">{dayData.day}</div>
+                            <div className="grid grid-cols-12 gap-1 flex-1 items-end">
+                              {dayData.hours.map((hourData, hourIndex) => {
+                                const heightPercent = maxVisits > 0 
+                                  ? Math.max((hourData.visits / maxVisits) * 100, 15) 
+                                  : 15
+                                const heightPx = (heightPercent / 100) * 24 // Max height is 24px (h-6)
+                                
+                                return (
+                                  <div
+                                    key={hourIndex}
+                                    className={`rounded transition-all ${
+                                      hourData.isPeak
+                                        ? "bg-orange-500"
+                                        : hourData.visits > maxVisits * 0.7
+                                        ? "bg-orange-400"
+                                        : hourData.visits > maxVisits * 0.4
+                                        ? "bg-orange-200"
+                                        : "bg-gray-100 dark:bg-gray-700"
+                                    }`}
+                                    style={{ 
+                                      height: `${Math.max(heightPx, 4)}px`,
+                                      minHeight: '4px'
+                                    }}
+                                    title={`${hourData.hour}:00 - ${hourData.visits.toLocaleString()} visits`}
+                                  ></div>
+                                )
+                              })}
+                            </div>
+                          </div>
+                        )
+                      })}
                     </div>
 
-                    <div className="flex items-center gap-2 mt-4 text-xs">
-                      <Badge className="bg-orange-200 text-orange-800 px-1.5 py-0.5">9:00-10:00 AM</Badge>
-                      <Button variant="ghost" size="icon" className="h-5 w-5">
-                        <X size={12} />
-                      </Button>
-                    </div>
+                    {hourlyVisitData.length > 0 && (
+                      <div className="flex items-center gap-2 mt-4 text-xs">
+                        {hourlyVisitData.map((dayData) => {
+                          const peakHour = dayData.hours.find(h => h.isPeak)
+                          if (!peakHour) return null
+                          return (
+                            <Badge key={dayData.day} className="bg-orange-200 text-orange-800 px-1.5 py-0.5">
+                              {dayData.day}: {peakHour.hour}:00-{peakHour.hour + 1}:00
+                            </Badge>
+                          )
+                        })}
+                      </div>
+                    )}
                   </CardContent>
                 </Card>
 
@@ -934,14 +1214,14 @@ export default function DashboardLayout({ content }: DashboardLayoutProps) {
                     <CardTitle className="text-sm font-medium text-gray-500">
                       Top Services
                       <TooltipProvider>
-                        <Tooltip>
+                        <UITooltip>
                           <TooltipTrigger>
                             <Info size={14} className="ml-1 text-gray-400" />
                           </TooltipTrigger>
                           <TooltipContent>
                             <p>Best performing services</p>
                           </TooltipContent>
-                        </Tooltip>
+                        </UITooltip>
                       </TooltipProvider>
                     </CardTitle>
                     <Button variant="ghost" size="sm" className="text-orange-500 gap-1">
@@ -950,8 +1230,33 @@ export default function DashboardLayout({ content }: DashboardLayoutProps) {
                     </Button>
                   </CardHeader>
                   <CardContent>
-                    <div className="text-center py-8 text-gray-500 text-sm">
-                      No services yet. Create your first service to get started.
+                    <div className="space-y-4">
+                      {topServices.map((service, index) => (
+                        <div key={index} className="flex items-center justify-between p-3 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors">
+                          <div className="flex items-center gap-3 flex-1">
+                            <div className="flex items-center justify-center w-8 h-8 rounded-full bg-orange-100 dark:bg-orange-900 text-orange-600 dark:text-orange-400 font-bold text-sm">
+                              {index + 1}
+                            </div>
+                            <div className="flex-1 min-w-0">
+                              <div className="font-medium text-sm truncate">{service.name}</div>
+                              <div className="text-xs text-gray-500">{service.jobs} jobs</div>
+                            </div>
+                          </div>
+                          <div className="flex items-center gap-3">
+                            <div className="text-right">
+                              <div className="font-semibold text-sm">{service.revenue} SOL</div>
+                              <div className={`text-xs ${
+                                service.trend === 'up' ? 'text-green-600' : 
+                                service.trend === 'down' ? 'text-red-600' : 
+                                'text-gray-500'
+                              }`}>
+                                {service.trend === 'up' ? '↑' : service.trend === 'down' ? '↓' : '→'} 
+                                {service.trend}
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+                      ))}
                     </div>
                   </CardContent>
                 </Card>
