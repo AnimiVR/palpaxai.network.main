@@ -30,7 +30,6 @@ import {
   Store,
   Wallet,
   Briefcase,
-  Bot,
   Pointer,
   Book,
   Twitter,
@@ -171,8 +170,7 @@ export default function DashboardLayout({ content }: DashboardLayoutProps) {
             {!sidebarCollapsed && (
               <>
                 <div className="bg-black text-white dark:bg-white dark:text-black p-2 rounded">
-                  {/* <Bot size={16} /> */}
-                  <Image src="/logopalpaxai.png" alt="PalPaxAI" width={16} height={16} className="w-16 h-16" />
+                  <Image src="/logopalpaxai.png" alt="PalPaxAI" width={20} height={20} className="w-5 h-5" />
                 </div>
                 <div>
                   <div className="font-semibold dark:text-white">PalPaxAI</div>
@@ -181,7 +179,7 @@ export default function DashboardLayout({ content }: DashboardLayoutProps) {
             )}
             {sidebarCollapsed && (
               <div className="bg-black text-white dark:bg-white dark:text-black p-2 rounded mx-auto">
-                <Image src="/logopalpaxai.png" alt="PalPaxAI" width={16} height={16} className="w-16 h-16" />
+                <Image src="/logopalpaxai.png" alt="PalPaxAI" width={20} height={20} className="w-5 h-5" />
               </div>
             )}
           </Link>
