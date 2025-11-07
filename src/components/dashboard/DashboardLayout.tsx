@@ -53,7 +53,7 @@ import { useTheme } from "@/contexts/theme-context"
 import { usePhantomWallet } from "@/hooks/usePhantomWallet"
 import { Loader2 } from "lucide-react"
 import Image from "next/image"
-import { LineChart, Line, BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, ComposedChart } from "recharts"
+import { Line, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, ComposedChart } from "recharts"
 import { format, subMonths, startOfMonth } from "date-fns"
 
 // Custom scrollbar styles
@@ -1155,7 +1155,6 @@ export default function DashboardLayout({ content }: DashboardLayoutProps) {
                     <div className="space-y-2">
                       {hourlyVisitData.map((dayData, dayIndex) => {
                         const maxVisits = Math.max(...dayData.hours.map(h => h.visits))
-                        const peakHour = dayData.hours.find(h => h.isPeak)
                         
                         return (
                           <div key={dayIndex} className="flex items-center gap-1 text-xs text-gray-500">
