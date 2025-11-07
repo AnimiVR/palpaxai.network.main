@@ -31,6 +31,7 @@ import { HireConfirmationModal } from "@/components/marketplace/HireConfirmation
 import { PaymentResultModal } from "@/components/marketplace/PaymentResultModal";
 import { WalletRequiredModal } from "@/components/marketplace/WalletRequiredModal";
 import { usePhantomWallet } from "@/hooks/usePhantomWallet";
+import { addTransaction, parsePrice } from "@/utils/dashboardStorage";
 
 // Generate random prices below 0.1 SOL (0.01 to 0.099)
 const randomPrices = [
@@ -270,6 +271,16 @@ export default function MarketplacePage() {
       
       // Simulate processing delay
       await new Promise(resolve => setTimeout(resolve, 1000));
+      
+      // Lưu transaction vào localStorage
+      const price = parsePrice(selectedService.price);
+      addTransaction({
+        serviceId: selectedService.id,
+        serviceTitle: selectedService.title,
+        price: price,
+        priceString: selectedService.price,
+        category: selectedService.category,
+      });
       
       setHireModalOpen(false);
       

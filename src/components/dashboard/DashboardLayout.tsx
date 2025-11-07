@@ -55,6 +55,13 @@ import { Loader2 } from "lucide-react"
 import Image from "next/image"
 import { Line, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, ComposedChart } from "recharts"
 import { format, subMonths, startOfMonth } from "date-fns"
+import { 
+  getDashboardData, 
+  getCurrentMonthTransactions, 
+  getLastMonthTransactions,
+  getTransactionsByMonth,
+  type DashboardTransaction
+} from "@/utils/dashboardStorage"
 
 // Custom scrollbar styles
 const scrollbarStyles = `
@@ -159,14 +166,45 @@ export default function DashboardLayout({ content }: DashboardLayoutProps) {
     }
   }, [])
 
-  // Generate chart data for the last 8 months
-  // Using useMemo to keep data stable across re-renders
+  // State để lưu transactions - khởi tạo với mảng rỗng để tránh hydration mismatch
+  // Server và client sẽ render giống nhau ban đầu (mảng rỗng = 0 revenue)
+  const [transactions, setTransactions] = useState<DashboardTransaction[]>([])
+
+  // Load transactions từ localStorage sau khi component mount (chỉ trên client)
+  useEffect(() => {
+    const loadTransactions = () => {
+      const data = getDashboardData()
+      setTransactions(data.transactions || [])
+    }
+
+    loadTransactions()
+
+    // Listen for storage changes (khi có transaction mới từ tab khác)
+    const handleStorageChange = (e: StorageEvent) => {
+      if (e.key === 'palpaxai_dashboard_data') {
+        loadTransactions()
+      }
+    }
+
+    // Listen for custom event (khi có transaction mới từ cùng tab)
+    const handleTransactionAdded = () => {
+      loadTransactions()
+    }
+
+    window.addEventListener('storage', handleStorageChange)
+    window.addEventListener('dashboardTransactionAdded', handleTransactionAdded)
+
+    return () => {
+      window.removeEventListener('storage', handleStorageChange)
+      window.removeEventListener('dashboardTransactionAdded', handleTransactionAdded)
+    }
+  }, [])
+
+  // Generate chart data for the last 8 months từ transactions
   const chartData = useMemo(() => {
     const today = new Date()
     const months = []
-    
-    // Predefined sample data for demonstration - replace with actual API data
-    const sampleData = [0.2, 1.7, 1.5, 1.6, 2.9, 3.1, 4.0, 4.6]
+    const transactionsByMonth = getTransactionsByMonth(transactions)
     
     const currentYear = today.getFullYear()
     
@@ -175,9 +213,10 @@ export default function DashboardLayout({ content }: DashboardLayoutProps) {
       const monthName = format(date, "MMM")
       const monthFull = format(date, "MMM yyyy")
       const year = date.getFullYear()
+      const monthKey = `${year}-${String(date.getMonth() + 1).padStart(2, '0')}`
       
-      // Use sample data or 0 if not available
-      const revenue = sampleData[7 - i] || 0
+      // Get revenue from transactions for this month
+      const revenue = transactionsByMonth[monthKey] || 0
       
       // Show year in label if it's different from current year
       const displayLabel = year !== currentYear 
@@ -194,7 +233,7 @@ export default function DashboardLayout({ content }: DashboardLayoutProps) {
     }
     
     return months
-  }, [])
+  }, [transactions])
   
   // Calculate total revenue and percentage change
   const totalRevenue = chartData.reduce((sum, item) => sum + item.revenue, 0)
@@ -211,52 +250,64 @@ export default function DashboardLayout({ content }: DashboardLayoutProps) {
   const maxRevenue = Math.max(...chartData.map(d => d.revenue), 1)
   const yAxisMax = Math.ceil(maxRevenue * 1.2) // Add 20% padding
 
-  // Calculate dashboard statistics
+  // Calculate dashboard statistics từ transactions
   const dashboardStats = useMemo(() => {
-    // Total Revenue - sum of last 8 months
-    const totalRevenue = chartData.reduce((sum, item) => sum + item.revenue, 0)
-    const thisMonthRevenue = chartData[chartData.length - 1]?.revenue || 0
-    const lastMonthRevenue = chartData[chartData.length - 2]?.revenue || 0
+    // Get transactions for current and last month
+    const currentMonthTxs = getCurrentMonthTransactions(transactions)
+    const lastMonthTxs = getLastMonthTransactions(transactions)
+    
+    // Total Revenue - sum of all transactions
+    const totalRevenue = transactions.reduce((sum, tx) => sum + tx.price, 0)
+    
+    // This month revenue
+    const thisMonthRevenue = currentMonthTxs.reduce((sum, tx) => sum + tx.price, 0)
+    
+    // Last month revenue
+    const lastMonthRevenue = lastMonthTxs.reduce((sum, tx) => sum + tx.price, 0)
+    
+    // Revenue change percentage
     const revenueChange = lastMonthRevenue > 0 
       ? ((thisMonthRevenue - lastMonthRevenue) / lastMonthRevenue) * 100 
       : 0
 
-    // Active Contracts - based on revenue (mock data)
-    const activeContracts = Math.floor(thisMonthRevenue * 2.5) || 12
-    const lastMonthContracts = Math.floor(lastMonthRevenue * 2.5) || 10
+    // Active Contracts = số transactions trong tháng này
+    const activeContracts = currentMonthTxs.length
+    const lastMonthContracts = lastMonthTxs.length
     const contractsChange = lastMonthContracts > 0
       ? ((activeContracts - lastMonthContracts) / lastMonthContracts) * 100
-      : 0
+      : activeContracts > 0 ? 100 : 0
 
-    // Completed Jobs - based on revenue (mock data)
-    const completedJobs = Math.floor(totalRevenue * 3) || 45
-    const lastMonthJobs = Math.floor(lastMonthRevenue * 3) || 15
+    // Completed Jobs = tổng số transactions (mỗi hire = 1 job completed)
+    const completedJobs = transactions.length
+    const lastMonthJobs = lastMonthTxs.length
     const jobsChange = lastMonthJobs > 0
       ? ((completedJobs - lastMonthJobs) / lastMonthJobs) * 100
-      : 0
+      : completedJobs > 0 ? 100 : 0
     
     // Completion percentage (based on target of 100 jobs)
     const completionPercentage = Math.min((completedJobs / 100) * 100, 100)
 
     // Service Performance - percentage based on revenue trend
-    const performancePercentage = thisMonthRevenue > 0 
+    const performancePercentage = thisMonthRevenue > 0 && maxRevenue > 0
       ? Math.min((thisMonthRevenue / maxRevenue) * 100, 100)
       : 0
 
-    // Service type breakdown
-    const aiAgentsCount = Math.floor(thisMonthRevenue * 0.6) || 8
-    const servicesCount = Math.floor(thisMonthRevenue * 0.4) || 5
+    // Service type breakdown - count AI Agents và Services
+    const aiAgentsCount = currentMonthTxs.filter(tx => 
+      tx.category === 'Development' || tx.category === 'Analytics' || tx.category === 'Testing'
+    ).length
+    const servicesCount = currentMonthTxs.filter(tx => 
+      tx.category !== 'Development' && tx.category !== 'Analytics' && tx.category !== 'Testing'
+    ).length
 
-    // Total visits - mock data based on revenue
-    const totalVisits = Math.floor(totalRevenue * 150) || 288822
-    const lastWeekVisits = Math.floor(totalRevenue * 140) || 277622
-    const visitsChange = lastWeekVisits > 0
-      ? ((totalVisits - lastWeekVisits) / lastWeekVisits) * 100
-      : 0
+    // Total visits - reset về 0
+    const totalVisits = 0
+    const visitsChange = 0
 
-    // Jobs per day (week average)
-    const jobsPerDay = Math.floor(completedJobs / 30) || 1.5
-    const averageJobsToday = Math.floor(completedJobs / 30 * 1.2) || 2
+    // Jobs per day (average)
+    const daysInMonth = new Date(new Date().getFullYear(), new Date().getMonth() + 1, 0).getDate()
+    const jobsPerDay = daysInMonth > 0 ? completedJobs / daysInMonth : 0
+    const averageJobsToday = Math.max(1, Math.floor(jobsPerDay))
 
     return {
       totalRevenue,
@@ -275,16 +326,15 @@ export default function DashboardLayout({ content }: DashboardLayoutProps) {
       jobsPerDay,
       averageJobsToday,
     }
-  }, [chartData, maxRevenue])
+  }, [transactions, maxRevenue])
 
-  // Generate hourly visit data for the last 3 days
+  // Generate hourly visit data for the last 3 days (reset về 0)
   const hourlyVisitData = useMemo(() => {
     const days = ['MON', 'TUE', 'WED']
     const hours = Array.from({ length: 12 }, (_, i) => i + 8) // 8 AM to 7 PM
     
-    // Calculate realistic daily visits (total visits distributed across 3 days)
-    const dailyVisits = dashboardStats.totalVisits / 3
-    const hourlyAverage = dailyVisits / 12 // Average visits per hour
+    // Reset về 0 - không có visits data
+    const hourlyAverage = 0 // Average visits per hour
     
     return days.map((day, dayIndex) => {
       const peakHour = dayIndex === 1 ? 10 : dayIndex === 2 ? 8 : 3 // Different peak hours
@@ -305,38 +355,40 @@ export default function DashboardLayout({ content }: DashboardLayoutProps) {
           
           return {
             hour,
-            visits: Math.max(visits, 100), // Minimum 100 visits for visibility
-            isPeak,
+            visits: visits, // Reset về 0, không có minimum
+            isPeak: false, // Reset peak hours
           }
         }),
       }
     })
-  }, [dashboardStats.totalVisits])
+  }, [])
 
-  // Generate top services data
+  // Generate top services data từ transactions
   const topServices = useMemo(() => {
-    const serviceNames = [
-      'AI Content Generator',
-      'Chatbot Assistant',
-      'Image Recognition',
-      'Text Summarizer',
-      'Language Translator',
-    ]
+    // Group transactions by service title
+    const serviceMap = new Map<string, { revenue: number; jobs: number; category?: string }>()
     
-    return serviceNames.map((name, index) => {
-      const baseRevenue = dashboardStats.thisMonthRevenue / serviceNames.length
-      const multiplier = 1 - (index * 0.15) // Decreasing revenue for lower ranks
-      const revenue = baseRevenue * multiplier
-      const jobs = Math.floor(revenue * 2)
-      
-      return {
+    transactions.forEach((tx) => {
+      const existing = serviceMap.get(tx.serviceTitle) || { revenue: 0, jobs: 0, category: tx.category }
+      existing.revenue += tx.price
+      existing.jobs += 1
+      serviceMap.set(tx.serviceTitle, existing)
+    })
+    
+    // Convert to array and sort by revenue
+    const services = Array.from(serviceMap.entries())
+      .map(([name, data]) => ({
         name,
-        revenue: Number(revenue.toFixed(2)),
-        jobs,
-        trend: index < 2 ? 'up' : index === 2 ? 'stable' : 'down',
-      }
-    }).sort((a, b) => b.revenue - a.revenue) // Sort by revenue descending
-  }, [dashboardStats.thisMonthRevenue])
+        revenue: Number(data.revenue.toFixed(2)),
+        jobs: data.jobs,
+        trend: 'up' as const, // Default trend
+      }))
+      .sort((a, b) => b.revenue - a.revenue)
+      .slice(0, 5) // Top 5 services
+    
+    // Nếu không có services, trả về mảng rỗng
+    return services
+  }, [transactions])
 
   return (
     <div className="flex flex-col md:flex-row h-screen bg-gray-100 dark:bg-gray-900">
@@ -1154,7 +1206,7 @@ export default function DashboardLayout({ content }: DashboardLayoutProps) {
 
                     <div className="space-y-2">
                       {hourlyVisitData.map((dayData, dayIndex) => {
-                        const maxVisits = Math.max(...dayData.hours.map(h => h.visits))
+                        const maxVisits = Math.max(...dayData.hours.map(h => h.visits), 1)
                         
                         return (
                           <div key={dayIndex} className="flex items-center gap-1 text-xs text-gray-500">
@@ -1162,25 +1214,21 @@ export default function DashboardLayout({ content }: DashboardLayoutProps) {
                             <div className="grid grid-cols-12 gap-1 flex-1 items-end">
                               {dayData.hours.map((hourData, hourIndex) => {
                                 const heightPercent = maxVisits > 0 
-                                  ? Math.max((hourData.visits / maxVisits) * 100, 15) 
-                                  : 15
+                                  ? Math.max((hourData.visits / maxVisits) * 100, 0) 
+                                  : 0
                                 const heightPx = (heightPercent / 100) * 24 // Max height is 24px (h-6)
                                 
                                 return (
                                   <div
                                     key={hourIndex}
                                     className={`rounded transition-all ${
-                                      hourData.isPeak
-                                        ? "bg-orange-500"
-                                        : hourData.visits > maxVisits * 0.7
-                                        ? "bg-orange-400"
-                                        : hourData.visits > maxVisits * 0.4
-                                        ? "bg-orange-200"
+                                      hourData.visits > 0
+                                        ? "bg-gray-200 dark:bg-gray-600"
                                         : "bg-gray-100 dark:bg-gray-700"
                                     }`}
                                     style={{ 
-                                      height: `${Math.max(heightPx, 4)}px`,
-                                      minHeight: '4px'
+                                      height: `${Math.max(heightPx, 2)}px`,
+                                      minHeight: '2px'
                                     }}
                                     title={`${hourData.hour}:00 - ${hourData.visits.toLocaleString()} visits`}
                                   ></div>
@@ -1192,19 +1240,6 @@ export default function DashboardLayout({ content }: DashboardLayoutProps) {
                       })}
                     </div>
 
-                    {hourlyVisitData.length > 0 && (
-                      <div className="flex items-center gap-2 mt-4 text-xs">
-                        {hourlyVisitData.map((dayData) => {
-                          const peakHour = dayData.hours.find(h => h.isPeak)
-                          if (!peakHour) return null
-                          return (
-                            <Badge key={dayData.day} className="bg-orange-200 text-orange-800 px-1.5 py-0.5">
-                              {dayData.day}: {peakHour.hour}:00-{peakHour.hour + 1}:00
-                            </Badge>
-                          )
-                        })}
-                      </div>
-                    )}
                   </CardContent>
                 </Card>
 
@@ -1229,34 +1264,40 @@ export default function DashboardLayout({ content }: DashboardLayoutProps) {
                     </Button>
                   </CardHeader>
                   <CardContent>
-                    <div className="space-y-4">
-                      {topServices.map((service, index) => (
-                        <div key={index} className="flex items-center justify-between p-3 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors">
-                          <div className="flex items-center gap-3 flex-1">
-                            <div className="flex items-center justify-center w-8 h-8 rounded-full bg-orange-100 dark:bg-orange-900 text-orange-600 dark:text-orange-400 font-bold text-sm">
-                              {index + 1}
+                    {topServices.length > 0 ? (
+                      <div className="space-y-4">
+                        {topServices.map((service, index) => (
+                          <div key={index} className="flex items-center justify-between p-3 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors">
+                            <div className="flex items-center gap-3 flex-1">
+                              <div className="flex items-center justify-center w-8 h-8 rounded-full bg-orange-100 dark:bg-orange-900 text-orange-600 dark:text-orange-400 font-bold text-sm">
+                                {index + 1}
+                              </div>
+                              <div className="flex-1 min-w-0">
+                                <div className="font-medium text-sm truncate">{service.name}</div>
+                                <div className="text-xs text-gray-500">{service.jobs} jobs</div>
+                              </div>
                             </div>
-                            <div className="flex-1 min-w-0">
-                              <div className="font-medium text-sm truncate">{service.name}</div>
-                              <div className="text-xs text-gray-500">{service.jobs} jobs</div>
-                            </div>
-                          </div>
-                          <div className="flex items-center gap-3">
-                            <div className="text-right">
-                              <div className="font-semibold text-sm">{service.revenue} SOL</div>
-                              <div className={`text-xs ${
-                                service.trend === 'up' ? 'text-green-600' : 
-                                service.trend === 'down' ? 'text-red-600' : 
-                                'text-gray-500'
-                              }`}>
-                                {service.trend === 'up' ? '↑' : service.trend === 'down' ? '↓' : '→'} 
-                                {service.trend}
+                            <div className="flex items-center gap-3">
+                              <div className="text-right">
+                                <div className="font-semibold text-sm">{service.revenue} SOL</div>
+                                <div className={`text-xs ${
+                                  service.trend === 'up' ? 'text-green-600' : 
+                                  service.trend === 'down' ? 'text-red-600' : 
+                                  'text-gray-500'
+                                }`}>
+                                  {service.trend === 'up' ? '↑' : service.trend === 'down' ? '↓' : '→'} 
+                                  {service.trend}
+                                </div>
                               </div>
                             </div>
                           </div>
-                        </div>
-                      ))}
-                    </div>
+                        ))}
+                      </div>
+                    ) : (
+                      <div className="text-center py-8 text-gray-500 text-sm">
+                        No services hired yet. Hire services from the marketplace to see them here.
+                      </div>
+                    )}
                   </CardContent>
                 </Card>
               </div>
